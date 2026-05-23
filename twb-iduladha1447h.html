@@ -469,9 +469,9 @@
      * ============================================= */
     function createDefaultFrame() {
         var c = document.createElement('canvas');
-        c.width = 1080; c.height = 1080;
+        c.width = 2160; c.height = 2700;
         var ctx = c.getContext('2d');
-        var W = 1080, H = 1080;
+        var W = 2160, H = 2700;
         var TOP_H = 80;
         var BOT_Y = 880;
         var PX = 36, PY = TOP_H + 8;
@@ -735,7 +735,7 @@
                 var canvas = this.$refs.cvs;
                 if (!canvas) return;
                 var ctx = canvas.getContext('2d');
-                var W = 1080, H = 1080;
+                var W = 2160, H = 2700;
 
                 ctx.clearRect(0, 0, W, H);
 
@@ -939,10 +939,10 @@
                 self.isBusy = true;
 
                 var dc = document.createElement('canvas');
-                dc.width = 1080;
-                dc.height = 1080;
+                dc.width = 2160;
+                dc.height = 2700;
                 var ctx = dc.getContext('2d');
-                var W = 1080, H = 1080;
+                var W = 2160, H = 2700;
 
                 ctx.fillStyle = '#0d1a2d';
                 ctx.fillRect(0, 0, W, H);
