@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MassiveMark Playground — Markdown ke DOCX &amp; PDF</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23211D15'/%3E%3Cpath d='M8 23V10.5L16 18l8-7.5V23' stroke='%23EDE7D6' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='25.5' cy='7.5' r='2' fill='%23E2552C'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      desk:'#15130E', desk2:'#1B1813', panel:'#1F1B14',
+      line:'#2B261C', line2:'#3A3428',
+      cream:'#EAE4D3', muted:'#948C79', faint:'#6B6455',
+      vermilion:'#E2552C', vermdark:'#C6461F', olive:'#5C7148',
+      paper:'#FDFBF6'
+    },
+    fontFamily: {
+      ui:['"Space Grotesk"','sans-serif'],
+      mono:['"JetBrains Mono"','Consolas','monospace']
+    }
+  }}
+};
+</script>
+<style>
+  /* ---------- dasar ---------- */
+  html,body{ height:100%; }
+  body{ font-family:'Space Grotesk',sans-serif; }
+  svg.lucide{ width:15px; height:15px; flex:none; }
+  .drop-ico svg.lucide{ width:30px; height:30px; stroke-width:1.6; }
+  .no-scrollbar::-webkit-scrollbar{ display:none; }
+  .no-scrollbar{ scrollbar-width:none; }
+
+  *{ scrollbar-width:thin; scrollbar-color:#332E23 transparent; }
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb{ background:#332E23; border-radius:8px; border:2px solid #15130E; }
+  ::-webkit-scrollbar-thumb:hover{ background:#4A4436; }
+
+  #editor::selection{ background:rgba(226,85,44,.32); }
+  #sheet ::selection{ background:rgba(226,85,44,.22); }
+
+  /* ---------- kontrol umum ---------- */
+  .vbtn{ height:30px; width:34px; border-radius:6px; color:#8F8875; display:grid; place-items:center; transition:all .15s; }
+  .vbtn:hover{ color:#EAE4D3; }
+  .vbtn.active{ background:#2A2519; color:#EAE4D3; box-shadow:inset 0 0 0 1px #3A3428; }
+  .tbtn{ height:30px; width:30px; flex:none; border-radius:6px; color:#948C79; display:grid; place-items:center; transition:all .15s; }
+  .tbtn:hover{ background:#262219; color:#EAE4D3; }
+  #zoomIn,#zoomOut{ width:28px; height:28px; }
+  .sitem{ display:flex; width:100%; align-items:center; gap:10px; border-radius:8px; padding:8px 10px; text-align:left; transition:background .15s; }
+  .sitem:hover{ background:#2A2519; }
+  .is-busy{ opacity:.55; pointer-events:none; }
+
+  #splitter{ background:transparent; transition:background .15s; }
+  #splitter::after{ content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:2px; height:26px; border-radius:2px; background:#3A3428; }
+  #splitter:hover{ background:rgba(226,85,44,.18); }
+  #splitter:hover::after{ background:#E2552C; }
+
+  #editorPane{ width:50%; }
+  @media (max-width:767px){
+    #editorPane{ width:100% !important; height:48%; }
+    #previewPane{ height:52%; }
+    #splitter{ display:none; }
+  }
+
+  /* popover melayang (menu contoh & rumus) */
+  .popover{ position:fixed; z-index:70; }
+
+  /* ---------- lembar kertas (mesin pratinjau) ---------- */
+  #sheet{
+    position:relative; width:794px; min-height:1123px; margin:0 auto;
+    background:#FDFBF6; color:#292521; border-radius:2px;
+    font-family:'Newsreader',Georgia,serif; font-size:16.5px; line-height:1.68;
+    padding:88px 92px;
+    box-shadow:0 1px 0 1px rgba(0,0,0,.3), 0 30px 70px -22px rgba(0,0,0,.6);
+  }
+  #sheet > *:first-child{ margin-top:0; }
+  #sheet h1,#sheet h2,#sheet h3,#sheet h4,#sheet h5,#sheet h6{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; line-height:1.25;
+    color:#211D15; letter-spacing:-0.01em; margin:1.6em 0 .55em;
+  }
+  #sheet h1{ font-size:34px; border-bottom:2px solid #E2552C; padding-bottom:.4em; margin-top:0; }
+  #sheet h2{ font-size:26px; }
+  #sheet h2::before{ content:""; display:inline-block; width:8px; height:8px; background:#E2552C; margin-right:10px; transform:translateY(-1px) rotate(45deg); }
+  #sheet h3{ font-size:20.5px; }
+  #sheet h4{ font-size:17.5px; }
+  #sheet h5{ font-size:15.5px; }
+  #sheet h6{ font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:#7A7263; }
+  #sheet p{ margin:.85em 0; }
+  #sheet a{ color:#B4451F; text-decoration:underline; text-underline-offset:3px; text-decoration-color:rgba(180,69,31,.35); }
+  #sheet a:hover{ text-decoration-color:#B4451F; }
+  #sheet strong{ font-weight:700; color:#1D1A13; }
+  #sheet del{ color:#8A8171; }
+  #sheet code{
+    font-family:'JetBrains Mono',Consolas,monospace; font-size:.82em;
+    background:#F1ECE0; border:1px solid #E4DECC; color:#A03E18;
+    padding:.12em .38em; border-radius:5px;
+  }
+  #sheet .code-wrap{ margin:1.15em 0; }
+  #sheet .code-wrap pre{ margin:0; }
+  #sheet pre{
+    background:#F6F2E5; border:1px solid #E7E1CE; border-left:3px solid #E2552C;
+    border-radius:6px; padding:14px 18px 14px 16px; overflow-x:auto;
+    font-family:'JetBrains Mono',Consolas,monospace; font-size:13px; line-height:1.6;
+    position:relative; color:#3A342A;
+  }
+  #sheet pre code{ font-family:inherit; font-size:inherit; background:none; border:none; padding:0; color:inherit; border-radius:0; }
+  #sheet pre[data-lang]::before{
+    content:attr(data-lang); position:absolute; top:0; right:0;
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:10px;
+    letter-spacing:.14em; text-transform:uppercase; color:#9B9484;
+    background:#EFEBDC; padding:5px 10px; border-left:1px solid #E7E1CE; border-bottom:1px solid #E7E1CE;
+    border-radius:0 5px 0 6px;
+  }
+  #sheet table{ width:100%; border-collapse:collapse; margin:1.25em 0; font-size:14.5px; }
+  #sheet thead th{
+    background:#26221A; color:#F2EDDF; font-family:'Space Grotesk',sans-serif;
+    font-weight:600; font-size:12.5px; letter-spacing:.02em;
+    padding:9px 14px; border-bottom:2px solid #E2552C;
+  }
+  #sheet td{ padding:8px 14px; border-bottom:1px solid #E5DFCB; }
+  #sheet tbody tr:nth-child(even){ background:#F7F3E7; }
+  #sheet blockquote{
+    margin:1.3em 0; padding:.35em 0 .35em 1.25em; border-left:3px solid #DDD6C2;
+    color:#6E675A; font-style:italic;
+  }
+  #sheet blockquote p{ margin:.35em 0; }
+  #sheet hr{ border:0; margin:2.3em 0; text-align:center; }
+  #sheet hr::after{ content:"◆"; display:inline-block; font-size:8px; color:#CE6B3F; }
+  #sheet img{
+    display:block; max-width:100%; height:auto; margin:1.5em auto;
+    border:1px solid #E7E1CE; border-radius:6px; padding:6px; background:#FBF8EF;
+  }
+  #sheet ul,#sheet ol{ padding-left:1.5em; margin:.9em 0; }
+  #sheet li{ margin:.3em 0; }
+  #sheet li::marker{ color:#C0511F; }
+  #sheet li:has(> input[type=checkbox]){ list-style:none; margin-left:-1.3em; }
+  #sheet input[type=checkbox]{ accent-color:#E2552C; margin-right:.55em; vertical-align:-1.5px; }
+  .keep{ break-inside:avoid; page-break-inside:avoid; }
+
+  /* ---------- rumus matematika (KaTeX) ---------- */
+  #sheet .math-display{
+    margin:1.35em 0; padding:8px 4px; text-align:center; overflow-x:auto;
+    break-inside:avoid; page-break-inside:avoid;
+  }
+  #sheet .math-display .katex-display{ margin:0; }
+  #sheet .math-inline .katex{ font-size:1.02em; }
+  #sheet .katex{ font-size:1.04em; }
+  #sheet .math-err{
+    font-family:'JetBrains Mono',Consolas,monospace; font-size:.8em;
+    color:#B0400F; background:#FAE7DF; border:1px solid #EEC2B0;
+    border-radius:5px; padding:.08em .35em; cursor:help;
+  }
+
+  /* ---------- palet pewarnaan kode (hangat, senada kertas) ---------- */
+  .hljs{ color:#3A342A; }
+  .hljs-keyword,.hljs-selector-tag,.hljs-literal,.hljs-section,.hljs-doctag{ color:#B0400F; }
+  .hljs-string,.hljs-regexp,.hljs-addition{ color:#5C7148; }
+  .hljs-number,.hljs-symbol,.hljs-bullet,.hljs-meta{ color:#9A6B2F; }
+  .hljs-comment,.hljs-quote{ color:#A29A86; font-style:italic; }
+  .hljs-title,.hljs-title.function_,.hljs-title.class_{ color:#2F6F6A; }
+  .hljs-built_in,.hljs-type,.hljs-typename{ color:#7A5C2E; }
+  .hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-attribute{ color:#71564A; }
+  .hljs-emphasis{ font-style:italic; } .hljs-strong{ font-weight:700; }
+
+  /* ---------- toast ---------- */
+  @keyframes t-in{ from{ opacity:0; transform:translateY(10px) scale(.97); } to{ opacity:1; transform:none; } }
+  .toast{
+    pointer-events:auto; display:flex; align-items:flex-start; gap:10px; width:300px;
+    padding:10px 12px; border-radius:12px; background:#1F1B14; border:1px solid #3A3428;
+    box-shadow:0 18px 44px -12px rgba(0,0,0,.6);
+    animation:t-in .3s cubic-bezier(.21,1.02,.55,1);
+  }
+  .toast.out{ opacity:0; transform:translateY(8px); transition:all .24s; }
+  .toast .tt{ font-family:'Space Grotesk',sans-serif; font-size:12.5px; font-weight:600; color:#EAE4D3; }
+  .toast .td{ font-family:'Space Grotesk',sans-serif; font-size:11.5px; line-height:1.45; color:#948C79; margin-top:2px; }
+  .ticon{ flex:none; width:26px; height:26px; display:grid; place-items:center; border-radius:8px; margin-top:1px; }
+  .ticon svg.lucide{ width:14px; height:14px; }
+  .t-ok{ background:#243118; color:#A9C18D; }
+  .t-err{ background:#3A1D13; color:#E58A6C; }
+  .t-inf{ background:#2A2519; color:#C9C2AF; }
+
+  /* ---------- animasi proses ---------- */
+  @keyframes lspin{ to{ transform:rotate(360deg); } }
+  .spin{ animation:lspin .9s linear infinite; transform-origin:center; }
+  #busyBar{ animation:busybar 1.15s ease-in-out infinite; }
+  @keyframes busybar{ 0%{ transform:translateX(-110%); } 100%{ transform:translateX(430%); } }
+</style>
+</head>
+<body class="flex h-screen flex-col overflow-hidden bg-desk text-cream antialiased">
+
+<!-- ===================== HEADER ===================== -->
+<header class="z-20 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-desk px-3 sm:px-4">
+  <div class="flex items-center gap-2.5">
+    <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#211D15" stroke="#3A3428"/>
+      <path d="M8 23V10.5L16 18l8-7.5V23" stroke="#EDE7D6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="25.5" cy="7.5" r="2" fill="#E2552C"/>
+    </svg>
+    <div class="leading-none">
+      <div class="font-ui text-[15px] font-semibold tracking-tight text-cream">MassiveMark</div>
+      <div class="mt-1 font-ui text-[9px] font-semibold uppercase tracking-[0.26em] text-vermilion">Playground</div>
+    </div>
+  </div>
+
+  <div class="mx-1 hidden h-6 w-px bg-line sm:block"></div>
+
+  <div class="hidden min-w-0 items-center gap-2 rounded-lg border border-line bg-panel px-2.5 py-1.5 sm:flex">
+    <i data-lucide="file-text" class="text-faint"></i>
+    <input id="nameInput" value="massivemark-dokumen" spellcheck="false" aria-label="Nama berkas hasil ekspor"
+           class="w-36 bg-transparent font-mono text-[12.5px] text-cream outline-none md:w-52"/>
+    <span class="font-mono text-[12.5px] text-faint">.md</span>
+  </div>
+
+  <div class="ml-auto flex items-center gap-2">
+    <button id="breaksBtn" title="Perlakukan baris tunggal sebagai baris baru — berguna untuk jawaban AI"
+            class="flex h-9 items-center gap-2 rounded-lg border border-line px-3 font-ui text-[12px] font-medium text-muted transition hover:border-line2 hover:text-cream">
+      <i data-lucide="wrap-text"></i><span class="hidden xl:inline">Pemisah baris</span>
+      <span id="breaksDot" class="h-1.5 w-1.5 rounded-full bg-line2"></span>
+    </button>
+
+    <div id="viewSeg" class="flex rounded-lg border border-line bg-panel p-0.5">
+      <button data-view="editor"   title="Editor saja" class="vbtn"><i data-lucide="square-pen"></i></button>
+      <button data-view="split"    title="Tampilan terpisah" class="vbtn active"><i data-lucide="columns-2"></i></button>
+      <button data-view="preview"  title="Pratinjau saja" class="vbtn"><i data-lucide="eye"></i></button>
+    </div>
+
+    <button id="btnDocx" title="Konversi ke dokumen Word"
+            class="flex h-9 items-center gap-2 rounded-lg border border-line2 bg-panel px-3.5 font-ui text-[12.5px] font-semibold text-cream transition hover:border-[#4E4738] hover:bg-[#272217] active:scale-[.98]">
+      <i data-lucide="file-down"></i><span class="hidden sm:inline">DOCX</span>
+    </button>
+    <button id="btnPdf" title="Konversi ke berkas PDF"
+            class="flex h-9 items-center gap-2 rounded-lg bg-vermilion px-3.5 font-ui text-[12.5px] font-semibold text-[#FFF6EC] transition hover:bg-vermdark active:scale-[.98]">
+      <i data-lucide="download"></i><span class="hidden sm:inline">PDF</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===================== AREA KERJA ===================== -->
+<main id="main" class="relative flex min-h-0 flex-1 flex-col md:flex-row">
+
+  <!-- --- panel editor --- -->
+  <section id="editorPane" class="flex min-h-0 min-w-0 flex-col bg-desk2">
+    <div class="no-scrollbar flex h-11 shrink-0 items-center gap-1 overflow-x-auto border-b border-line px-3">
+      <button id="sampleBtn" class="flex h-7 items-center gap-1.5 rounded-md px-2 font-ui text-[12px] font-medium text-muted transition hover:bg-line hover:text-cream">
+        <i data-lucide="sparkles"></i> Contoh <i data-lucide="chevron-down"></i>
+      </button>
+
+      <button id="pasteBtn" title="Tempel teks dari clipboard"
+              class="flex h-7 items-center gap-1.5 rounded-md px-2 font-ui text-[12px] font-medium text-muted transition hover:bg-line hover:text-cream">
+        <i data-lucide="clipboard-paste"></i><span class="hidden md:inline">Tempel</span>
+      </button>
+
+      <span class="mx-1 h-4 w-px shrink-0 bg-line"></span>
+
+      <button class="tbtn" data-act="h2"  title="Judul (H2) — klik lagi untuk menghapus"><i data-lucide="heading-2"></i></button>
+      <button class="tbtn" data-act="bold" title="Tebal (Ctrl+B)"><i data-lucide="bold"></i></button>
+      <button class="tbtn" data-act="italic" title="Miring (Ctrl+I)"><i data-lucide="italic"></i></button>
+      <button class="tbtn" data-act="code" title="Kode inline"><i data-lucide="code"></i></button>
+
+      <span class="mx-1 h-4 w-px shrink-0 bg-line"></span>
+
+      <button class="tbtn" data-act="codeblock" title="Blok kode"><i data-lucide="braces"></i></button>
+      <button class="tbtn" data-act="quote" title="Kutipan"><i data-lucide="quote"></i></button>
+
+      <span class="mx-1 h-4 w-px shrink-0 bg-line"></span>
+
+      <button class="tbtn" data-act="ul" title="Daftar butir"><i data-lucide="list"></i></button>
+      <button class="tbtn" data-act="ol" title="Daftar bernomor"><i data-lucide="list-ordered"></i></button>
+      <button class="tbtn" data-act="task" title="Daftar tugas"><i data-lucide="square-check"></i></button>
+
+      <span class="mx-1 h-4 w-px shrink-0 bg-line"></span>
+
+      <button class="tbtn" data-act="link" title="Tautan"><i data-lucide="link"></i></button>
+      <button class="tbtn" data-act="img" title="Gambar"><i data-lucide="image"></i></button>
+      <button class="tbtn" data-act="table" title="Tabel"><i data-lucide="table"></i></button>
+      <button class="tbtn" data-act="hr" title="Garis pemisah"><i data-lucide="minus"></i></button>
+
+      <span class="mx-1 h-4 w-px shrink-0 bg-line"></span>
+
+      <button id="mathBtn" class="flex h-7 items-center gap-1.5 rounded-md px-2 font-ui text-[12px] font-medium text-muted transition hover:bg-line hover:text-cream" title="Sisipkan rumus LaTeX">
+        <i data-lucide="sigma"></i> Rumus <i data-lucide="chevron-down"></i>
+      </button>
+
+      <div class="ml-auto hidden pl-3 pr-1 font-mono text-[10.5px] tracking-widest text-faint lg:block">MARKDOWN</div>
+    </div>
+
+    <div class="relative min-h-0 flex-1">
+      <textarea id="editor" spellcheck="false"
+        placeholder="Tempel markdown di sini — teks, tabel, hingga rumus $LaTeX$…"
+        class="absolute inset-0 h-full w-full resize-none bg-transparent px-5 py-4 font-mono text-[13.5px] leading-[1.75] text-[#E8E2D0] caret-vermilion outline-none placeholder:text-faint"></textarea>
+    </div>
+  </section>
+
+  <!-- --- pemisah panel --- -->
+  <div id="splitter" class="group relative hidden w-1.5 shrink-0 cursor-col-resize md:block" title="Geser untuk mengubah lebar panel"></div>
+
+  <!-- --- panel pratinjau: meja + lembar kertas --- -->
+  <section id="previewPane" class="relative flex min-h-0 min-w-0 flex-1 flex-col">
+    <div class="absolute right-3 top-3 z-20 flex items-center gap-1 rounded-full border border-line bg-panel/90 px-1.5 py-1 shadow-lg shadow-black/30 backdrop-blur-sm">
+      <button id="zoomOut" title="Perkecil pratinjau" class="tbtn"><i data-lucide="zoom-out"></i></button>
+      <button id="zoomLabel" title="Kembalikan ke 100%" class="min-w-[44px] font-mono text-[11px] text-muted transition hover:text-cream">100%</button>
+      <button id="zoomIn" title="Perbesar pratinjau" class="tbtn"><i data-lucide="zoom-in"></i></button>
+      <span class="mx-0.5 h-4 w-px bg-line"></span>
+      <span class="px-1.5 font-mono text-[10px] tracking-widest text-faint">A4</span>
+    </div>
+
+    <div id="previewScroll" class="relative flex-1 overflow-auto bg-[#191610]">
+      <div id="sheetWrap" class="px-6 py-8 md:px-10 md:py-10">
+        <article id="sheet">
+          <div id="emptyState" class="absolute inset-0 z-10 flex items-center justify-center">
+            <div class="pointer-events-none max-w-[310px] text-center">
+              <div class="mx-auto mb-4 grid h-11 w-11 place-items-center rounded-full border border-[#D8D2C0] text-[#A39A84]">
+                <i data-lucide="pen-line"></i>
+              </div>
+              <div class="font-serif text-[19px] italic text-[#8A8171]">Kanvas masih kosong</div>
+              <p class="mt-2 font-serif text-[14.5px] leading-relaxed text-[#A39A84]">
+                Mulai menulis, tempel jawaban AI — teks, tabel, rumus — atau jatuhkan berkas <span class="font-mono text-[12.5px]">.md</span> ke mana saja di halaman ini.
+              </p>
+              <button id="emptyLoadSample"
+                      class="pointer-events-auto mt-5 rounded-lg border border-[#D8D2C0] px-4 py-2 font-ui text-[12px] font-semibold text-[#5A5344] transition hover:border-vermilion hover:text-vermilion">
+                Muat contoh dokumen
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="flex h-9 shrink-0 items-center justify-between gap-4 border-t border-line bg-desk px-4 font-mono text-[11px] text-muted">
+  <div class="flex min-w-0 items-center gap-2">
+    <span id="statusDot" class="h-1.5 w-1.5 shrink-0 rounded-full" style="background:#6F7D55"></span>
+    <span id="statusMsg" class="truncate">Memuat…</span>
+  </div>
+  <div class="hidden items-center gap-4 text-faint lg:flex">
+    <span><span id="stWords" class="text-[#C9C2AF]">0</span> kata</span><span class="text-line2">·</span>
+    <span><span id="stChars" class="text-[#C9C2AF]">0</span> karakter</span><span class="text-line2">·</span>
+    <span><span id="stRead" class="text-[#C9C2AF]">0</span> mnt baca</span><span class="text-line2">·</span>
+    <span><span id="stH" class="text-[#C9C2AF]">0</span> heading</span><span class="text-line2">·</span>
+    <span><span id="stT" class="text-[#C9C2AF]">0</span> tabel</span><span class="text-line2">·</span>
+    <span><span id="stC" class="text-[#C9C2AF]">0</span> blok kode</span><span class="text-line2">·</span>
+    <span><span id="stM" class="text-[#C9C2AF]">0</span> rumus</span>
+  </div>
+  <div class="flex shrink-0 items-center gap-3 text-faint">
+    <span id="lnCol">Ln 1, Col 1</span>
+    <span class="text-line2">|</span><span>A4 · 794×1123</span>
+  </div>
+</footer>
+
+<!-- ===================== POPOVER: contoh dokumen ===================== -->
+<div id="sampleMenu" class="hidden w-72 rounded-xl border border-line2 bg-panel p-1.5 shadow-2xl shadow-black/60">
+  <div class="px-2.5 pb-1.5 pt-1 font-ui text-[10px] font-semibold uppercase tracking-[0.18em] text-faint">Muat dokumen contoh</div>
+  <button class="sitem" data-sample="0">
+    <i data-lucide="chart-column" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Laporan Analisis AI</span>
+    <span class="block font-ui text-[11px] text-muted">Tabel, kode, rumus, tugas &amp; gambar</span></span>
+  </button>
+  <button class="sitem" data-sample="1">
+    <i data-lucide="package" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">README Teknis</span>
+    <span class="block font-ui text-[11px] text-muted">Blok bash, tabel konfigurasi</span></span>
+  </button>
+  <button class="sitem" data-sample="2">
+    <i data-lucide="notebook-pen" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Notulen Rapat</span>
+    <span class="block font-ui text-[11px] text-muted">Keputusan &amp; tindak lanjut</span></span>
+  </button>
+  <div class="my-1 h-px bg-line"></div>
+  <button class="sitem" id="clearBtn">
+    <i data-lucide="eraser" class="text-faint"></i>
+    <span class="font-ui text-[12.5px] font-medium text-muted">Kosongkan kanvas</span>
+  </button>
+</div>
+
+<!-- ===================== POPOVER: rumus LaTeX ===================== -->
+<div id="mathMenu" class="hidden w-[310px] rounded-xl border border-line2 bg-panel p-1.5 shadow-2xl shadow-black/60">
+  <div class="px-2.5 pb-1.5 pt-1 font-ui text-[10px] font-semibold uppercase tracking-[0.18em] text-faint">Sisipkan rumus LaTeX</div>
+  <button class="sitem" data-mode="inline" data-ins="$e^{i\pi} + 1 = 0$">
+    <i data-lucide="type" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Rumus inline</span>
+    <span class="block font-mono text-[10.5px] text-muted">$…$ di dalam baris</span></span>
+  </button>
+  <button class="sitem" data-mode="block" data-ins="$$P(t) = \frac{K}{1 + e^{-r(t-t_0)}}$$">
+    <i data-lucide="sigma" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Rumus blok</span>
+    <span class="block font-mono text-[10.5px] text-muted">$$…$$ tampil di tengah</span></span>
+  </button>
+  <button class="sitem" data-mode="block" data-ins="$$P(n, r) = \frac{n!}{(n-r)!}$$">
+    <i data-lucide="shuffle" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Permutasi</span>
+    <span class="block font-mono text-[10.5px] text-muted">\frac{n!}{(n-r)!}</span></span>
+  </button>
+  <div class="my-1 h-px bg-line"></div>
+  <button class="sitem" data-mode="inline" data-ins="$\frac{a+b}{c}$">
+    <i data-lucide="divide" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Pecahan</span>
+    <span class="block font-mono text-[10.5px] text-muted">\frac{pembilang}{penyebut}</span></span>
+  </button>
+  <button class="sitem" data-mode="inline" data-ins="$\sqrt[3]{2x+1}$">
+    <i data-lucide="percent" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Akar</span>
+    <span class="block font-mono text-[10.5px] text-muted">\sqrt[n]{isi} — n opsional</span></span>
+  </button>
+  <button class="sitem" data-mode="inline" data-ins="$x_i^2 \le n^2$">
+    <i data-lucide="hash" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Indeks &amp; pangkat</span>
+    <span class="block font-mono text-[10.5px] text-muted">x_i^2 dengan _ dan ^</span></span>
+  </button>
+  <div class="my-1 h-px bg-line"></div>
+  <button class="sitem" data-mode="block" data-ins="$$\sum_{i=1}^{n} w_i\,x_i$$">
+    <i data-lucide="plus" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Penjumlahan</span>
+    <span class="block font-mono text-[10.5px] text-muted">\sum dengan batas</span></span>
+  </button>
+  <button class="sitem" data-mode="block" data-ins="$$\int_{0}^{\infty} e^{-x}\,dx = 1$$">
+    <i data-lucide="infinity" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Integral</span>
+    <span class="block font-mono text-[10.5px] text-muted">\int dengan batas</span></span>
+  </button>
+  <button class="sitem" data-mode="inline" data-ins="$\lim_{n \to \infty} \left(1 + \tfrac{1}{n}\right)^n = e$">
+    <i data-lucide="arrow-right" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Limit</span>
+    <span class="block font-mono text-[10.5px] text-muted">\lim, \to, \left( \right)</span></span>
+  </button>
+  <button class="sitem" data-mode="inline" data-ins="$\alpha + \beta = \gamma$">
+    <i data-lucide="languages" class="text-vermilion"></i>
+    <span><span class="block font-ui text-[12.5px] font-medium text-cream">Huruf Yunani</span>
+    <span class="block font-mono text-[10.5px] text-muted">\alpha, \beta, \pi, \sigma…</span></span>
+  </button>
+</div>
+
+<!-- overlay proses ekspor -->
+<div id="busy" class="fixed inset-0 z-50 bg-[#14120D]/70 backdrop-blur-[2px]" style="display:none">
+  <div class="grid h-full w-full place-items-center p-4">
+    <div class="w-72 rounded-2xl border border-line2 bg-panel p-5 shadow-2xl shadow-black/60">
+      <div class="flex items-center gap-3">
+        <div class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-vermilion/15 text-vermilion"><i data-lucide="loader-circle" class="spin"></i></div>
+        <div class="min-w-0">
+          <div id="busyTitle" class="font-ui text-[13.5px] font-semibold text-cream">Membuat PDF…</div>
+          <div id="busySub" class="mt-0.5 truncate font-ui text-[11.5px] text-muted">Merender halaman</div>
+        </div>
+      </div>
+      <div class="mt-4 h-1 overflow-hidden rounded-full bg-line"><div id="busyBar" class="h-full w-1/4 rounded-full bg-vermilion"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- overlay tarik-lepas berkas -->
+<div id="dropOverlay" class="fixed inset-0 z-40 hidden bg-[#14120D]/85 backdrop-blur-[2px]">
+  <div class="pointer-events-none absolute inset-4 rounded-2xl border-2 border-dashed border-vermilion/70"></div>
+  <div class="absolute inset-0 grid place-items-center text-center">
+    <div>
+      <div class="drop-ico text-vermilion"><i data-lucide="file-down"></i></div>
+      <div class="mt-3 font-ui text-[15px] font-semibold text-cream">Lepaskan berkas markdown</div>
+      <div class="mt-1 font-ui text-[12px] text-muted">Berkas .md / .markdown / .txt akan dimuat ke editor</div>
+    </div>
+  </div>
+</div>
+
+<!-- wadah toast -->
+<div id="toasts" class="pointer-events-none fixed bottom-4 right-4 z-[60] flex flex-col items-end gap-2"></div>
+
+<!-- ===================== PUSTAKA ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+
+<script>
+/* =========================================================
+   MassiveMark Playground — semua logika berjalan di peramban
+   ========================================================= */
+
+// ---------- util ----------
+const $id = id => document.getElementById(id);
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function unesc(s){ return String(s).replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&nbsp;/g, m => ({'&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#39;':"'",'&nbsp;':'\u00A0'}[m])); }
+function b64ToU8(b64){ const bin = atob(b64); const u = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u; }
+function clamp(v,a,b){ return Math.min(b, Math.max(a, v)); }
+
+// ---------- referensi DOM ----------
+const editor = $id('editor'), sheet = $id('sheet'), sheetWrap = $id('sheetWrap');
+const previewScroll = $id('previewScroll'), previewPane = $id('previewPane');
+const editorPane = $id('editorPane'), splitter = $id('splitter'), mainEl = $id('main');
+const nameInput = $id('nameInput'), emptyState = $id('emptyState');
+const toastsEl = $id('toasts'), statusMsg = $id('statusMsg'), statusDot = $id('statusDot');
+const busyEl = $id('busy'), busyTitle = $id('busyTitle'), busySub = $id('busySub');
+const sampleBtn = $id('sampleBtn'), sampleMenu = $id('sampleMenu'), pasteBtn = $id('pasteBtn');
+const mathBtn = $id('mathBtn'), mathMenu = $id('mathMenu');
+const breaksBtn = $id('breaksBtn'), breaksDot = $id('breaksDot');
+const btnDocx = $id('btnDocx'), btnPdf = $id('btnPdf');
+const dropOverlay = $id('dropOverlay');
+const stWords=$id('stWords'), stChars=$id('stChars'), stRead=$id('stRead'), stH=$id('stH'), stT=$id('stT'), stC=$id('stC'), stM=$id('stM');
+const lnCol = $id('lnCol'), zoomLabel = $id('zoomLabel');
+
+// ---------- state ----------
+const state = { breaks:false, zoom:1, view:'split', tokens:[], mathStore:[] };
+let exporting = false, renderT, persistT, lockSync = false;
+
+// ---------- dokumen contoh ----------
+const SAMPLES = [
+{ name:'laporan-adopsi-ai', title:'Laporan Analisis — Adopsi AI Generatif', md:
+`# Laporan Analisis: Adopsi AI Generatif
+
+> **Ringkasan eksekutif** — Dokumen ini dihasilkan oleh asisten AI, disempurnakan manusia, dan kini dikemas sebagai *deliverable* resmi melalui MassiveMark Playground.
+
+## 1. Temuan Utama
+
+Adopsi AI generatif di perusahaan menengah melonjak **48%** sepanjang tahun ini. Tiga pendorong utamanya:
+
+1. Tekanan efisiensi biaya operasional
+2. Kematangan model *open-weight* yang mudah disematkan
+3. Regulasi yang mulai memberi kepastian arah
+
+Namun, hanya **31%** organisasi yang berhasil melewati tahap uji coba menuju produksi — sisanya terjebak di "purgatorium *pilot project*".
+
+### 1.1 Metrik Kinerja
+
+| Metrik | 2023 | 2024 | 2025 (proyeksi) |
+| :--- | ---: | ---: | ---: |
+| Tingkat adopsi | 27% | 41% | 62% |
+| ROI rata-rata | 1,2x | 1,8x | 2,6x |
+| Waktu ke produksi | 18 bln | 11 bln | 7 bln |
+| Kepuasan internal | 3,4/5 | 3,9/5 | 4,3/5 |
+
+### 1.2 Hambatan yang Sering Muncul
+
+- Mutu data internal yang belum siap
+- **Kesenjangan talenta** rekayasa data dan MLOps
+- Siklus evaluasi yang terlalu panjang
+- [ ] Audit keamanan model (terjadwal Q3)
+- [x] Kebijakan penggunaan AI internal
+
+## 2. Model Pertumbuhan Adopsi
+
+Kurva adopsi dimodelkan secara logistik:
+
+ $$P(t) = \\frac{K}{1 + e^{-r\\,(t - t_0)}}$$ 
+dengan $K$ menyatakan kapasitas pasar, $r$ laju difusi, dan $t_0$ titik infleksi. Kalibrasi 2025 menghasilkan $K = 0{,}62$, $r = 0{,}8$, serta $t_0 \\approx 2024{,}3$, sehingga:
+
+ $$\\hat{P}(2025) = \\frac{0{,}62}{1 + e^{-0{,}8 \\cdot 0{,}7}} \\approx 0{,}53$$ 
+Elastisitas anggaran terhadap kecepatan adopsi dihitung melalui
+
+ $$\\varepsilon = \\frac{\\partial Q\\,/\\,\\partial B}{Q\\,/\\,B} \\approx 1{,}4$$ 
+dengan interval kepercayaan 95% untuk ROI sebesar $[\\,1{,}8 - 1{,}96\\sigma,\\ 1{,}8 + 1{,}96\\sigma\\,]$ pada $\\sigma = 0{,}3$.
+
+## 3. Kombinatorika dalam Perancangan Uji
+
+Menyusun $r$ variasi berurutan dari $n$ kandidat fitur menghasilkan
+
+ $$P(n, r) = \\frac{n!}{(n-r)!}$$ 
+susunan berbeda — itulah rumus permutasi. Tanpa memedulikan urutan, jumlah kombinasi dihitung dengan $\\binom{n}{r} = \\frac{n!}{r!\\,(n-r)!}$, dan untuk uji berpasangan cukup $\\frac{n(n-1)}{2}$ pasangan.
+
+## 4. Integrasi Teknis Singkat
+
+Konversi markdown ke dokumen dilakukan sepenuhnya di peramban — tanpa unggah — dan seluruh alur tokenisasi berjalan dalam $O(n \\log n)$:
+
+\`\`\`python
+from pathlib import Path
+import re
+
+def hitung_statistik(teks: str) -> dict:
+    """Hitung statistik ringkas sebuah dokumen markdown."""
+    kata = re.findall(r"[\\w-]+", teks.lower())
+    return {
+        "kata": len(kata),
+        "karakter": len(teks),
+        "menit_baca": round(len(kata) / 200),
+    }
+
+laporan = Path("laporan.md").read_text(encoding="utf-8")
+print(hitung_statistik(laporan))
+\`\`\`
+
+Perhatikan bahwa \`hitung_statistik()\` bersifat murni — tanpa efek samping, sehingga mudah diuji.
+
+## 5. Ilustrasi
+
+![Diagram alur adopsi AI generatif](https://picsum.photos/seed/massivemark-flow/880/420.jpg)
+
+## 6. Rekomendasi
+
+1. Mulai dari kasus pakai *bernilai rendah risiko, tinggi frekuensi*
+2. Bangun tim platform kecil, bukan tim model besar
+3. Ukur dampak dengan baseline yang disepakati sejak awal
+
+---
+
+*Kontak tim analisis: [analitik@contoh.id](mailto:analitik@contoh.id) — lampiran tersedia saat diminta.*` },
+
+{ name:'massconn-readme', title:'README Teknis — MassConn', md:
+`# MassConn · v0.9
+
+Konektor ringan untuk menyinkronkan basis data lokal ke gudang data — satu profil, satu perintah.
+
+## Instalasi
+
+\`\`\`bash
+npm install massconn
+massconn init --profile gudang
+\`\`\`
+
+## Penggunaan cepat
+
+1. Inisialisasi profil di \`massconn.config.json\`
+2. Jalankan \`massconn sync --watch\`
+3. Pantau log dengan \`massconn tail\`
+
+## Opsi konfigurasi
+
+| Opsi | Tipe | Default | Keterangan |
+| --- | --- | --- | --- |
+| batch | integer | 500 | Ukuran batch per sinkronisasi |
+| retries | integer | 3 | Percobaan ulang saat gagal |
+| mode | string | "append" | "append" atau "replace" |
+| verify | boolean | true | Cek checksum pasca-transfer |
+
+## Prinsip desain
+
+> MassConn tidak menyimpan data Anda di mana pun. Semua kredensial hanya tinggal di mesin lokal, terenkripsi dengan kuncinya sendiri.
+
+## Batasan saat ini
+
+- Hanya PostgreSQL dan SQLite sebagai sumber
+- [ ] Dukungan MySQL (milestone 0.10)
+- [x] Mode *dry-run*
+- [ ] Ekspor ke Parquet
+
+---
+
+Distribusi di bawah lisensi **MIT**. Silakan laporkan kendala di pelacak isu proyek.` },
+
+{ name:'notulen-sprint-14', title:'Notulen Rapat — Sprint 14', md:
+`# Notulen Rapat — Sprint 14
+
+**Tanggal:** Kamis, 12 Juni 2025 · **Tempat:** Ruang Kaca, lantai 3
+**Pemimpin rapat:** Rani · **Pencatat:** otomatis oleh AI
+
+## Peserta
+
+Rani, Bagas, Titik, Surya, dan *satu perwakilan tim data*.
+
+## Ringkasan diskusi
+
+Sprint 13 selesai dengan **92% cakupan komitmen**. Dua isu utama yang menunda rilis:
+
+1. Latensi antrean tugas di lingkungan staging
+2. Ketidakjelasan kriteria penerimaan modul ekspor
+
+> "Kalau kriteria penerimaannya tidak bisa diuji otomatis, itu bukan kriteria — itu harapan." — Surya
+
+## Keputusan
+
+| Nomor | Keputusan | Status |
+| :---: | --- | --- |
+| 14-01 | Migrasi antrean ke Redis Streams | Disetujui |
+| 14-02 | Kriteria penerimaan wajib berbentuk uji otomatis | Disetujui |
+| 14-03 | Menunda fitur impor CSV ke sprint 15 | DITOLAK — dibahas ulang |
+
+## Tindak lanjut
+
+- [x] Bagas: dokumen arsitektur Redis Streams
+- [ ] Titik: *mockup* alur ekspor — sebelum 17 Juni
+- [ ] Rani: koordinasi dengan tim data soal akses staging
+
+---
+
+*Rapat berikutnya: Senin, 16 Juni 2025, pukul 09.30.*` }
+];
+
+/* =========================================================
+   MESIN MATEMATIKA
+   Rumus DICABUT dari naskah SEBELUM markdown diurai, lalu
+   dirender kembali dengan KaTeX setelah parsing. Dengan urutan
+   ini posisi rumus tidak lagi berpengaruh: baris sendiri, di
+   tengah kalimat, setelah teks, dalam tabel/judul/daftar.
+   Blok kode & kode inline dibiarkan utuh.
+   ========================================================= */
+
+// penanda sementara — garam acak agar tak mungkin bertabrakan dengan teks pengguna
+const MATH_SALT = Math.random().toString(36).slice(2, 7);
+const PH_OPEN   = '⟦MM' + MATH_SALT;
+const PH_RE     = new RegExp('⟦MM' + MATH_SALT + '([BID])(\\d+)⟧', 'g');
+const PH_FULL_B = new RegExp('^\\s*⟦MM' + MATH_SALT + 'B(\\d+)⟧\\s*$');
+const ph = (mode, id) => PH_OPEN + mode + id + '⟧';
+
+// konten yang hanya berisi angka & tanda baca → kemungkinan uang, bukan rumus
+function isMoneyLike(s){ return /^[\d\s.,:;–—'’€$£%~/-]*$/.test(s); }
+function hasBlankLine(s){ return /\n[ \t]*\n/.test(s); }
+
+// mode: 'B' blok tampilan, 'I' inline, 'D' $$ di tengah baris (gaya display)
+function extractMath(src){
+  const store = [];
+  const out = [];
+  let i = 0;
+  const L = src.length;
+  const atLineStart = () => {
+    let p = i - 1;
+    while (p >= 0 && (src[p] === ' ' || src[p] === '\t')) p--;
+    return p < 0 || src[p] === '\n';
+  };
+
+  while (i < L) {
+    const ch = src[i];
+
+    // --- blok kode berpagar (``` / ~~~) : lindungi isinya ---
+    if ((ch === '`' || ch === '~') && atLineStart()) {
+      const fm = /^(`{3,}|~{3,})/.exec(src.slice(i));
+      if (fm) {
+        const fc = fm[1][0], flen = fm[1].length;
+        const closeRe = new RegExp('^[ \\t]*' + fc + '{' + flen + ',}[ \\t]*$');
+        let j = i;
+        while (j < L) {
+          const nl = src.indexOf('\n', j);
+          const le = nl === -1 ? L : nl;
+          if (j > i && closeRe.test(src.slice(j, le))) { j = le; break; }
+          if (nl === -1) { j = L; break; }
+          j = nl + 1;
+        }
+        out.push(src.slice(i, j));
+        i = j;
+        continue;
+      }
+    }
+
+    // --- kode inline (`…`) : lindungi isinya ---
+    if (ch === '`') {
+      const run = /^`+/.exec(src.slice(i))[0];
+      let j = i + run.length, close = -1;
+      while (j < L && close === -1) {
+        if (src[j] === '`') {
+          let k = j;
+          while (k < L && src[k] === '`') k++;
+          if (k - j === run.length) close = j; else j = k;
+        } else j++;
+      }
+      const end = close === -1 ? i + run.length : close + run.length;
+      out.push(src.slice(i, end));
+      i = end;
+      continue;
+    }
+
+    // --- $$…$$ ---
+    if (ch === '$' && src[i+1] === '$') {
+      const close = src.indexOf('$$', i + 2);
+      const latex = close === -1 ? '' : src.slice(i+2, close).trim();
+      if (latex && !hasBlankLine(latex)) {
+        const head = atLineStart();
+        let after = close + 2;
+        while (after < L && (src[after] === ' ' || src[after] === '\t')) after++;
+        const atEOL = after >= L || src[after] === '\n';
+        if (head && atEOL) {
+          // rumus menempati baris penuh → jadikan blok tampilan
+          let p = i - 1, ind = '';
+          while (p >= 0 && (src[p] === ' ' || src[p] === '\t')) { ind = src[p] + ind; p--; }
+          const id = store.push({ mode:'B', latex }) - 1;
+          out.push('\n\n' + ind + ph('B', id) + '\n');
+          i = (after < L && src[after] === '\n') ? after + 1 : after;
+        } else {
+          // di tengah baris → tetap dirender bergaya display
+          const id = store.push({ mode:'D', latex }) - 1;
+          out.push(ph('D', id));
+          i = close + 2;
+        }
+        continue;
+      }
+      out.push('$$');
+      i += 2;
+      continue;
+    }
+
+    // --- \[…\] (gaya output AI) ---
+    if (ch === '\\' && src[i+1] === '[') {
+      const close = src.indexOf('\\]', i + 2);
+      const latex = close === -1 ? '' : src.slice(i+2, close).trim();
+      if (latex && !hasBlankLine(latex)) {
+        const id = store.push({ mode:'B', latex }) - 1;
+        out.push('\n\n' + ph('B', id) + '\n');
+        i = close + 2;
+        continue;
+      }
+      out.push('\\[');
+      i += 2;
+      continue;
+    }
+
+    // --- \(…\) ---
+    if (ch === '\\' && src[i+1] === '(') {
+      const close = src.indexOf('\\)', i + 2);
+      const latex = close === -1 ? '' : src.slice(i+2, close).trim();
+      if (latex && !hasBlankLine(latex)) {
+        const id = store.push({ mode:'I', latex }) - 1;
+        out.push(ph('I', id));
+        i = close + 2;
+        continue;
+      }
+      out.push('\\(');
+      i += 2;
+      continue;
+    }
+
+    // --- karakter ter-escape (mis. \$) : salin apa adanya ---
+    if (ch === '\\') {
+      out.push(src.substr(i, 2));
+      i += 2;
+      continue;
+    }
+
+    // --- $…$ inline (tolak pola uang) ---
+    if (ch === '$') {
+      const nl = src.indexOf('\n', i + 1);
+      const le = nl === -1 ? L : nl;
+      const close = src.indexOf('$', i + 1);
+      if (close !== -1 && close < le) {
+        const content = src.slice(i+1, close);
+        if (content && !/^\s|\s$/.test(content) && content.indexOf('$') === -1 && !isMoneyLike(content)) {
+          const id = store.push({ mode:'I', latex: content }) - 1;
+          out.push(ph('I', id));
+          i = close + 1;
+          continue;
+        }
+      }
+      out.push('$');
+      i += 1;
+      continue;
+    }
+
+    // --- salin teks biasa sampai karakter berikutnya yang menarik ---
+    let j = i + 1;
+    while (j < L) {
+      const c = src[j];
+      if (c === '`' || c === '$' || c === '\\' || c === '~') break;
+      j++;
+    }
+    out.push(src.slice(i, j));
+    i = j;
+  }
+  return { text: out.join(''), store };
+}
+
+// render KaTeX langsung ke elemen DOM (aman & tanpa sanitasi tambahan)
+function renderKatexInto(el, latex, display, forceDisplayStyle){
+  if (typeof katex === 'undefined' || !katex) {
+    el.classList.add('math-err');
+    el.textContent = latex;
+    return;
+  }
+  try {
+    katex.render(forceDisplayStyle ? '\\displaystyle ' + latex : latex, el, {
+      displayMode: display, output: 'html', throwOnError: true, strict: 'ignore', trust: false
+    });
+  } catch (err) {
+    el.classList.add('math-err');
+    el.textContent = latex;
+    if (err && err.message) el.title = String(err.message);
+  }
+}
+
+// pasang rumus kembali ke DOM pratinjau
+function applyMathToDom(root, store){
+  if (!store.length) return;
+
+  // paragraf yang isinya persis satu rumus blok → ganti jadi blok tampilan
+  root.querySelectorAll('p').forEach(p => {
+    const m = PH_FULL_B.exec(p.textContent || '');
+    if (m) {
+      const div = document.createElement('div');
+      div.className = 'math-display';
+      renderKatexInto(div, store[+m[1]].latex, true, false);
+      if (p.parentNode) p.replaceWith(div);
+    }
+  });
+
+  // sisanya bersembunyi di simpul teks (judul, sel tabel, daftar, dsb.)
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const txt = node.nodeValue || '';
+    if (txt.indexOf(PH_OPEN) === -1) continue;
+    const frag = document.createDocumentFragment();
+    let last = 0, m;
+    PH_RE.lastIndex = 0;
+    while ((m = PH_RE.exec(txt))) {
+      if (m.index > last) frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+      const item = store[+m[2]];
+      const el = document.createElement(m[1] === 'B' ? 'div' : 'span');
+      el.className = m[1] === 'B' ? 'math-display' : 'math-inline';
+      renderKatexInto(el, item.latex, m[1] === 'B', m[1] === 'D');
+      frag.appendChild(el);
+      last = m.index + m[0].length;
+    }
+    if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+    if (node.parentNode) node.parentNode.replaceChild(frag, node);
+  }
+}
+
+// sisipkan kembali rumus ke token markdown (untuk ekspor DOCX)
+function splitInlineTokens(tokens, store){
+  const out = [];
+  for (const tok of tokens || []) {
+    const plain = tok.type === 'text' || tok.type === 'escape';
+    if (plain && !tok.tokens && typeof tok.text === 'string' && tok.text.indexOf(PH_OPEN) !== -1) {
+      let last = 0, m;
+      PH_RE.lastIndex = 0;
+      while ((m = PH_RE.exec(tok.text))) {
+        if (m.index > last) out.push({ type:'text', text: tok.text.slice(last, m.index) });
+        out.push({ type:'mathInline', latex: store[+m[2]].latex, raw: m[0] });
+        last = m.index + m[0].length;
+      }
+      if (last < tok.text.length) out.push({ type:'text', text: tok.text.slice(last) });
+      continue;
+    }
+    if (tok.tokens && tok.tokens.length) tok.tokens = splitInlineTokens(tok.tokens, store);
+    out.push(tok);
+  }
+  return out;
+}
+
+function injectMathTokens(tokens, store){
+  const out = [];
+  for (const tok of tokens || []) {
+    if (tok.type === 'paragraph' || tok.type === 'text') {
+      const m = (typeof tok.text === 'string') ? PH_FULL_B.exec(tok.text) : null;
+      if (m) { out.push({ type:'mathBlock', latex: store[+m[1]].latex, raw: tok.raw || m[0] }); continue; }
+    }
+    if (tok.type === 'blockquote') {
+      tok.tokens = injectMathTokens(tok.tokens || [], store);
+    } else if (tok.type === 'list') {
+      for (const it of tok.items || []) { if (it.tokens) it.tokens = injectMathTokens(it.tokens, store); }
+    } else if (tok.type === 'table') {
+      const fix = c => {
+        c.tokens = splitInlineTokens(c.tokens || (typeof c.text === 'string' ? [{ type:'text', text: c.text }] : []), store);
+        return c;
+      };
+      if (tok.header) tok.header = tok.header.map(fix);
+      if (tok.rows) tok.rows = tok.rows.map(r => r.map(fix));
+    } else if (tok.tokens && tok.tokens.length) {
+      tok.tokens = splitInlineTokens(tok.tokens, store);
+    }
+    out.push(tok);
+  }
+  return out;
+}
+
+// ---------- marked: renderer kustom (label bahasa + tautan tab baru) ----------
+marked.use({
+  renderer: {
+    code({ text, lang }){
+      const code = String(text || '').replace(/\n$/, '');
+      const label = (lang || '').trim().split(/\s+/)[0].replace(/[^a-zA-Z0-9+#._-]/g, '');
+      let html;
+      try {
+        if (typeof hljs !== 'undefined') {
+          if (label && hljs.getLanguage(label)) html = hljs.highlight(code, { language: label, ignoreIllegals: true }).value;
+          else html = hljs.highlightAuto(code).value;
+        } else html = escapeHtml(code);
+      } catch (e) { html = escapeHtml(code); }
+      return `<div class="code-wrap"><pre${label ? ` data-lang="${label}"` : ''}><code class="hljs">${html}</code></pre></div>`;
+    },
+    link({ href, title, tokens }){
+      const txt = this.parser.parseInline(tokens || []);
+      return `<a href="${href}"${title ? ` title="${title}"` : ''} target="_blank" rel="noopener">${txt}</a>`;
+    }
+  }
+});
+
+// ---------- pratinjau & statistik ----------
+function scheduleRender(){ clearTimeout(renderT); renderT = setTimeout(renderPreview, 130); }
+
+function renderPreview(){
+  const raw = editor.value;
+  if (typeof marked === 'undefined') return;
+
+  // 1) cabut rumus dari naskah, 2) urai markdown, 3) render, 4) pasang rumus kembali
+  const ex = extractMath(raw);
+  state.mathStore = ex.store;
+  state.tokens = marked.lexer(ex.text, { gfm: true, breaks: state.breaks });
+
+  if (!raw.trim()) {
+    sheet.innerHTML = '';
+    sheet.appendChild(emptyState);
+  } else {
+    if (emptyState.parentNode) emptyState.remove();
+    let html;
+    try { html = marked.parser(state.tokens, { gfm: true, breaks: state.breaks }); }
+    catch (e) { html = '<p><em>Gagal mengurai markdown.</em></p>'; }
+    if (typeof DOMPurify !== 'undefined') {
+      html = DOMPurify.sanitize(html, { ADD_TAGS:['input'], ADD_ATTR:['type','checked','disabled','start','target','rel'] });
+    }
+    sheet.innerHTML = html;
+    applyMathToDom(sheet, ex.store);
+    // elemen yang sebaiknya tidak terpotong halaman saat ekspor PDF
+    sheet.querySelectorAll('table, blockquote, .code-wrap, .math-display').forEach(el => el.classList.add('keep'));
+  }
+  updateStats(raw);
+}
+
+function walkTokens(tokens, fn){
+  for (const t of tokens) {
+    fn(t);
+    if (t.tokens) walkTokens(t.tokens, fn);
+    if (t.items) for (const it of t.items) { if (it.tokens) walkTokens(it.tokens, fn); }
+    if (t.rows) for (const r of t.rows) for (const c of r) { if (c.tokens) walkTokens(c.tokens, fn); }
+    if (t.header) for (const c of t.header) { if (c.tokens) walkTokens(c.tokens, fn); }
+  }
+}
+
+function updateStats(raw){
+  const t = raw.trim();
+  const words = t ? t.split(/\s+/).length : 0;
+  let h = 0, tb = 0, cb = 0;
+  walkTokens(state.tokens, tok => {
+    if (tok.type === 'heading') h++;
+    else if (tok.type === 'table') tb++;
+    else if (tok.type === 'code') cb++;
+  });
+  stWords.textContent = words.toLocaleString('id-ID');
+  stChars.textContent = raw.length.toLocaleString('id-ID');
+  stRead.textContent = words ? Math.max(1, Math.ceil(words / 200)) : 0;
+  stH.textContent = h; stT.textContent = tb; stC.textContent = cb;
+  stM.textContent = (state.mathStore || []).length;
+}
+
+function updateLnCol(){
+  const p = editor.selectionStart;
+  const before = editor.value.slice(0, p);
+  const ln = before.split('\n').length;
+  const col = p - (before.lastIndexOf('\n') + 1) + 1;
+  lnCol.textContent = `Ln ${ln}, Col ${col}`;
+}
+
+// ---------- status, toast, proses ----------
+function setStatus(msg, tone){
+  statusMsg.textContent = msg;
+  statusDot.style.background = tone === 'work' ? '#E2552C' : (tone === 'err' ? '#C03A21' : '#6F7D55');
+}
+
+function toast(type, title, desc){
+  const conf = { success:{ic:'check',cls:'t-ok'}, error:{ic:'triangle-alert',cls:'t-err'}, info:{ic:'info',cls:'t-inf'} }[type] || {ic:'info',cls:'t-inf'};
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="ticon ${conf.cls}"><i data-lucide="${conf.ic}"></i></span>
+    <div class="min-w-0"><div class="tt">${escapeHtml(title)}</div>
+    ${desc ? `<div class="td">${escapeHtml(desc)}</div>` : ''}</div>`;
+  toastsEl.appendChild(el);
+  if (window.lucide) lucide.createIcons();
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 260); }, 3600);
+}
+
+function showBusy(title, sub){ busyTitle.textContent = title; busySub.textContent = sub; busyEl.style.display = 'grid'; }
+function hideBusy(){ busyEl.style.display = 'none'; }
+
+// ---------- popover melayang (contoh & rumus) ----------
+const popovers = [];
+function closeAllPopovers(){ popovers.forEach(m => m.classList.add('hidden')); }
+function bindPopover(btn, menu){
+  menu.classList.add('popover');
+  document.body.appendChild(menu);
+  popovers.push(menu);
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const willOpen = menu.classList.contains('hidden');
+    closeAllPopovers();
+    if (!willOpen) return;
+    menu.classList.remove('hidden');
+    const r = btn.getBoundingClientRect();
+    const mw = menu.offsetWidth, mh = menu.offsetHeight;
+    const left = clamp(r.left, 8, window.innerWidth - mw - 8);
+    let top = r.bottom + 8;
+    if (top + mh > window.innerHeight - 8) top = Math.max(8, r.top - mh - 8);
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+  });
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.popover')) closeAllPopovers();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllPopovers(); });
+
+// ---------- penyimpanan otomatis ----------
+function persistNow(){
+  clearTimeout(persistT);
+  try {
+    localStorage.setItem('mm.draft', JSON.stringify({ n: nameInput.value, t: editor.value, b: state.breaks, at: Date.now() }));
+    setStatus('Tersimpan otomatis · ' + new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' }));
+  } catch (e) { /* kuota penuh: abaikan diam-diam */ }
+}
+function schedulePersist(){ clearTimeout(persistT); persistT = setTimeout(persistNow, 600); }
+
+// ---------- alat bantu editor ----------
+function handleEditorInput(){ scheduleRender(); schedulePersist(); updateLnCol(); }
+editor.addEventListener('input', handleEditorInput);
+['keyup','click'].forEach(ev => editor.addEventListener(ev, updateLnCol));
+
+function wrapSel(before, after, phText){
+  const s = editor.selectionStart, e = editor.selectionEnd;
+  const sel = editor.value.slice(s, e) || (phText || '');
+  editor.setRangeText(before + sel + after, s, e, 'end');
+  editor.setSelectionRange(s + before.length, s + before.length + sel.length);
+  editor.focus();
+  handleEditorInput();
+}
+
+function insertLines(block){
+  const s = editor.selectionStart;
+  const before = editor.value.slice(0, s);
+  const pad = !before ? '' : (/\n\n$/.test(before) ? '' : '\n\n');
+  editor.setRangeText(pad + block + '\n', s, editor.selectionEnd, 'end');
+  editor.focus();
+  handleEditorInput();
+}
+
+function insertText(text){
+  editor.setRangeText(text, editor.selectionStart, editor.selectionEnd, 'end');
+  editor.focus();
+  handleEditorInput();
+}
+
+function toggleHeading(){
+  const v = editor.value, s = editor.selectionStart;
+  const ls = v.lastIndexOf('\n', s - 1) + 1;
+  let le = v.indexOf('\n', s); if (le === -1) le = v.length;
+  const line = v.slice(ls, le);
+  const m = /^(#{1,6})\s+/.exec(line);
+  let nl, off;
+  if (m) { nl = line.slice(m[0].length); off = -m[0].length; }
+  else   { nl = '## ' + line; off = 3; }
+  editor.setRangeText(nl, ls, le, 'end');
+  editor.setSelectionRange(Math.max(ls, s + off), Math.max(ls, s + off));
+  editor.focus();
+  handleEditorInput();
+}
+
+const actions = {
+  h2: toggleHeading,
+  bold: () => wrapSel('**','**','teks tebal'),
+  italic: () => wrapSel('*','*','teks miring'),
+  code: () => wrapSel('`','`','kode'),
+  codeblock: () => insertLines('```\nkode di sini\n```'),
+  quote: () => insertLines('> Kutipan penting'),
+  ul: () => insertLines('- butir pertama\n- butir kedua'),
+  ol: () => insertLines('1. langkah pertama\n2. langkah kedua'),
+  task: () => insertLines('- [ ] tugas baru'),
+  link: () => wrapSel('[', '](https://example.com)', 'tautan'),
+  img: () => insertLines('![deskripsi gambar](https://picsum.photos/seed/mm/720/360.jpg)'),
+  table: () => insertLines('| Kolom A | Kolom B | Kolom C |\n| --- | :---: | ---: |\n| isi | isi | isi |\n| isi | isi | isi |'),
+  hr: () => insertLines('---'),
+};
+document.querySelectorAll('.tbtn[data-act]').forEach(b => {
+  b.addEventListener('click', () => { const a = actions[b.dataset.act]; if (a) a(); });
+});
+
+// pintasan papan tuts
+editor.addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    editor.setRangeText('  ', editor.selectionStart, editor.selectionEnd, 'end');
+    handleEditorInput();
+    return;
+  }
+  const mod = e.ctrlKey || e.metaKey;
+  if (!mod) return;
+  const k = e.key.toLowerCase();
+  if (k === 'b') { e.preventDefault(); actions.bold(); }
+  else if (k === 'i') { e.preventDefault(); actions.italic(); }
+  else if (k === 's') { e.preventDefault(); persistNow(); toast('info','Draf tersimpan','Naskah disimpan ke penyimpanan lokal peramban.'); }
+});
+
+// ---------- menu contoh, papan klip, menu rumus ----------
+bindPopover(sampleBtn, sampleMenu);
+bindPopover(mathBtn, mathMenu);
+
+function loadSample(i){
+  const s = SAMPLES[i];
+  editor.value = s.md;
+  nameInput.value = s.name;
+  closeAllPopovers();
+  renderPreview(); persistNow();
+  toast('success','Contoh dimuat', s.title);
+}
+sampleMenu.querySelectorAll('[data-sample]').forEach(b => b.addEventListener('click', () => loadSample(+b.dataset.sample)));
+ $id('clearBtn').addEventListener('click', () => {
+  editor.value = ''; nameInput.value = 'massivemark-dokumen';
+  closeAllPopovers();
+  renderPreview(); persistNow();
+  toast('info','Kanvas dikosongkan','Mulai dari naskah Anda sendiri.');
+});
+ $id('emptyLoadSample').addEventListener('click', () => loadSample(0));
+
+mathMenu.querySelectorAll('[data-ins]').forEach(b => {
+  b.addEventListener('click', () => {
+    const ins = b.dataset.ins;
+    if (b.dataset.mode === 'block') insertLines(ins);
+    else insertText(ins);
+    closeAllPopovers();
+  });
+});
+
+pasteBtn.addEventListener('click', async () => {
+  try {
+    const t = await navigator.clipboard.readText();
+    if (!t) { toast('info','Clipboard kosong','Salin teks markdown terlebih dahulu.'); return; }
+    editor.setRangeText(t, editor.selectionStart, editor.selectionEnd, 'end');
+    editor.focus(); handleEditorInput();
+    toast('success','Ditempel dari clipboard', t.length.toLocaleString('id-ID') + ' karakter masuk ke editor.');
+  } catch (e) {
+    toast('error','Tidak bisa mengakses clipboard','Tempel langsung di editor dengan Ctrl+V.');
+  }
+});
+
+// ---------- tampilan, pemisah, sinkronisasi gulir, zum ----------
+function setView(v){
+  state.view = v;
+  document.querySelectorAll('#viewSeg button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  editorPane.classList.toggle('hidden', v === 'preview');
+  previewPane.classList.toggle('hidden', v === 'editor');
+  splitter.classList.toggle('hidden', v !== 'split' || window.innerWidth < 768);
+}
+document.querySelectorAll('#viewSeg button').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+
+let dragging = false;
+splitter.addEventListener('pointerdown', e => {
+  dragging = true; splitter.setPointerCapture(e.pointerId);
+  document.body.classList.add('select-none');
+});
+window.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const rect = mainEl.getBoundingClientRect();
+  editorPane.style.width = clamp(e.clientX - rect.left, 320, rect.width - 380) + 'px';
+});
+window.addEventListener('pointerup', () => { dragging = false; document.body.classList.remove('select-none'); });
+
+function syncScroll(from){
+  if (lockSync || from === editor && state.view !== 'split') return;
+  const other = from === editor ? previewScroll : editor;
+  const maxS = from.scrollHeight - from.clientHeight || 1;
+  const r = from.scrollTop / maxS;
+  other.scrollTop = r * (other.scrollHeight - other.clientHeight);
+  lockSync = true;
+  setTimeout(() => lockSync = false, 120);
+}
+editor.addEventListener('scroll', () => syncScroll(editor));
+previewScroll.addEventListener('scroll', () => syncScroll(previewScroll));
+
+function applyZoom(z){
+  state.zoom = Math.round(clamp(z, .5, 1.6) * 100) / 100;
+  sheetWrap.style.zoom = state.zoom;
+  zoomLabel.textContent = Math.round(state.zoom * 100) + '%';
+}
+ $id('zoomIn').addEventListener('click', () => applyZoom(state.zoom + .1));
+ $id('zoomOut').addEventListener('click', () => applyZoom(state.zoom - .1));
+zoomLabel.addEventListener('click', () => applyZoom(1));
+previewScroll.addEventListener('wheel', e => {
+  if (e.ctrlKey) { e.preventDefault(); applyZoom(state.zoom - e.deltaY * .0015); }
+}, { passive: false });
+
+breaksBtn.addEventListener('click', () => {
+  state.breaks = !state.breaks;
+  breaksDot.classList.toggle('bg-vermilion', state.breaks);
+  breaksDot.classList.toggle('bg-line2', !state.breaks);
+  breaksBtn.classList.toggle('text-cream', state.breaks);
+  breaksBtn.classList.toggle('text-muted', !state.breaks);
+  renderPreview(); schedulePersist();
+  setStatus(state.breaks ? 'Pemisah baris aktif — baris tunggal dianggap baris baru.' : 'Pemisah baris nonaktif.');
+});
+
+nameInput.addEventListener('input', schedulePersist);
+
+// ---------- tarik-lepas berkas .md ----------
+let dragDepth = 0;
+const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
+window.addEventListener('dragenter', e => { if (hasFiles(e)) { dragDepth++; dropOverlay.classList.remove('hidden'); } });
+window.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+window.addEventListener('dragleave', e => { if (hasFiles(e)) { dragDepth--; if (dragDepth <= 0) { dragDepth = 0; dropOverlay.classList.add('hidden'); } } });
+window.addEventListener('drop', async e => {
+  if (!hasFiles(e)) return;
+  e.preventDefault(); dragDepth = 0; dropOverlay.classList.add('hidden');
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (!f) return;
+  if (!/\.(md|markdown|txt)$/i.test(f.name)) {
+    toast('error','Format tidak didukung','Letakkan berkas .md, .markdown, atau .txt.');
+    return;
+  }
+  const text = await f.text();
+  editor.value = text;
+  nameInput.value = f.name.replace(/\.[^.]+$/, '');
+  renderPreview(); persistNow(); updateLnCol();
+  toast('success','Berkas dimuat', f.name + ' · ' + f.size.toLocaleString('id-ID') + ' byte');
+});
+
+// =========================================================
+//  LATEX → OMML : rumus menjadi persamaan Word ASLI (docx)
+//  Parser subset: frac, sqrt, sub/sup, sum, integral, simbol,
+//  fungsi, aksen, \text, \mathbb. Di luar subset → fallback teks.
+// =========================================================
+const DOCX_MATH_OK = typeof docx !== 'undefined' && !!(docx.Math && docx.MathRun && docx.MathFraction && docx.MathRadical && docx.MathSubScript && docx.MathSuperScript && docx.MathSubSuperScript && docx.MathSum && docx.MathIntegral);
+
+const LX_SYM = {
+  alpha:'\u03B1', beta:'\u03B2', gamma:'\u03B3', delta:'\u03B4', epsilon:'\u03B5', varepsilon:'\u03B5',
+  zeta:'\u03B6', eta:'\u03B7', theta:'\u03B8', vartheta:'\u03D1', iota:'\u03B9', kappa:'\u03BA',
+  lambda:'\u03BB', mu:'\u03BC', nu:'\u03BD', xi:'\u03BE', pi:'\u03C0', varpi:'\u03D6', rho:'\u03C1',
+  varrho:'\u03F1', sigma:'\u03C3', varsigma:'\u03C2', tau:'\u03C4', upsilon:'\u03C5', phi:'\u03C6',
+  varphi:'\u03D5', chi:'\u03C7', psi:'\u03C8', omega:'\u03C9',
+  Gamma:'\u0393', Delta:'\u0394', Theta:'\u0398', Lambda:'\u039B', Xi:'\u039E', Pi:'\u03A0',
+  Sigma:'\u03A3', Upsilon:'\u03D2', Phi:'\u03A6', Psi:'\u03A8', Omega:'\u03A9',
+  pm:'\u00B1', mp:'\u2213', times:'\u00D7', div:'\u00F7', cdot:'\u22C5', ast:'\u2217', star:'\u22C6',
+  circ:'\u2218', bullet:'\u2219', leq:'\u2264', le:'\u2264', geq:'\u2265', ge:'\u2265',
+  neq:'\u2260', ne:'\u2260', equiv:'\u2261', sim:'\u223C', simeq:'\u2243', cong:'\u2245',
+  approx:'\u2248', propto:'\u221D', ll:'\u226A', gg:'\u226B', prec:'\u227A', succ:'\u227B',
+  subset:'\u2282', supset:'\u2283', subseteq:'\u2286', supseteq:'\u2287',
+  in:'\u2208', notin:'\u2209', ni:'\u220B', cup:'\u222A', cap:'\u2229', emptyset:'\u2205', varnothing:'\u2205',
+  forall:'\u2200', exists:'\u2203', nexists:'\u2204', neg:'\u00AC', lnot:'\u00AC',
+  land:'\u2227', wedge:'\u2227', lor:'\u2228', vee:'\u2228', oplus:'\u2295', ominus:'\u2296', otimes:'\u2297',
+  perp:'\u22A5', parallel:'\u2225', angle:'\u2220', measuredangle:'\u2221', triangle:'\u25B3',
+  prime:'\u2032', int:'\u222B', iint:'\u222C', iiint:'\u222D', oint:'\u222E',
+  sum:'\u2211', prod:'\u220F', coprod:'\u2210', partial:'\u2202', nabla:'\u2207',
+  infty:'\u221E', aleph:'\u2135', hbar:'\u210F', ell:'\u2113', Re:'\u211C', Im:'\u2111',
+  degree:'\u00B0', mid:'\u2223', vdots:'\u22EE', ddots:'\u22F1', cdots:'\u22EF', ldots:'\u2026', dots:'\u2026',
+  because:'\u2235', therefore:'\u2234', mapsto:'\u21A6', to:'\u2192', rightarrow:'\u2192', longrightarrow:'\u27F6',
+  leftarrow:'\u2190', Rightarrow:'\u21D2', Longrightarrow:'\u27F9', Leftarrow:'\u21D0', leftrightarrow:'\u2194', Leftrightarrow:'\u21D4',
+  uparrow:'\u2191', downarrow:'\u2193', updownarrow:'\u2195', nearrow:'\u2197', searrow:'\u2198', swarrow:'\u2199', nwarrow:'\u2196',
+  top:'\u22A4', bot:'\u22A5', dagger:'\u2020', ddagger:'\u2021', S:'\u00A7', checkmark:'\u2713',
+  clubsuit:'\u2663', diamondsuit:'\u2666', heartsuit:'\u2665', spadesuit:'\u2660',
+  flat:'\u266D', natural:'\u266E', sharp:'\u266F'
+};
+const LX_NARY  = ['sum','prod','coprod','int','iint','iiint','oint','bigcup','bigcap','bigvee','bigwedge','bigoplus','bigotimes','biguplus','bigsqcup'];
+const LX_FN    = ['sin','cos','tan','cot','sec','csc','arcsin','arccos','arctan','sinh','cosh','tanh','coth','log','ln','lg','exp','lim','limsup','liminf','max','min','sup','inf','det','dim','arg','gcd','lcm','deg','hom','ker','Pr','mod'];
+const LX_ACC   = { hat:'\u0302', widehat:'\u0302', tilde:'\u0303', widetilde:'\u0303', bar:'\u0304', overline:'\u0305', vec:'\u20D7', overrightarrow:'\u20D7', dot:'\u0307', ddot:'\u0308' };
+const LX_FRAC  = ['frac','dfrac','tfrac','cfrac','binom'];
+const LX_BIG   = ['left','right','middle','big','Big','bigg','Bigg','bigl','Bigl','biggl','Biggl','bigr','Bigr','biggr','Biggr'];
+const LX_SKIP  = ['limits','nolimits','displaystyle','textstyle','scriptstyle','scriptscriptstyle','relax','ensuremath','not','phantom','hphantom','vphantom'];
+const LX_TEXT  = ['text','textrm','textbf','textit','textsf','texttt','mathrm','mathbf','mathit','mathsf','mathtt','mathcal','mathscr','mathfrak','mathnormal','textnormal','operatorname','operatorname*','bm','boldsymbol'];
+
+function lxUnsupported(name){
+  const e = new Error('Perintah LaTeX tidak didukung untuk DOCX: \\' + name);
+  e.unsupported = true;
+  return e;
+}
+
+// --- leksikal ---
+function lxLex(src){
+  const toks = []; let i = 0;
+  while (i < src.length) {
+    const c = src[i];
+    if (c === '\\') {
+      if (/[a-zA-Z]/.test(src[i+1] || '')) {
+        let j = i + 1;
+        while (j < src.length && /[a-zA-Z]/.test(src[j])) j++;
+        toks.push({ k:'cmd', v: src.slice(i+1, j) }); i = j;
+      } else { toks.push({ k:'cmd', v: src[i+1] || '' }); i += 2; }
+    }
+    else if (c === '{') { toks.push({ k:'{' }); i++; }
+    else if (c === '}') { toks.push({ k:'}' }); i++; }
+    else if (c === '^') { toks.push({ k:'^' }); i++; }
+    else if (c === '_') { toks.push({ k:'_' }); i++; }
+    else { toks.push({ k:'ch', v: c }); i++; }
+  }
+  return toks;
+}
+
+function lxText(atoms){
+  return atoms.map(a => (a.a === 'run' || a.a === 'fn') ? (a.s || '') : '').join('');
+}
+
+function lxRawGroup(toks, i){
+  if (!toks[i] || toks[i].k !== '{') return null;
+  let depth = 0, s = '';
+  for (let j = i; j < toks.length; j++) {
+    const t = toks[j];
+    if (t.k === '{') { depth++; if (j > i) s += '{'; }
+    else if (t.k === '}') { depth--; if (depth === 0) return { s, i: j+1 }; s += '}'; }
+    else if (t.k === 'ch') s += t.v;
+    else if (t.k === 'cmd') s += '\\' + t.v;
+  }
+  return null;
+}
+
+function lxBb(s){
+  const m = { R:'\u211D', N:'\u2115', Z:'\u2124', Q:'\u211A', C:'\u2102', P:'\u2119', H:'\u210D', E:'\u2130', F:'\u2131' };
+  return [...s].map(c => m[c] || c).join('');
+}
+
+function lxCmdAtom(name){
+  const sym = LX_SYM[name];
+  if (typeof sym === 'string') {
+    if (LX_NARY.includes(name)) return { a:'op', v: sym };
+    if (LX_FN.includes(name)) return { a:'fn', s: name };
+    return { a:'run', s: sym };
+  }
+  if (LX_FN.includes(name)) return { a:'fn', s: name };
+  throw lxUnsupported(name);
+}
+
+function lxApplyScript(atoms, kind, arg){
+  const mk = base => kind === '^' ? { a:'sup', base, sup: arg } : { a:'sub', base, sub: arg };
+  const last = atoms[atoms.length - 1];
+  if (!last) { atoms.push(mk({ a:'run', s:'' })); return; }
+  if (last.a === 'fn') { atoms[atoms.length - 1] = mk(last); return; }
+  if (last.a === 'run') {
+    if (last.s.length > 1) {
+      const ch = last.s.slice(-1);
+      const base = { a:'run', s: ch };
+      last.s = last.s.slice(0, -1);
+      atoms.push(mk(base));
+    } else atoms[atoms.length - 1] = mk(last);
+    return;
+  }
+  if (kind === '^' && last.a === 'sub') { atoms[atoms.length-1] = { a:'subsup', base: last.base, sub: last.sub, sup: arg }; return; }
+  if (kind === '_' && last.a === 'sup') { atoms[atoms.length-1] = { a:'subsup', base: last.base, sub: arg, sup: last.sup }; return; }
+  if (last.a === 'grp' || last.a === 'op' || last.a === 'frac' || last.a === 'sqrt') {
+    if (kind === '^') last.sup = arg; else last.sub = arg;
+    return;
+  }
+  atoms.push(mk({ a:'run', s:'' }));
+}
+
+function lxParse(toks, i, stop){
+  const atoms = [];
+  const readArg = pos => {
+    const t = toks[pos];
+    if (!t) return null;
+    if (t.k === '{') { const r = lxParse(toks, pos + 1, '}'); return { atoms: r.atoms, i: r.i }; }
+    if (t.k === '}' || t.k === '^' || t.k === '_') return { atoms: [{ a:'run', s:'' }], i: pos };
+    if (t.k === 'cmd') return { atoms: [lxCmdAtom(t.v)], i: pos + 1 };
+    return { atoms: [{ a:'run', s: t.v === "'" ? '\u2032' : t.v }], i: pos + 1 };
+  };
+
+  while (i < toks.length) {
+    const t = toks[i];
+    if (t.k === '}') { i++; if (stop === '}') break; continue; }
+    if (t.k === 'ch') {
+      if (!/\s/.test(t.v)) atoms.push({ a:'run', s: t.v === "'" ? '\u2032' : t.v });
+      i++; continue;
+    }
+    if (t.k === '{') {
+      const r = lxParse(toks, i + 1, '}');
+      const nxt = toks[r.i];
+      if (nxt && (nxt.k === '^' || nxt.k === '_')) atoms.push({ a:'grp', items: r.atoms });
+      else atoms.push(...r.atoms);
+      i = r.i; continue;
+    }
+    if (t.k === '^' || t.k === '_') {
+      const arg = readArg(i + 1);
+      if (arg) { lxApplyScript(atoms, t.k, arg.atoms); i = arg.i; }
+      else i++;
+      continue;
+    }
+
+    // --- perintah (\...) ---
+    const name = t.v; i++;
+
+    if (name === '') throw lxUnsupported('\\\\'); // pemisah baris: tidak didukung
+    if (name === ' ' || name === '~') { atoms.push({ a:'run', s:'\u00A0' }); continue; }
+    if (name === ',' || name === ':') { atoms.push({ a:'run', s:'\u2009' }); continue; }
+    if (name === ';') { atoms.push({ a:'run', s:'\u2005' }); continue; }
+    if (name === '!') continue;
+    if (name === 'quad') { atoms.push({ a:'run', s:'\u2003' }); continue; }
+    if (name === 'qquad') { atoms.push({ a:'run', s:'\u2003\u2003' }); continue; }
+
+    if (LX_BIG.includes(name)) {
+      if (toks[i] && toks[i].k === 'ch' && toks[i].v === '.') i++;
+      continue;
+    }
+    if (LX_SKIP.includes(name)) continue;
+
+    if (LX_FRAC.includes(name)) {
+      const n = readArg(i); if (!n) throw lxUnsupported(name);
+      const d = readArg(n.i); if (!d) throw lxUnsupported(name);
+      atoms.push({ a:'frac', n: n.atoms, d: d.atoms });
+      i = d.i; continue;
+    }
+
+    if (name === 'sqrt') {
+      let deg = null;
+      if (toks[i] && toks[i].k === 'ch' && toks[i].v === '[') {
+        i++; deg = [];
+        while (i < toks.length) {
+          const tt = toks[i];
+          if (tt.k === 'ch' && tt.v === ']') { i++; break; }
+          if (tt.k === 'ch') { if (!/\s/.test(tt.v)) deg.push({ a:'run', s: tt.v }); }
+          else if (tt.k === 'cmd') deg.push(lxCmdAtom(tt.v));
+          i++;
+        }
+      }
+      const b = readArg(i); if (!b) throw lxUnsupported('sqrt');
+      atoms.push({ a:'sqrt', b: b.atoms, deg });
+      i = b.i; continue;
+    }
+
+    const acc = LX_ACC[name];
+    if (typeof acc === 'string') {
+      const arg = readArg(i); if (!arg) throw lxUnsupported(name);
+      const txt = lxText(arg.atoms);
+      atoms.push({ a:'run', s: txt ? txt + acc : acc });
+      i = arg.i; continue;
+    }
+
+    if (name === 'mathbb' || name === 'Bbb') {
+      const arg = readArg(i); if (!arg) throw lxUnsupported(name);
+      atoms.push({ a:'run', s: lxBb(lxText(arg.atoms)) });
+      i = arg.i; continue;
+    }
+
+    if (LX_TEXT.includes(name)) {
+      const rg = lxRawGroup(toks, i);
+      if (rg) { atoms.push({ a:'run', s: rg.s }); i = rg.i; continue; }
+      const arg = readArg(i); if (!arg) throw lxUnsupported(name);
+      atoms.push({ a:'run', s: lxText(arg.atoms) });
+      i = arg.i; continue;
+    }
+
+    if (LX_NARY.includes(name)) { atoms.push({ a:'op', v: LX_SYM[name] }); continue; }
+    if (LX_FN.includes(name)) { atoms.push({ a:'fn', s: name }); continue; }
+
+    const sym = LX_SYM[name];
+    if (typeof sym === 'string') { atoms.push({ a:'run', s: sym }); continue; }
+
+    // \begin{matrix}, \substack, dsb. → jatuh ke fallback agar ekspor tetap aman
+    throw lxUnsupported(name);
+  }
+  return { atoms, i };
+}
+
+// --- konversi atom → kelas matematika docx ---
+function lxChildren(atoms){
+  const out = [];
+  for (const at of atoms) { const n = lxNode(at); if (n) out.push(n); }
+  if (!out.length) out.push(new docx.MathRun(''));
+  return out;
+}
+function lxBase(b){
+  if (b.a === 'grp') return lxChildren(b.items);
+  const n = lxNode(b);
+  return n ? [n] : [new docx.MathRun('')];
+}
+function lxNode(at){
+  switch (at.a) {
+    case 'run': return at.s ? new docx.MathRun(at.s) : null;
+    case 'fn':  return new docx.MathRun(at.s);
+    case 'grp': {
+      if (at.sub && at.sub.length && at.sup && at.sup.length)
+        return new docx.MathSubSuperScript({ children: lxChildren(at.items), subScript: lxChildren(at.sub), superScript: lxChildren(at.sup) });
+      if (at.sup && at.sup.length)
+        return new docx.MathSuperScript({ children: lxChildren(at.items), superScript: lxChildren(at.sup) });
+      if (at.sub && at.sub.length)
+        return new docx.MathSubScript({ children: lxChildren(at.items), subScript: lxChildren(at.sub) });
+      return null;
+    }
+    case 'frac': return new docx.MathFraction({ numerator: lxChildren(at.n), denominator: lxChildren(at.d) });
+    case 'sqrt': {
+      const o = { children: lxChildren(at.b) };
+      if (at.deg && at.deg.length) o.degree = lxChildren(at.deg);
+      return new docx.MathRadical(o);
+    }
+    case 'sup': return new docx.MathSuperScript({ children: lxBase(at.base), superScript: lxChildren(at.sup) });
+    case 'sub': return new docx.MathSubScript({ children: lxBase(at.base), subScript: lxChildren(at.sub) });
+    case 'subsup': return new docx.MathSubSuperScript({ children: lxBase(at.base), subScript: lxChildren(at.sub), superScript: lxChildren(at.sup) });
+    case 'op': {
+      const sub = (at.sub && at.sub.length) ? lxChildren(at.sub) : undefined;
+      const sup = (at.sup && at.sup.length) ? lxChildren(at.sup) : undefined;
+      if (!sub && !sup) return new docx.MathRun(at.v);
+      if (at.v === '\u2211') return new docx.MathSum({ children: [new docx.MathRun('')], subScript: sub, superScript: sup });
+      if (at.v === '\u222B' || at.v === '\u222C' || at.v === '\u222D' || at.v === '\u222E')
+        return new docx.MathIntegral({ children: [new docx.MathRun('')], subScript: sub, superScript: sup });
+      const ch = [new docx.MathRun(at.v)];
+      if (sub && sup) return new docx.MathSubSuperScript({ children: ch, subScript: sub, superScript: sup });
+      if (sup) return new docx.MathSuperScript({ children: ch, superScript: sup });
+      return new docx.MathSubScript({ children: ch, subScript: sub });
+    }
+  }
+  return null;
+}
+
+function latexToDocxMath(latex){
+  const r = lxParse(lxLex(String(latex)), 0, null);
+  return new docx.Math({ children: lxChildren(r.atoms) });
+}
+function mathToDocx(latex){
+  if (DOCX_MATH_OK) {
+    try { return { math: latexToDocxMath(latex) }; }
+    catch (e) { /* subset tak tercakup → fallback */ }
+  }
+  return { fallback: latex };
+}
+
+// =========================================================
+//  EKSPOR DOCX — markdown diurai menjadi struktur Word asli
+// =========================================================
+function fileName(){
+  return (nameInput.value || '').trim().replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '-') || 'massivemark-dokumen';
+}
+
+const INDENT_LIST = [720, 1140, 1560, 1980];
+
+function bulletConfig(){
+  const glyphs = ['\u2022', '\u25E6', '\u25AA', '\u2022'];
+  return { reference: 'mm-bullet', levels: INDENT_LIST.map((_, l) => ({
+    level: l, format: 'bullet', text: glyphs[l], alignment: 'left',
+    style: { paragraph: { indent: { left: INDENT_LIST[l], hanging: 360 } }, run: { color: 'B4451F' } }
+  })) };
+}
+function ordLevels(start){
+  const fmt = ['decimal', 'lowerLetter', 'lowerRoman', 'decimal'];
+  return INDENT_LIST.map((_, l) => ({
+    level: l, format: fmt[l], text: `%${l+1}.`,
+    start: l === 0 ? (start && start > 1 ? start : 1) : 1,
+    alignment: 'left',
+    style: { paragraph: { indent: { left: INDENT_LIST[l], hanging: 360 } } }
+  }));
+}
+
+function collectImageSrcs(tokens){
+  const set = new Set();
+  (function walk(ts){
+    for (const t of ts) {
+      if (t.type === 'image' && t.href) set.add(t.href);
+      if (t.tokens) walk(t.tokens);
+      if (t.items) for (const it of t.items) { if (it.tokens) walk(it.tokens); }
+      if (t.rows) for (const r of t.rows) for (const c of r) { if (c.tokens) walk(c.tokens); }
+      if (t.header) for (const c of t.header) { if (c.tokens) walk(c.tokens); }
+    }
+  })(tokens);
+  return set;
+}
+
+function imgDims(src){
+  return new Promise((res, rej) => {
+    const im = new Image();
+    im.onload = () => res({ w: im.naturalWidth || 600, h: im.naturalHeight || 400 });
+    im.onerror = rej;
+    im.src = src;
+  });
+}
+
+async function loadImages(srcs){
+  const map = {};
+  await Promise.all([...srcs].slice(0, 20).map(async src => {
+    try {
+      let dataUrl = src;
+      if (!src.startsWith('data:')) {
+        const r = await fetch(src, { mode: 'cors' });
+        if (!r.ok) return;
+        const blob = await r.blob();
+        if (blob.size > 8e6) return;
+        dataUrl = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(blob); });
+      }
+      const dim = await imgDims(dataUrl);
+      const scale = Math.min(1, 560 / dim.w, 700 / dim.h);
+      const b64 = dataUrl.split(',')[1] || '';
+      map[src] = { u8: b64ToU8(b64), w: Math.max(1, Math.round(dim.w * scale)), h: Math.max(1, Math.round(dim.h * scale)) };
+    } catch (e) { /* gambar tak bisa diambil: akan jadi placeholder */ }
+  }));
+  return map;
+}
+
+function runProps(ctx){
+  ctx = ctx || {};
+  const p = {};
+  if (ctx.code) { p.font = 'Consolas'; p.size = 19; p.color = 'A03E18'; p.shading = { type: 'clear', fill: 'F1ECE0' }; }
+  else { p.font = 'Georgia'; p.size = 22; }
+  if (ctx.bold) p.bold = true;
+  if (ctx.italics) p.italics = true;
+  if (ctx.strike) p.strike = true;
+  if (ctx.underline) p.underline = {};
+  if (!p.color) p.color = ctx.color || (ctx.quote ? '5A5344' : '2B2721');
+  return p;
+}
+
+// token inline markdown → kumpulan TextRun / hyperlink / gambar / persamaan
+function inlineRuns(tokens, ctx, imgMap){
+  const out = [];
+  for (const t of tokens) {
+    switch (t.type) {
+      case 'text':
+      case 'escape':
+        if (t.tokens && t.tokens.length) out.push(...inlineRuns(t.tokens, ctx, imgMap));
+        else if (t.text) out.push(new docx.TextRun({ text: unesc(t.text), ...runProps(ctx) }));
+        break;
+      case 'strong': out.push(...inlineRuns(t.tokens || [], { ...ctx, bold: true }, imgMap)); break;
+      case 'em':     out.push(...inlineRuns(t.tokens || [], { ...ctx, italics: true }, imgMap)); break;
+      case 'del':    out.push(...inlineRuns(t.tokens || [], { ...ctx, strike: true }, imgMap)); break;
+      case 'codespan':
+        out.push(new docx.TextRun({ text: String(t.text || '').replace(/\n/g, ' '), font: 'Consolas', size: 19, color: 'A03E18', shading: { type: 'clear', fill: 'F1ECE0' } }));
+        break;
+      case 'link': {
+        const href = t.href || '#';
+        out.push(new docx.ExternalHyperlink({ link: href, children: inlineRuns(t.tokens || [{ type:'text', text: t.text || '' }], { ...ctx, color: 'B4451F', underline: true }, imgMap) }));
+        break;
+      }
+      case 'image': {
+        const info = imgMap[t.href];
+        if (info) out.push(new docx.ImageRun({ data: info.u8, transformation: { width: info.w, height: info.h } }));
+        else out.push(new docx.TextRun({ text: '[gambar: ' + (t.text || t.href || '') + ']', italics: true, color: '9B9484', size: 20 }));
+        break;
+      }
+      case 'mathInline': {
+        const r = mathToDocx(t.latex || '');
+        out.push(r.math || new docx.TextRun({ text: t.latex || '', font: 'Consolas', size: 19, color: 'A03E18' }));
+        break;
+      }
+      case 'br':
+        out.push(new docx.TextRun({ break: 1 }));
+        break;
+      default: break; // html inline dan lainnya dilewati
+    }
+  }
+  return out;
+}
+
+function mathBlockDocx(latex){
+  const r = mathToDocx(latex);
+  if (r.math) return [new docx.Paragraph({ children: [r.math], alignment: 'center', spacing: { before: 200, after: 200, line: 320 } })];
+  return [new docx.Paragraph({
+    children: [new docx.TextRun({ text: latex, font: 'Consolas', size: 19, color: '5A5344' })],
+    alignment: 'center', spacing: { before: 160, after: 160 }
+  })];
+}
+
+function buildBlocks(tokens, imgMap, numbering){
+  let ord = 0;
+  const mkOrd = start => { ord++; const ref = 'mm-ord-' + ord; numbering.push({ reference: ref, levels: ordLevels(start) }); return ref; };
+  const spacer = h => new docx.Paragraph({ children: [new docx.TextRun({ text: ' ', size: 8 })], spacing: { before: 0, after: 0, line: h, lineRule: 'exact' } });
+  const HL = ['HEADING_1','HEADING_2','HEADING_3','HEADING_4','HEADING_5','HEADING_6'];
+  const checkboxRun = checked => new docx.TextRun({ text: checked ? '\u2611  ' : '\u2610  ', color: checked ? 'B4451F' : '8F8875', bold: checked });
+
+  const runsOf = (tok, ctx) => inlineRuns(tok.tokens || (tok.text ? [{ type: 'text', text: tok.text }] : []), ctx, imgMap);
+
+  function paragraphBlock(tok, ctx){
+    const children = runsOf(tok, ctx);
+    if (!children.length) return [];
+    const opts = { children, spacing: { after: 160, line: 300 } };
+    if (ctx && ctx.quote) {
+      opts.border = { left: { style: 'single', size: 12, color: 'D8D2C0', space: 8 } };
+      opts.indent = { left: 360 };
+    }
+    return [new docx.Paragraph(opts)];
+  }
+
+  function headingBlock(tok){
+    const depth = clamp(tok.depth || 1, 1, 6);
+    const children = runsOf(tok, {});
+    const p = { heading: HL[depth - 1], children: children.length ? children : [new docx.TextRun(' ')] };
+    if (depth === 1) p.border = { bottom: { style: 'single', size: 10, color: 'E2552C', space: 6 } };
+    return [new docx.Paragraph(p)];
+  }
+
+  function codeBlock(tok){
+    const text = (tok.text || '').replace(/\n+$/, '');
+    if (!text) return [];
+    const paras = text.split('\n').map(ln => new docx.Paragraph({
+      children: [new docx.TextRun({ text: ln || ' ', font: 'Consolas', size: 18, color: '3A342A' })],
+      spacing: { before: 0, after: 0, line: 240 },
+      shading: { type: 'clear', fill: 'F5F1E3' },
+      border: { left: { style: 'single', size: 16, color: 'E2552C', space: 8 } },
+      indent: { left: 240, right: 120 }
+    }));
+    return [spacer(140), ...paras, spacer(140)];
+  }
+
+  function tableBlock(tok){
+    const aligns = tok.align || [];
+    const alignOf = i => aligns[i] === 'center' ? 'center' : (aligns[i] === 'right' ? 'right' : 'left');
+    const mkCell = (cell, i, header) => new docx.TableCell({
+      children: [new docx.Paragraph({
+        alignment: alignOf(i),
+        spacing: { after: 0, line: 264 },
+        children: inlineRuns(cell.tokens || [{ type:'text', text: cell.text }], { bold: header }, imgMap)
+      })],
+      shading: header ? { type: 'clear', fill: 'EBE5D4' } : undefined,
+      margins: { top: 100, bottom: 100, left: 160, right: 160 }
+    });
+    const headerRow = new docx.TableRow({ tableHeader: true, children: (tok.header || []).map((c, i) => mkCell(c, i, true)) });
+    const rows = (tok.rows || []).map(r => new docx.TableRow({ children: r.map((c, i) => mkCell(c, i, false)) }));
+    const b = (sz, col) => ({ style: 'single', size: sz, color: col });
+    const table = new docx.Table({
+      width: { size: 100, type: 'pct' },
+      rows: [headerRow, ...rows],
+      borders: { top: b(8,'CFC8B6'), bottom: b(8,'CFC8B6'), left: b(8,'CFC8B6'), right: b(8,'CFC8B6'), insideHorizontal: b(4,'DDD6C2'), insideVertical: b(4,'DDD6C2') }
+    });
+    return [spacer(120), table, spacer(120)];
+  }
+
+  function listBlock(tok, lvl, ctx){
+    const lvlC = clamp(lvl, 0, 3);
+    const ref = tok.ordered ? mkOrd(tok.start) : 'mm-bullet';
+    const out = [];
+    for (const item of tok.items || []) {
+      let first = true;
+      for (const sub of item.tokens || []) {
+        if (sub.type === 'space') continue;
+        if (sub.type === 'list') { out.push(...listBlock(sub, lvlC + 1, ctx)); continue; }
+        if (sub.type === 'text' || sub.type === 'paragraph') {
+          let children = (sub.tokens && sub.tokens.length)
+            ? inlineRuns(sub.tokens, ctx, imgMap)
+            : (sub.text && sub.text.trim() !== '' ? [new docx.TextRun({ text: unesc(sub.text), ...runProps(ctx) })] : []);
+          if (first && item.task) children = [checkboxRun(item.checked), ...children];
+          if (children.length) {
+            const opts = { children, spacing: { after: 60, line: 288 } };
+            if (first && !item.task) opts.numbering = { reference: ref, level: lvlC };
+            else opts.indent = { left: INDENT_LIST[lvlC] };
+            out.push(new docx.Paragraph(opts));
+          }
+          first = false;
+        } else {
+          out.push(...blockToken(sub, lvlC, ctx));
+        }
+      }
+      if (first) { // butir tanpa isi
+        const p = { spacing: { after: 60, line: 288 } };
+        if (item.task) { p.children = [checkboxRun(item.checked)]; p.indent = { left: INDENT_LIST[lvlC] }; }
+        else { p.children = [new docx.TextRun({ text: ' ' })]; p.numbering = { reference: ref, level: lvlC }; }
+        out.push(new docx.Paragraph(p));
+      }
+    }
+    return out;
+  }
+
+  function blockToken(tok, lvl, ctx){
+    switch (tok.type) {
+      case 'heading':    return headingBlock(tok);
+      case 'paragraph':  return paragraphBlock(tok, ctx);
+      case 'text':       return paragraphBlock(tok, ctx);
+      case 'code':       return codeBlock(tok);
+      case 'mathBlock':  return mathBlockDocx(tok.latex || '');
+      case 'blockquote': return (tok.tokens || []).flatMap(t => blockToken(t, lvl, { ...(ctx || {}), quote: true, italics: true }));
+      case 'hr':         return [new docx.Paragraph({ border: { bottom: { style: 'single', size: 6, color: 'D8D2C0', space: 2 } }, spacing: { before: 200, after: 220 } })];
+      case 'table':      return tableBlock(tok);
+      case 'list':       return listBlock(tok, lvl, ctx);
+      default:           return [];
+    }
+  }
+
+  return tokens.flatMap(t => blockToken(t, 0, {}));
+}
+
+function makeDocument(blocks, numbering, title){
+  const S = (sz, col, extra) => ({ run: { font: 'Georgia', size: sz, bold: true, color: col, ...(extra || {}) }, paragraph: { spacing: { before: extra && extra.pb || 300, after: 140 } } });
+  return new docx.Document({
+    creator: 'MassiveMark Playground',
+    title,
+    description: 'Diekspor dari MassiveMark Playground — Markdown ke DOCX',
+    styles: { default: {
+      document:  { run: { font: 'Georgia', size: 22, color: '2B2721' }, paragraph: { spacing: { line: 300, after: 160 } } },
+      heading1:  { run: { font: 'Georgia', size: 44, bold: true, color: '1E1B15' }, paragraph: { spacing: { before: 400, after: 200 } } },
+      heading2:  S(32, '241F18', { pb: 360 }),
+      heading3:  S(26, '2B2620'),
+      heading4:  S(23, '2B2620', { pb: 260 }),
+      heading5:  S(21, '5A5344', { pb: 240 }),
+      heading6:  S(19, '5A5344', { pb: 220 })
+    }},
+    numbering: { config: numbering },
+    sections: [{
+      properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1440, bottom: 1440, left: 1440, right: 1440 } } },
+      footers: { default: new docx.Footer({ children: [new docx.Paragraph({
+        alignment: 'center',
+        children: [new docx.TextRun({ children: ['Halaman ', docx.PageNumber.CURRENT, ' dari ', docx.PageNumber.TOTAL_PAGES], font: 'Georgia', size: 16, color: '9B9484' })]
+      })] }) },
+      children: blocks
+    }]
+  });
+}
+
+function downloadBlob(blob, name){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+async function exportDOCX(){
+  if (exporting) return;
+  if (typeof docx === 'undefined') { toast('error','Pustaka DOCX tidak termuat','Periksa koneksi internet, lalu muat ulang halaman.'); return; }
+  if (!editor.value.trim()) { toast('info','Tidak ada yang diekspor','Kanvas masih kosong — tulis atau muat contoh dulu.'); return; }
+
+  exporting = true;
+  btnDocx.classList.add('is-busy');
+  showBusy('Menyusun DOCX', 'Mengurai markdown, rumus & memuat aset…');
+  setStatus('Menyusun DOCX…', 'work');
+  try {
+    // rumus dicabut dulu, lalu disisipkan kembali sebagai token matematika
+    const ex = extractMath(editor.value);
+    const tokens = injectMathTokens(marked.lexer(ex.text, { gfm: true, breaks: state.breaks }), ex.store);
+    const srcs = collectImageSrcs(tokens);
+    const imgMap = srcs.size ? await loadImages(srcs) : {};
+    const numbering = [bulletConfig()];
+    const blocks = buildBlocks(tokens, imgMap, numbering);
+    if (!blocks.length) blocks.push(new docx.Paragraph({ children: [] }));
+    const doc = makeDocument(blocks, numbering, fileName());
+    const blob = await docx.Packer.toBlob(doc);
+    downloadBlob(blob, fileName() + '.docx');
+    toast('success','DOCX berhasil dibuat', `${fileName()}.docx · ${Math.max(1, Math.round(blob.size / 1024))} KB — heading, tabel, daftar & rumus menjadi struktur Word asli.`);
+    setStatus('DOCX diekspor');
+  } catch (err) {
+    console.error(err);
+    toast('error','Gagal menyusun DOCX','Terjadi kesalahan saat membangun dokumen. Periksa konsol untuk detail.');
+    setStatus('Ekspor DOCX gagal', 'err');
+  } finally {
+    exporting = false;
+    btnDocx.classList.remove('is-busy');
+    hideBusy();
+  }
+}
+btnDocx.addEventListener('click', exportDOCX);
+
+// =========================================================
+//  EKSPOR PDF — lembar kertas dirender menjadi berkas A4
+// =========================================================
+async function exportPDF(){
+  if (exporting) return;
+  if (typeof html2pdf === 'undefined') { toast('error','Pustaka PDF tidak termuat','Periksa koneksi internet, lalu muat ulang halaman.'); return; }
+  if (!editor.value.trim()) { toast('info','Tidak ada yang diekspor','Kanvas masih kosong — tulis atau muat contoh dulu.'); return; }
+
+  exporting = true;
+  btnPdf.classList.add('is-busy');
+  const prevZoom = state.zoom, prevScroll = previewScroll.scrollTop;
+  const wasHidden = previewPane.classList.contains('hidden');
+  if (wasHidden) previewPane.classList.remove('hidden');
+  applyZoom(1); previewScroll.scrollTop = 0;
+
+  showBusy('Membuat PDF', 'Merender halaman & rumus — mohon tunggu…');
+  setStatus('Membuat PDF…', 'work');
+  try {
+    // pastikan font rumus (KaTeX) benar-benar terpasang sebelum dirender
+    try {
+      await Promise.all(['KaTeX_Main','KaTeX_Math','KaTeX_Size1','KaTeX_Size2','KaTeX_AMS','KaTeX_Caligraphic','KaTeX_Typewriter']
+        .map(f => document.fonts.load(`normal 16px "${f}"`)));
+    } catch (e) { /* lanjutkan dengan font yang tersedia */ }
+    await document.fonts.ready;
+    await new Promise(r => requestAnimationFrame(() => setTimeout(r, 80)));
+    await html2pdf().set({
+      margin: 0,
+      filename: fileName() + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2.5, useCORS: true, backgroundColor: '#FDFBF6', logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+      pagebreak: { mode: ['css', 'legacy'] }
+    }).from(sheet).save();
+    toast('success','PDF berhasil dibuat', fileName() + '.pdf tersimpan di folder unduhan.');
+    setStatus('PDF diekspor');
+  } catch (err) {
+    console.error(err);
+    toast('error','Gagal membuat PDF','Terjadi kesalahan saat merender halaman. Coba lagi.');
+    setStatus('Ekspor PDF gagal', 'err');
+  } finally {
+    applyZoom(prevZoom);
+    previewScroll.scrollTop = prevScroll;
+    if (wasHidden) previewPane.classList.add('hidden');
+    exporting = false;
+    btnPdf.classList.remove('is-busy');
+    hideBusy();
+  }
+}
+btnPdf.addEventListener('click', exportPDF);
+
+// =========================================================
+//  INISIALISASI
+// =========================================================
+(function init(){
+  let restored = false;
+  try {
+    const d = JSON.parse(localStorage.getItem('mm.draft') || 'null');
+    if (d && typeof d.t === 'string') {
+      editor.value = d.t;
+      if (d.n) nameInput.value = d.n;
+      if (d.b) {
+        state.breaks = true;
+        breaksDot.classList.replace('bg-line2', 'bg-vermilion');
+        breaksBtn.classList.replace('text-muted', 'text-cream');
+      }
+      restored = d.t.trim().length > 0;
+      setStatus(restored ? 'Draf dipulihkan dari sesi sebelumnya.' : 'Siap.');
+    }
+  } catch (e) {}
+  if (!restored) {
+    editor.value = SAMPLES[0].md;
+    nameInput.value = SAMPLES[0].name;
+    setStatus('Siap — tempel markdown dari AI favoritmu, lalu ekspor ke DOCX atau PDF.');
+  }
+  applyZoom(1);
+  renderPreview();
+  updateLnCol();
+  if (window.lucide) lucide.createIcons();
+  editor.focus();
+})();
+</script>
+</body>
+</html>
