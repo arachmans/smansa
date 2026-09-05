@@ -1,0 +1,2535 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Modul Ajar Informatika SMA — Kurikulum Merdeka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Lora:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F2E8; --paper-2:#EDE7D8; --paper-3:#FBF8F1;
+    --ink:#232019; --ink-70:rgba(35,32,25,.72); --ink-55:rgba(35,32,25,.55);
+    --ink-30:rgba(35,32,25,.32); --ink-12:rgba(35,32,25,.14);
+    --board:#153029; --chalk:#EAE4D2; --chalk-dim:rgba(234,228,210,.52);
+    --accent:#A8401F; --green:#2E6B4F; --gold:#D8B25C; --hl:#F0E2AC;
+    --serif:'Lora',Georgia,serif; --disp:'Fraunces',Georgia,serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--serif);background:var(--paper);color:var(--ink);font-size:16px;line-height:1.78;overflow-wrap:break-word}
+  ::selection{background:var(--hl)}
+  [hidden]{display:none!important}
+  button{font-family:inherit;color:inherit}
+  a{color:var(--accent)}
+  kbd{font:600 10.5px var(--mono);border:1px solid var(--ink-30);border-bottom-width:2px;padding:1px 6px;border-radius:3px;background:var(--paper-3)}
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{position:fixed;inset:0 auto 0 0;width:330px;background:var(--board);color:var(--chalk);
+    display:flex;flex-direction:column;z-index:60;
+    background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1.2px);background-size:24px 24px}
+  .brand{padding:30px 26px 22px;border-bottom:1px solid rgba(234,228,210,.14)}
+  .brand-kicker{font:600 10px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  .brand-title{font:600 25px/1.18 var(--disp);letter-spacing:-.2px}
+  .brand-title em{font-style:italic;font-weight:500}
+  .search{margin:18px 26px 4px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(234,228,210,.25)}
+  .search svg{width:14px;height:14px;color:var(--chalk-dim);flex:none}
+  .search input{flex:1;background:none;border:none;outline:none;color:var(--chalk);font:400 13px var(--mono);padding:9px 0;caret-color:var(--gold)}
+  .search input::placeholder{color:var(--chalk-dim)}
+  .search:focus-within{border-bottom-color:var(--gold)}
+  .module-nav{flex:1;overflow-y:auto;padding:8px 0 16px;scrollbar-width:thin;scrollbar-color:rgba(234,228,210,.25) transparent}
+  .module-nav::-webkit-scrollbar{width:7px}
+  .module-nav::-webkit-scrollbar-thumb{background:rgba(234,228,210,.18);border-radius:4px}
+  .nav-cap{font:600 10px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--chalk-dim);padding:20px 26px 8px}
+  .mod-item{display:grid;grid-template-columns:30px 1fr auto;gap:0 12px;align-items:start;width:100%;text-align:left;
+    background:none;border:none;border-left:3px solid transparent;cursor:pointer;padding:10px 22px 11px 23px}
+  .mod-item:hover{background:rgba(255,255,255,.05)}
+  .mod-item.on{background:rgba(255,255,255,.07);border-left-color:var(--gold)}
+  .mi-no{font:600 10.5px var(--mono);color:var(--chalk-dim);padding-top:4px}
+  .mod-item.on .mi-no{color:var(--gold)}
+  .mi-title{display:block;font:600 14.5px/1.35 var(--disp);letter-spacing:.1px}
+  .mi-meta{display:block;font:500 10px var(--mono);color:var(--chalk-dim);margin-top:3px}
+  .mi-state{padding-top:5px}
+  .mi-state svg{width:13px;height:13px;color:var(--gold)}
+  .mi-state .dot{display:block;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .nav-empty{padding:26px;font:italic 14px var(--serif);color:var(--chalk-dim)}
+  .sidebar-foot{border-top:1px solid rgba(234,228,210,.14);padding:16px 26px 18px}
+  .progress-line{height:4px;background:rgba(234,228,210,.14);margin-bottom:9px}
+  .progress-line span{display:block;height:100%;width:0;background:var(--gold);transition:width .4s ease}
+  .progress-text{font:500 10.5px var(--mono);letter-spacing:.06em;color:var(--chalk-dim)}
+  .sf-tools{display:flex;gap:10px;margin-top:10px}
+  .sf-btn{background:none;border:none;cursor:pointer;font:500 10px var(--mono);letter-spacing:.08em;
+    color:var(--chalk-dim);text-decoration:underline;text-underline-offset:3px;padding:0}
+  .sf-btn:hover{color:var(--gold)}
+
+  /* ---------- MOBILE BAR ---------- */
+  .mbar{display:none;position:sticky;top:0;z-index:55;background:var(--board);color:var(--chalk);padding:12px 16px;align-items:center;gap:12px}
+  .mbar button{background:none;border:none;cursor:pointer;display:flex;padding:4px}
+  .mbar svg{width:19px;height:19px}
+  .mbar b{font:600 15px var(--disp)}
+  .scrim{position:fixed;inset:0;background:rgba(20,18,14,.45);z-index:58;opacity:0;pointer-events:none;transition:opacity .25s}
+  .scrim.show{opacity:1;pointer-events:auto}
+
+  /* ---------- MAIN + TOOLBAR ---------- */
+  .main{margin-left:330px;min-height:100vh}
+  .toolbar{position:sticky;top:0;z-index:50;background:rgba(246,242,232,.94);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--ink-12);display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 30px}
+  .crumb{flex:1;min-width:200px;font:600 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-55)}
+  .tb-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .tbtn{display:inline-flex;align-items:center;gap:7px;font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;
+    padding:8px 13px;border:1px solid var(--ink-30);background:transparent;cursor:pointer;border-radius:3px}
+  .tbtn svg{width:13px;height:13px}
+  .tbtn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .tbtn.accent{background:var(--accent);border-color:var(--accent);color:#FCF8EE}
+  .tbtn.accent:hover{background:#8A3216;border-color:#8A3216}
+  .tbtn.on{background:var(--green);border-color:var(--green);color:#FCF8EE}
+  .tbtn.on:hover{background:#245A41;border-color:#245A41}
+  .readprog{position:absolute;left:0;bottom:-1px;height:2px;background:var(--accent);width:0}
+  .edit-tip{flex-basis:100%;display:none;align-items:center;gap:9px;font:italic 13px var(--serif);color:var(--ink-70);
+    background:rgba(240,226,172,.4);border:1px solid rgba(168,64,31,.25);border-radius:3px;padding:7px 12px}
+  .edit-tip svg{width:14px;height:14px;color:var(--accent);flex:none}
+  body.editing .edit-tip{display:flex}
+
+  /* ---------- BILAH PENYUNTING ---------- */
+  .editbar{flex-basis:100%;display:flex;align-items:center;gap:3px;flex-wrap:wrap;padding:5px 0 1px}
+  .eb-sep{width:1px;height:20px;background:var(--ink-12);margin:0 6px;flex:none}
+  .editbar button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:28px;height:28px;
+    padding:0 6px;border:1px solid var(--ink-12);background:var(--paper-3);cursor:pointer;border-radius:3px}
+  .editbar button:hover{border-color:var(--accent);color:var(--accent)}
+  .editbar button svg{width:13px;height:13px}
+  .editbar .eb-txt{font:600 11px var(--mono);letter-spacing:.04em}
+  .editbar .eb-img{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;
+    background:var(--accent);border-color:var(--accent);color:#FCF8EE;padding:0 12px}
+  .editbar .eb-img:hover{background:#8A3216;border-color:#8A3216;color:#FCF8EE}
+
+  /* ---------- LANDING ---------- */
+  .landing{max-width:900px;margin:0 auto;padding:84px 48px 70px;animation:rise .5s ease both}
+  .land-kicker{font:600 10.5px var(--mono);letter-spacing:.26em;text-transform:uppercase;color:var(--accent)}
+  .land-title{font:600 clamp(32px,4.2vw,52px)/1.12 var(--disp);letter-spacing:-1px;margin:20px 0 22px;max-width:760px}
+  .land-title em{font-style:italic;color:var(--accent);font-weight:500}
+  .lede{font:17.5px/1.8 var(--serif);color:var(--ink-70);max-width:680px}
+  .land-stats{display:flex;flex-wrap:wrap;border:1px solid var(--ink-12);background:var(--paper-3);margin:36px 0 50px}
+  .stat{flex:1 1 150px;padding:16px 22px;border-right:1px solid var(--ink-12)}
+  .stat:last-child{border-right:none}
+  .stat b{display:block;font:600 30px/1 var(--disp)}
+  .stat span{font:500 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-55)}
+  .toc-cap{font:600 11px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--ink-55);
+    border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:6px}
+  .toc-group{font:600 10px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--accent);padding:22px 2px 8px}
+  .toc-row{display:flex;align-items:baseline;gap:12px;width:100%;background:none;border:none;text-align:left;
+    padding:12px 2px;cursor:pointer;font-family:inherit}
+  .toc-row:hover .toc-t{color:var(--accent)}
+  .toc-no{font:600 11px var(--mono);color:var(--accent);min-width:26px}
+  .toc-t{font:600 18px/1.3 var(--disp);letter-spacing:.1px}
+  .toc-dots{flex:1;border-bottom:2px dotted var(--ink-30);transform:translateY(-5px);min-width:30px}
+  .toc-m{font:500 10.5px var(--mono);color:var(--ink-55);white-space:nowrap}
+  .land-hint{font:italic 14px var(--serif);color:var(--ink-70);margin-top:34px;max-width:680px}
+  .land-bits{margin-top:64px;padding-top:20px;border-top:1px solid var(--ink-12);
+    font:400 11.5px var(--mono);color:var(--ink-55);letter-spacing:.04em}
+
+  /* ---------- DOKUMEN ---------- */
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .doc{max-width:860px;margin:0 auto;padding:54px 52px 30px;animation:rise .45s ease both}
+  .print-head{display:none;justify-content:space-between;font:500 10px var(--mono);letter-spacing:.16em;
+    text-transform:uppercase;color:#444;border-bottom:1px solid #999;padding-bottom:8px;margin-bottom:26px}
+  .doc-head{margin-bottom:8px}
+  .dh-top{display:flex;gap:36px;align-items:flex-start;border-bottom:1px solid var(--ink);padding-bottom:32px}
+  .dh-num .cap{font:600 10px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--ink-55);margin-bottom:12px}
+  .dh-num .n{font:700 118px/0.82 var(--disp);letter-spacing:-5px;color:var(--accent)}
+  @supports(-webkit-text-stroke:1px black){.dh-num .n{color:transparent;-webkit-text-stroke:2.5px var(--accent)}}
+  .dh-right{flex:1;min-width:0}
+  .dh-kicker{font:600 10.5px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .chip{font:600 9px var(--mono);letter-spacing:.14em;padding:3px 8px;border:1px solid;border-radius:2px}
+  .chip-local{color:var(--accent);border-color:var(--accent);background:rgba(168,64,31,.07)}
+  .chip-done{color:var(--green);border-color:var(--green);background:rgba(46,107,79,.08)}
+  .dh-title{font:600 clamp(26px,3vw,38px)/1.18 var(--disp);letter-spacing:-.4px;margin-bottom:14px}
+  .dh-ringkas{font:italic 16.5px/1.65 var(--serif);color:var(--ink-70);max-width:600px}
+  .meta-strip{display:flex;flex-wrap:wrap;border:1px solid var(--ink-12);border-top:none;background:var(--paper-3)}
+  .ms{flex:1 1 170px;padding:13px 17px;border-right:1px solid var(--ink-12);min-width:150px}
+  .ms:last-child{border-right:none}
+  .ms .k{font:600 9.5px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);margin-bottom:4px}
+  .ms .v{font:600 14px/1.4 var(--disp)}
+  .band{margin-top:86px;background:var(--paper-2);border:1px solid var(--ink-12);padding:20px 26px;
+    display:flex;gap:20px;align-items:center;break-inside:avoid}
+  .band .b-no{font:600 13px var(--mono);color:var(--accent);border:1.5px solid var(--accent);padding:7px 11px;flex:none}
+  .band h2{font:600 24px var(--disp);letter-spacing:-.2px}
+  .band .b-cap{margin-left:auto;font:italic 14px var(--serif);color:var(--ink-55);text-align:right}
+  .sec{margin-top:56px}
+  .sub-h{display:flex;align-items:baseline;gap:13px;margin:0 0 20px}
+  .sub-no{font:600 12px var(--mono);color:var(--accent);letter-spacing:.1em}
+  .sub-t{font:600 21px var(--disp);letter-spacing:-.2px}
+  .sec-intro{font:italic 15px var(--serif);color:var(--ink-70);margin-bottom:20px}
+
+  .id-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:36px;border-top:1px solid var(--ink-12)}
+  .id-row{padding:13px 2px 12px 0;border-bottom:1px solid var(--ink-12)}
+  .id-row dt{font:600 9.5px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);margin-bottom:5px}
+  .id-row dd{font:15px/1.6 var(--serif)}
+  .cp-item{margin-bottom:24px}
+  .cp-e{font:600 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
+    display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .cp-e::after{content:"";flex:1;height:1px;background:var(--ink-12)}
+  .cp-t{font:italic 16.5px/1.7 var(--serif);padding-left:18px;border-left:3px solid var(--accent);color:#2A2620}
+  .tp{display:grid;grid-template-columns:54px 1fr;gap:16px;padding:15px 0;border-bottom:1px solid var(--ink-12)}
+  .tp:first-child{border-top:1px solid var(--ink-12)}
+  .tp-no{font:600 29px/1.1 var(--disp);color:var(--accent)}
+  .tp p{font:15.5px/1.72 var(--serif);padding-top:4px}
+  .pb-list{display:grid;gap:13px}
+  .pb{background:var(--paper-2);border-left:3px solid var(--accent);padding:17px 22px;font:italic 17.5px/1.62 var(--serif)}
+  .pm{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:17px 2px;border-bottom:1px dotted var(--ink-30)}
+  .pm-no{font:600 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-55);padding-top:7px}
+  .pm-q{font:500 18.5px/1.5 var(--disp)}
+
+  /* kegiatan */
+  .pert{border:1px solid var(--ink-12);background:var(--paper-3);margin-bottom:16px;break-inside:avoid}
+  .pert-head{width:100%;display:flex;align-items:center;gap:14px;padding:15px 20px 12px;background:none;border:none;text-align:left;cursor:pointer}
+  .pert-no{font:600 10.5px var(--mono);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+  .pert-judul{font:600 16.5px var(--disp);flex:1;min-width:0}
+  .pert-menit{font:500 10.5px var(--mono);color:var(--ink-55);display:flex;gap:6px;align-items:center;white-space:nowrap}
+  .pert-menit svg{width:12px;height:12px}
+  .pert-head .chev{width:16px;height:16px;color:var(--ink-55);transition:transform .35s;flex:none}
+  .pert.open .chev{transform:rotate(180deg)}
+  .timebar{display:flex;gap:3px;padding:0 20px 10px}
+  .tb-seg{height:8px;min-width:8px}
+  .c-p{background:#B7AD93}.c-i{background:var(--accent)}.c-t{background:var(--green)}
+  .tb-legend{display:flex;gap:18px;flex-wrap:wrap;padding:0 20px 14px;font:500 10px var(--mono);color:var(--ink-55)}
+  .tb-legend span{display:flex;align-items:center;gap:6px}
+  .tb-legend b{width:8px;height:8px;flex:none}
+  .pert-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
+  .pert-inner{overflow:hidden}
+  .pert.open .pert-body{grid-template-rows:1fr}
+  .phase{padding:2px 20px 12px}
+  .phase h4{font:600 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);
+    display:flex;align-items:center;gap:12px;margin:8px 0}
+  .phase h4::after{content:"";flex:1;height:1px;background:var(--ink-12)}
+  .dash-list,.inti-list{list-style:none}
+  .dash-list li,.inti-list li{position:relative;padding:7px 0 7px 30px;font:15px/1.7 var(--serif)}
+  .dash-list li::before{content:"";position:absolute;left:4px;top:19px;width:11px;height:2px;background:var(--ink-30)}
+  .inti-list{counter-reset:step}
+  .inti-list li::before{content:counter(step);counter-increment:step;position:absolute;left:0;top:8px;
+    font:600 11px var(--mono);color:var(--accent);width:20px;text-align:center}
+  .phase-inti{background:rgba(168,64,31,.05);margin:0 12px;padding:12px 16px 8px;border:1px solid rgba(168,64,31,.18)}
+  .phase-inti h4{color:var(--accent)}
+  .pert-ases{display:flex;gap:10px;align-items:baseline;padding:13px 20px 16px;border-top:1px dotted var(--ink-30);
+    font:italic 13.5px var(--serif);color:var(--ink-70)}
+  .pert-ases b{font:600 9.5px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);font-style:normal}
+
+  /* materi */
+  .m-h{font:600 19px var(--disp);letter-spacing:-.1px;margin:36px 0 12px;display:flex;align-items:center;gap:11px;break-after:avoid}
+  .m-h::before{content:"";width:9px;height:9px;background:var(--accent);flex:none}
+  .m-p{margin:13px 0;font:16px/1.8 var(--serif)}
+  .m-p.lead::first-letter{font:600 52px/0.85 var(--disp);float:left;padding:7px 10px 0 0;color:var(--accent)}
+  .m-ul{list-style:none;margin:13px 0}
+  .m-ul li{position:relative;padding:7px 0 7px 28px;font:15.5px/1.72 var(--serif)}
+  .m-ul li::before{content:"";position:absolute;left:4px;top:19px;width:11px;height:2px;background:var(--accent)}
+  .m-note{display:grid;grid-template-columns:120px 1fr;gap:16px;background:rgba(216,178,92,.2);
+    border:1px solid rgba(168,64,31,.22);padding:16px 20px;margin:18px 0;break-inside:avoid}
+  .n-cap{font:600 9.5px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--accent);padding-top:4px}
+  .n-t{font:italic 15.5px/1.68 var(--serif)}
+  .m-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14px}
+  .m-table th{font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;
+    color:var(--ink-55);border-bottom:2px solid var(--ink);padding:8px 10px}
+  .m-table td{border-bottom:1px solid var(--ink-12);padding:8px 10px;vertical-align:top}
+  .m-table tbody tr:nth-child(even) td{background:rgba(35,32,25,.03)}
+  .m-code{font:400 12.5px/1.75 var(--mono);background:var(--board);color:var(--chalk);
+    border-left:3px solid var(--gold);padding:16px 20px;margin:18px 0;overflow-x:auto;white-space:pre;
+    background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1.2px);background-size:22px 22px}
+
+  /* gambar tersisip */
+  .m-fig{position:relative;margin:22px 0;break-inside:avoid}
+  .m-fig img{display:block;max-width:100%;height:auto;border:1px solid var(--ink-12);background:#fff}
+  .m-fig[data-align="left"] img{margin:0 auto 0 0}
+  .m-fig[data-align="center"] img{margin:0 auto}
+  .m-fig[data-align="right"] img{margin:0 0 0 auto}
+  .m-fig figcaption{font:italic 13px/1.6 var(--serif);color:var(--ink-55);margin-top:8px;text-align:center}
+  body.editing .m-fig{outline:1px dashed rgba(168,64,31,.35);outline-offset:6px}
+  body.editing .m-fig img{cursor:pointer}
+  .fig-resize{display:none;position:absolute;right:-7px;bottom:-7px;width:13px;height:13px;
+    background:var(--accent);border:2px solid var(--paper-3);cursor:nwse-resize;z-index:5}
+  body.editing .fig-resize{display:block}
+  body.noselect{user-select:none;-webkit-user-select:none}
+
+  /* asesmen */
+  .as-block{border:1px solid var(--ink-12);margin-bottom:15px;background:var(--paper-3)}
+  .as-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:12px 18px;
+    background:var(--paper-2);border-bottom:1px solid var(--ink-12)}
+  .as-name{font:600 16.5px var(--disp)}
+  .as-when{font:italic 13px var(--serif);color:var(--ink-55)}
+  .as-body{padding:6px 18px 16px}
+  .as-row{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:9px 0;border-bottom:1px dashed var(--ink-12)}
+  .as-row span{font:600 9.5px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);padding-top:5px}
+  .as-row p{font:15px/1.65 var(--serif)}
+  .as-contoh{padding-top:12px}
+  .as-contoh .cap{font:600 9.5px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+  .as-contoh ol{padding-left:22px}
+  .as-contoh li{font:15px/1.68 var(--serif);padding:4px 0}
+  .rubrik-wrap{margin-top:28px}
+  .rubrik-cap{font:600 10px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ink-55);
+    border-bottom:1px solid var(--ink);padding-bottom:9px;margin-bottom:4px}
+  .rubrik{width:100%;border-collapse:collapse;font-size:13px;line-height:1.55}
+  .rubrik thead{display:table-header-group}
+  .rubrik th{border-bottom:2px solid var(--ink);padding:9px 10px;text-align:left;vertical-align:bottom}
+  .rubrik thead th{font:600 9.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-55)}
+  .rubrik thead .lv{display:block;font-style:normal;font-size:9px;color:var(--accent);margin-top:3px}
+  .rubrik tbody th{font:600 14.5px/1.4 var(--disp);border-bottom:1px solid var(--ink-12);padding:10px}
+  .rubrik tbody td{border-bottom:1px solid var(--ink-12);padding:9px 10px;vertical-align:top;font:13.5px/1.55 var(--serif)}
+  .rubrik tbody tr:nth-child(even) td,.rubrik tbody tr:nth-child(even) th{background:rgba(35,32,25,.03)}
+
+  /* refleksi */
+  .ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .ref-panel{padding:26px 26px 18px}
+  .ref-guru{background:var(--board);color:var(--chalk);border-left:4px solid var(--gold);
+    background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1.2px);background-size:22px 22px}
+  .ref-siswa{background:var(--paper-2);border:1px solid var(--ink-12);border-left:4px solid var(--accent)}
+  .ref-cap{font:600 9.5px var(--mono);letter-spacing:.24em;text-transform:uppercase;margin-bottom:12px}
+  .ref-guru .ref-cap{color:var(--gold)}
+  .ref-siswa .ref-cap{color:var(--accent)}
+  .ref-h{font:italic 500 18px/1.35 var(--disp);margin-bottom:12px}
+  .ref-panel ul{list-style:none}
+  .ref-panel li{position:relative;padding:9px 0 9px 22px;font:italic 14.5px/1.65 var(--serif)}
+  .ref-panel li::before{content:"";position:absolute;left:2px;top:19px;width:8px;height:2px}
+  .ref-guru li{border-bottom:1px dashed rgba(234,228,210,.22)}
+  .ref-guru li::before{background:var(--gold)}
+  .ref-siswa li{border-bottom:1px dashed var(--ink-30)}
+  .ref-siswa li::before{background:var(--accent)}
+
+  /* pager */
+  .pager{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:72px;border-top:3px double var(--ink);padding-top:24px}
+  .pg-btn{border:1px solid var(--ink-12);background:var(--paper-3);padding:15px 18px;text-align:left;cursor:pointer;display:block}
+  .pg-btn:hover{border-color:var(--accent);background:var(--paper-2)}
+  .pg-next{text-align:right}
+  .pg-lab{display:block;font:600 9.5px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--ink-55);margin-bottom:5px}
+  .pg-tit{display:block;font:600 16px/1.35 var(--disp)}
+  .doc-foot{margin-top:30px;font:italic 13px/1.7 var(--serif);color:var(--ink-55);text-align:center}
+
+  /* rail */
+  .toc-rail{position:fixed;right:26px;top:110px;width:225px;font-family:var(--mono);font-size:11px;display:none;z-index:10}
+  @media(min-width:1500px){.toc-rail{display:block}}
+  .rail-cap{font:600 9.5px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ink-55);margin-bottom:10px}
+  .rail-grp{font:600 9.5px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent);padding:12px 0 5px}
+  .toc-rail a{display:block;padding:5px 0 5px 13px;color:var(--ink-70);text-decoration:none;border-left:1px solid var(--ink-12)}
+  .toc-rail a:hover{color:var(--ink)}
+  .toc-rail a.on{color:var(--accent);border-left:2px solid var(--accent);padding-left:12px;font-weight:600}
+
+  /* toast */
+  .toasts{position:fixed;right:24px;bottom:24px;z-index:100;display:flex;flex-direction:column;gap:10px;max-width:360px}
+  .toast{display:flex;align-items:flex-start;gap:11px;background:var(--board);color:var(--chalk);
+    border-left:3px solid var(--gold);padding:13px 17px;font:14px/1.55 var(--serif);
+    box-shadow:0 8px 26px rgba(14,20,16,.3);animation:tin .35s ease both}
+  .toast svg{width:15px;height:15px;color:var(--gold);flex:none;margin-top:3px}
+  .toast.out{animation:tout .35s ease both}
+  @keyframes tin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes tout{to{opacity:0;transform:translateY(10px)}}
+
+  /* bilah melayang gambar & tabel */
+  .fbar{position:fixed;z-index:80;display:flex;align-items:center;gap:2px;padding:5px;background:var(--board);color:var(--chalk);
+    border:1px solid rgba(234,228,210,.25);border-radius:3px;box-shadow:0 10px 30px rgba(14,20,16,.35);
+    max-width:calc(100vw - 16px);flex-wrap:wrap}
+  .fbar button{display:inline-flex;align-items:center;gap:5px;font:600 10px var(--mono);letter-spacing:.05em;
+    padding:5px 8px;background:none;border:none;color:var(--chalk);cursor:pointer;border-radius:2px;white-space:nowrap}
+  .fbar button:hover{background:rgba(255,255,255,.14);color:#fff}
+  .fbar button svg{width:12px;height:12px}
+  .fbar .fb-sep{width:1px;align-self:stretch;background:rgba(234,228,210,.22);margin:0 4px}
+
+  /* modal */
+  .modal-scrim{position:fixed;inset:0;z-index:90;background:rgba(20,18,14,.55);display:flex;align-items:center;justify-content:center;padding:20px;animation:tin .25s ease both}
+  .modal{background:var(--paper-3);border:1px solid var(--ink);max-width:480px;width:100%;max-height:86vh;overflow-y:auto;
+    box-shadow:0 24px 60px rgba(14,20,16,.4);padding:22px 26px}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--ink);padding-bottom:10px;margin-bottom:16px}
+  .modal-head h3{font:600 21px var(--disp);letter-spacing:-.2px}
+  .modal-head button{background:none;border:none;cursor:pointer;display:flex;padding:4px}
+  .modal-head svg{width:16px;height:16px;color:var(--ink-55)}
+  .seg-tabs{display:flex;border:1px solid var(--ink-30);margin-bottom:16px}
+  .seg-tabs .seg{flex:1;padding:8px;background:var(--paper);border:none;cursor:pointer;
+    font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55)}
+  .seg-tabs .seg.on{background:var(--board);color:var(--chalk)}
+  .dropzone{display:flex;flex-direction:column;align-items:center;gap:6px;border:1.5px dashed var(--ink-30);
+    padding:26px 18px;text-align:center;cursor:pointer;background:var(--paper)}
+  .dropzone svg{width:22px;height:22px;color:var(--accent)}
+  .dropzone b{font:600 15px var(--disp)}
+  .dropzone span{font:400 11.5px var(--mono);color:var(--ink-55)}
+  .dropzone.over,.dropzone:hover{border-color:var(--accent);background:rgba(168,64,31,.05)}
+  .f-label{display:block;font:600 9.5px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);margin:14px 0 6px}
+  .f-input{width:100%;border:1px solid var(--ink-30);background:#fff;padding:9px 12px;font:14.5px var(--serif);color:var(--ink);outline:none}
+  .f-input:focus{border-color:var(--accent)}
+  .url-row{display:flex;gap:8px}
+  .url-row .f-input{flex:1}
+  .f-err{font:italic 13px var(--serif);color:var(--accent);margin-top:8px}
+  .fig-prev{margin-top:14px;border:1px solid var(--ink-12);background:#fff;padding:10px;
+    display:flex;flex-direction:column;align-items:center;gap:6px}
+  .fig-prev img{max-height:200px;max-width:100%}
+  .fig-meta{font:500 10.5px var(--mono);color:var(--ink-55)}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+
+  /* sunting */
+  [contenteditable="true"]{border-radius:2px}
+  [contenteditable="true"]:hover{background:rgba(168,64,31,.05);outline:1px dashed var(--accent);outline-offset:3px}
+  [contenteditable="true"]:focus{outline:2px solid var(--accent);outline-offset:3px;background:rgba(168,64,31,.04)}
+  body.editing .m-p.lead::first-letter{padding-top:2px}
+
+  /* responsif */
+  @media(max-width:1024px){
+    .mbar{display:flex}
+    .sidebar{transform:translateX(-100%);transition:transform .3s ease;width:300px}
+    .sidebar.open{transform:none}
+    .main{margin-left:0}
+    .toolbar{top:46px}
+  }
+  @media(max-width:720px){
+    .doc{padding:38px 22px 20px}
+    .landing{padding:56px 22px 50px}
+    .dh-top{gap:18px}
+    .dh-num .n{font-size:64px;letter-spacing:-3px}
+    .dh-title{font-size:24px}
+    .id-grid,.ref-grid{grid-template-columns:1fr}
+    .pm{grid-template-columns:1fr;gap:4px}
+    .tp{grid-template-columns:40px 1fr;gap:10px}
+    .tp-no{font-size:22px}
+    .m-note{grid-template-columns:1fr;gap:6px}
+    .pager{grid-template-columns:1fr}
+    .pg-next{text-align:left}
+    .band{flex-wrap:wrap;gap:12px}
+    .band .b-cap{margin-left:0;text-align:left;flex-basis:100%}
+    .toolbar{padding:9px 16px}
+    .toasts{left:16px;right:16px;max-width:none}
+    .url-row{flex-wrap:wrap}
+  }
+
+  /* cetak */
+  @media print{
+    .sidebar,.mbar,.toolbar,.toc-rail,.toasts,.scrim,.pager,.edit-tip,.fbar,.modal-scrim{display:none!important}
+    body{background:#fff;font-size:12.5px}
+    .main{margin:0}
+    .doc{max-width:100%;padding:0;animation:none}
+    .print-head{display:flex!important}
+    .band{margin-top:34px}
+    .sec{margin-top:26px}
+    .m-h,.sub-h,h4,.as-head{break-after:avoid}
+    .pert{break-inside:avoid}
+    .pert-body{grid-template-rows:1fr!important}
+    .pert-inner{overflow:visible}
+    .m-fig{break-inside:avoid}
+    .m-fig img{max-width:100%}
+    .m-code{white-space:pre-wrap;background:#1B1B18;color:#EEE;border-left:3px solid #999}
+    .rubrik tbody tr{break-inside:avoid}
+    .doc-head{padding-bottom:10px}
+    @page{size:A4;margin:16mm 15mm}
+  }
+</style>
+</head>
+<body>
+
+<div class="scrim" id="scrim"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-kicker">Kurikulum Merdeka</div>
+    <h1 class="brand-title">Modul Ajar<br><em>Informatika SMA</em></h1>
+  </div>
+  <div class="search">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.7" y2="16.7"/></svg>
+    <input id="searchInput" type="text" placeholder="cari modul — tekan /" autocomplete="off">
+  </div>
+  <nav class="module-nav" id="moduleNav"></nav>
+  <div class="sidebar-foot">
+    <div class="progress-line"><span id="progFill"></span></div>
+    <div class="progress-text" id="progText"></div>
+    <div class="sf-tools">
+      <button class="sf-btn" id="btnBackup" type="button">cadangkan data</button>
+      <button class="sf-btn" id="btnRestore" type="button">pulihkan data</button>
+      <input type="file" id="fileRestore" accept=".json,application/json" hidden>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="mbar">
+    <button id="btnMenu" aria-label="buka daftar modul"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    <b>Modul Ajar Informatika SMA</b>
+  </div>
+  <div class="toolbar" id="toolbar" hidden></div>
+  <div id="view">
+    <noscript>
+      <div style="margin:80px auto;max-width:640px;padding:26px;font-family:Georgia,serif;background:#F6F2E8;border:1px solid #232019;line-height:1.7">
+        <b>Aplikasi ini membutuhkan JavaScript.</b><br>
+        Aktifkan JavaScript pada peramban Anda, lalu muat ulang halaman untuk menampilkan modul ajar.
+      </div>
+    </noscript>
+  </div>
+</div>
+
+<aside class="toc-rail" id="rail"></aside>
+
+<!-- bilah melayang: gambar -->
+<div class="fbar" id="imgBar" hidden>
+  <button type="button" data-act="align" data-arg="left" title="Rata kiri"><i data-lucide="align-left"></i></button>
+  <button type="button" data-act="align" data-arg="center" title="Rata tengah"><i data-lucide="align-center"></i></button>
+  <button type="button" data-act="align" data-arg="right" title="Rata kanan"><i data-lucide="align-right"></i></button>
+  <span class="fb-sep"></span>
+  <button type="button" data-act="width" data-arg="35%">35%</button>
+  <button type="button" data-act="width" data-arg="60%">60%</button>
+  <button type="button" data-act="width" data-arg="100%">100%</button>
+  <span class="fb-sep"></span>
+  <button type="button" data-act="replace"><i data-lucide="rotate-cw"></i>ganti</button>
+  <button type="button" data-act="delete"><i data-lucide="trash"></i>hapus</button>
+</div>
+
+<!-- bilah melayang: tabel -->
+<div class="fbar" id="tblBar" hidden>
+  <button type="button" data-act="row+">+ baris</button>
+  <button type="button" data-act="row-">− baris</button>
+  <span class="fb-sep"></span>
+  <button type="button" data-act="col+">+ kolom</button>
+  <button type="button" data-act="col-">− kolom</button>
+</div>
+
+<!-- modal umum -->
+<div class="modal-scrim" id="modalScrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="modalTitle"></h3>
+      <button type="button" id="modalClose" aria-label="tutup"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ================= IKON INLINE (tanpa CDN — aplikasi berjalan penuh secara luring) ================= */
+const ICONS={
+  "search":'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.7" y2="16.7"/>',
+  "check":'<polyline points="20 6 9 17 4 12"/>',
+  "x":'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  "pencil":'<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+  "printer":'<path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/>',
+  "rotate-ccw":'<path d="M3 12a9 9 0 1 0 2.7-6.4L3 8"/><polyline points="3 3 3 8 8 8"/>',
+  "rotate-cw":'<path d="M21 12a9 9 0 1 1-2.7-6.4L21 8"/><polyline points="21 3 21 8 16 8"/>',
+  "save":'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+  "clock":'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>',
+  "chevron-down":'<polyline points="6 9 12 15 18 9"/>',
+  "info":'<circle cx="12" cy="12" r="9"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+  "pen-line":'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  "file-text":'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>',
+  "undo":'<path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+  "redo":'<path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
+  "bold":'<path d="M7 5h7a3.5 3.5 0 0 1 0 7H7z"/><path d="M7 12h8a3.5 3.5 0 0 1 0 7H7z"/>',
+  "italic":'<line x1="19" y1="5" x2="10" y2="5"/><line x1="14" y1="19" x2="5" y2="19"/><line x1="15" y1="5" x2="9" y2="19"/>',
+  "underline":'<path d="M6 4v7a6 6 0 0 0 12 0V4"/><line x1="4" y1="20" x2="20" y2="20"/>',
+  "strike":'<path d="M5 12h14"/><path d="M15.5 7c-.7-1.3-2-2-3.8-2C9.4 5 8 6.2 8 7.8c0 .9.4 1.6 1.1 2.2"/><path d="M8.5 17c.7 1.3 2 2 3.8 2 2.3 0 3.7-1.2 3.7-2.8 0-.9-.4-1.6-1.1-2.2"/>',
+  "list":'<line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><line x1="4" y1="6" x2="4.01" y2="6"/><line x1="4" y1="12" x2="4.01" y2="12"/><line x1="4" y1="18" x2="4.01" y2="18"/>',
+  "list-ol":'<line x1="10" y1="6" x2="20" y2="6"/><line x1="10" y1="12" x2="20" y2="12"/><line x1="10" y1="18" x2="20" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>',
+  "align-left":'<line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="15" y2="12"/><line x1="4" y1="18" x2="18" y2="18"/>',
+  "align-center":'<line x1="6" y1="6" x2="18" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="7" y1="18" x2="17" y2="18"/>',
+  "align-right":'<line x1="4" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="6" y1="18" x2="20" y2="18"/>',
+  "link":'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+  "unlink":'<path d="M15 7h2a5 5 0 0 1 0 10h-2"/><path d="M9 17H7a5 5 0 0 1 0-10h2"/><line x1="4" y1="4" x2="20" y2="20"/>',
+  "image":'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="M21 16l-5-5L5 21"/>',
+  "minus":'<line x1="5" y1="12" x2="19" y2="12"/>',
+  "eraser":'<path d="M20 20H8.5L3.7 15.2a2 2 0 0 1 0-2.8L13.6 2.5l7.9 7.9-9.9 9.9"/><path d="M9 8l7 7"/>',
+  "trash":'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>'
+};
+function renderIcons(scope){
+  (scope||document).querySelectorAll("[data-lucide]").forEach(el=>{
+    const body=ICONS[el.getAttribute("data-lucide")];
+    if(!body) return;
+    const cls=el.getAttribute("class");
+    el.outerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"'+(cls?' class="'+cls+'"':'')+
+      ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+body+'</svg>';
+  });
+}
+
+/* ================= DATA MODUL ================= */
+
+const MODULES = [
+{
+  id:"x1", no:"01", kelas:"X", fase:"E", semester:"Gasal",
+  judul:"Penalaran Komputasional: Dekomposisi dan Pengenalan Pola",
+  ringkas:"Melatih kebiasaan membedah masalah besar menjadi bagian-bagian kecil, mengenali yang berulang, lalu menyusun solusi langkah demi langkah.",
+  materiPokok:"Berpikir Komputasional",
+  menit:90, alokasi:{jp:6, teks:"6 JP · 3 pertemuan × 2 JP"},
+  model:"Discovery Learning — diskusi kelompok dan galeri karya",
+  tags:["berpikir komputasional","dekomposisi","pola","abstraksi","algoritma"],
+  ident:{penyusun:"Guru Mata Pelajaran Informatika",instansi:"SMA Negeri 1 Nusantara",tahun:"2025/2026",
+    jenjang:"SMA — Kurikulum Merdeka",mapel:"Informatika",kelas:"Kelas X · Fase E",
+    alokasi:"6 JP (3 pertemuan × 2 JP × 45 menit)",model:"Discovery Learning, diskusi kelompok, galeri karya",
+    prasyarat:"Tidak ada — modul pembuka mata pelajaran"},
+  cp:[
+    {e:"Berpikir Komputasional",t:"Pada akhir Fase E, peserta didik diharapkan dapat menerapkan dan membandingkan beberapa teknik penalaran komputasional untuk menyelesaikan berbagai masalah — di rumah, sekolah, dan lingkungan sekitar — yang disajikan dalam berbagai representasi."},
+    {e:"Dampak Sosial Informatika",t:"Pada akhir Fase E, peserta didik diharapkan dapat menimbangkan dampak penerapan teknik penalaran komputasional bagi diri dan masyarakat, serta mengikuti kaidah etika yang berlaku."},
+    {e:"Praktik Lintas Bidang",t:"Pada akhir Fase E, peserta didik diharapkan dapat menjalankan proyek lintas bidang sederhana yang menerapkan keterampilan penalaran komputasional."}
+  ],
+  tp:[
+    "Melalui diskusi kelompok, peserta didik mampu mendekomposisi satu masalah kompleks menjadi submasalah yang jelas batas dan hubungannya.",
+    "Peserta didik mampu mengidentifikasi pola yang berulang pada suatu kasus dan memakainya untuk menyederhanakan penyelesaian.",
+    "Peserta didik mampu melakukan abstraksi: memilih informasi yang berpengaruh dan mengabaikan detail yang tidak relevan.",
+    "Peserta didik mampu menyusun langkah penyelesaian secara berurutan (algoritma sederhana) dan mengomunikasikannya kepada orang lain.",
+    "Peserta didik mampu memberi contoh penerapan penalaran komputasional dalam kehidupan sehari-hari."
+  ],
+  pb:[
+    "Masalah yang tampak mustahil jarang harus diselesaikan sekaligus; mengurainya menjadi bagian kecil membuatnya terlihat mungkin.",
+    "Pola adalah jalan pintas berpikir — mengenali yang berulang berarti tidak perlu memikirkan semuanya dari awal.",
+    "Berpikir komputasional bukan berpikir seperti mesin, melainkan cara manusia menyusun urutan penalaran yang bisa dijalankan ulang oleh siapa pun."
+  ],
+  pemantik:[
+    "Bagaimana kurir bisa mengantarkan ratusan paket ke alamat yang berbeda-beda dalam satu hari tanpa tersesat?",
+    "Mengapa kita menemukan satu buku di antara puluhan ribu koleksi perpustakaan hanya dalam beberapa menit?",
+    "Apa persamaan antara menyusun jadwal piket kelas, menata lemari pakaian, dan mencari kata di kamus?"
+  ],
+  keg:[
+    {j:"Membedah masalah — mengenal dekomposisi",
+     pend:[
+       "Guru menayangkan foto lalu-lalang paket di pusat sortir dan bertanya: “bagaimana semua paket ini sampai ke alamat yang tepat?” Peserta didik menulis dugaannya di kertas tempel.",
+       "Guru menyampaikan tujuan pembelajaran, kesepakatan kelas, dan gambaran tiga pertemuan."
+     ],
+     inti:[
+       "Kelompok beranggota 4–5 orang memilih satu “masalah besar” sekolah (class meeting, pentas seni, bersih-bersih kelas) lalu mengurainya menjadi diagram submasalah di kertas plano.",
+       "Setiap kelompok membandingkan hasil uraiannya: submasalah mana yang bisa dikerjakan bersamaan, mana yang saling menunggu?",
+       "Peserta didik menandai tugas yang mirip atau berulang antarsubmasalah — benih pengenalan pola untuk pertemuan berikutnya.",
+       "Guru berkeliling memberi pertanyaan pemantik, bukan jawaban: “jika bagian ini gagal, bagian mana yang ikut gagal?”"
+     ],
+     tutup:[
+       "Galeri karya: plano ditempel di dinding, kelompok saling berkunjung memberi catatan tempel — dua pujian, satu saran.",
+       "Guru menegaskan konsep dekomposisi dan memberi tugas ringan: mengurai satu masalah rumah tangga."
+     ],
+     w:[10,65,15], as:"Formatif — observasi diskusi dan kualitas catatan tempel pada galeri karya."},
+    {j:"Pola dan abstraksi — memilih yang penting",
+     pend:[
+       "Apersepsi: beberapa peserta didik membacakan uraian tugas rumahnya, kelas menebak “masalah besarnya”.",
+       "Pemanasan lima menit “apa berikutnya?” — deret gambar, bunyi, dan angka ditebak polanya."
+     ],
+     inti:[
+       "Tiap kelompok menerima kartu kasus (jadwal bus, motif batik, daftar nilai, susunan turnamen) dan mencari pola berulang, lalu merumuskan aturan umumnya dengan satu kalimat.",
+       "Abstraksi: dari kasus yang sama, kelompok menuliskan “yang penting saja” — data dan aturan inti — dan mencoret detail yang tidak berpengaruh.",
+       "Presentasi kilat dua menit per kelompok; kelompok lain menyebutkan pola yang terlewat.",
+       "Guru merangkum: pola mempersingkat, abstraksi memfokuskan; keduanya bekerja setelah masalah diurai."
+     ],
+     tutup:[
+       "Refleksi tertulis singkat: “pola apa yang aku temui pekan ini di luar kelas?”"
+     ],
+     w:[10,65,15], as:"Formatif — LKPD pola dan abstraksi dikumpulkan untuk ditelaah."},
+    {j:"Merangkai algoritma — solusi yang bisa dijalankan",
+     pend:[
+       "Guru menayangkan urutan langkah memasak mi instan yang sengaja diacak; peserta didik memperbaiki urutannya dan menemukan mengapa urutan penting."
+     ],
+     inti:[
+       "Berdasarkan submasalah pertemuan 1 dan pola pertemuan 2, tiap kelompok menyusun langkah penyelesaian bernomor, lengkap dengan kondisi “jika… maka…”.",
+       "Simulasi manusiawi: kelompok lain menjalankan langkah persis seperti tertulis tanpa menambah apa pun — ambiguitas ditemukan, lalu langkah diperbaiki.",
+       "Peserta didik mengerjakan asesmen sumatif individual: satu studi kasus baru untuk didekomposisi, dicari polanya, dan disusun solusinya.",
+       "Guru membahas ringkas kriteria rubrik sebelum pengumpulan."
+     ],
+     tutup:[
+       "Pengumuman hasil singkat, umpan balik rubrik, dan pengantar modul berikutnya: teks dan gerbang logika."
+     ],
+     w:[10,60,20], as:"Sumatif — studi kasus individual, dinilai dengan rubrik empat tingkat."}
+  ],
+  materi:[
+    {h:"Empat fondasi penalaran komputasional"},
+    {p:"Penalaran komputasional bukan berpikir seperti mesin, melainkan cara manusia menyusun penalaran agar dapat dijalankan ulang oleh siapa pun — termasuk komputer. Ada empat kebiasaan yang dilatih pada modul ini, dan keempatnya sebenarnya sudah kamu pakai jauh sebelum mengenal kata “informatika”."},
+    {ul:[
+      "Dekomposisi — memecah masalah besar menjadi submasalah yang jelas batas dan hubungannya.",
+      "Pengenalan pola — menemukan yang berulang, lalu memakainya sebagai jalan pintas.",
+      "Abstraksi — menyaring: mana informasi yang berpengaruh, mana detail yang boleh diabaikan.",
+      "Algoritma — merangkai langkah penyelesaian secara berurutan, lengkap dengan kondisi “jika… maka…”."
+    ]},
+    {note:"Dekomposisi menjawab “bagian apa saja?”. Pengenalan pola menjawab “apa yang berulang?”. Abstraksi menjawab “apa yang penting?”. Algoritma menjawab “langkah mana lebih dulu?”.", label:"Kotak Konsep"},
+    {h:"Contoh terapan: pentas seni sekolah"},
+    {p:"Sebuah pentas seni tampak seperti satu masalah raksasa: panggung, sponsor, tiket, perizinan, gladi resik. Dekomposisi memecahnya menjadi lima panitia kecil. Pengenalan pola muncul ketika pendaftaran tiap genre pertunjukan ternyata memakai formulir yang sama — cukup satu formulir dicetak berkali-kali. Abstraksi memangkas rapat panitia dari tiga jam menjadi tiga puluh menit karena hanya anggaran dan jadwal yang benar-benar perlu diputuskan bersama. Algoritmanya berjalan mundur dari hari-H: gladi resik H-1, publikasi H-7, penjualan tiket H-14, dan seterusnya."},
+    {h:"Jejak pada kehidupan sehari-hari"},
+    {ul:[
+      "Pusat sortir paket mengurai rute pengiriman menjadi kode pos, jalur, dan kurir — dekomposisi pada skala raksasa.",
+      "Mesin pencari mengenali pola kata yang sering dicari bersamaan untuk menebak maksudmu.",
+      "Rekomendasi lagu membandingkan pola mendengarkanmu dengan jutaan orang lain.",
+      "Jadwal kereta menyusun urutan peron, waktu, dan rangkaian menjadi satu algoritma harian."
+    ]}
+  ],
+  asesmen:{
+    d:{teknik:"Tanya jawab lisan dan angket singkat",bentuk:"Pertanyaan terbuka, tidak dinilai — memetakan titik awal",
+       contoh:["Apa yang biasa kamu lakukan pertama kali ketika menghadapi tugas yang besar?",
+               "Pernahkah kamu menyelesaikan sesuatu secara bertahap? Ceritakan singkat.",
+               "Apa yang kamu ketahui tentang kata “algoritma”?"]},
+    f:{teknik:"Observasi, penilaian antarteman, penilaian kinerja",bentuk:"LKPD, catatan observasi, umpan balik galeri karya",
+       contoh:["Saat diskusi: siapa yang mengurai masalah, siapa yang menemukan pola? Catat perannya.",
+               "Periksa LKPD: apakah aturan pola dirumuskan dengan kalimat yang dapat diuji benar-salahnya?"]},
+    s:{teknik:"Tes tertulis dan penugasan individual",bentuk:"Soal uraian studi kasus, dinilai dengan rubrik empat tingkat",
+       contoh:["Antrean kantin sekolah panjang pada jam istirahat. Uraikan masalah ini menjadi submasalah, tentukan pola penyebabnya, dan susun algoritma perbaikan.",
+               "Jelaskan perbedaan dekomposisi dan abstraksi memakai satu contoh yang sama.",
+               "Pilih satu masalah rumah tangga, lalu selesaikan dengan empat langkah penalaran komputasional."]},
+    rubrik:{k:[
+      {c:"Dekomposisi",lv:["Masalah diurai lengkap; batas dan ketergantungan antarsubmasalah jelas.","Sebagian besar submasalah terurai; hubungan antarbagian kadang kurang tepat.","Uraian sebagian saja; beberapa submasalah masih bercampur.","Masalah dinyatakan ulang tanpa diurai."]},
+      {c:"Pengenalan pola",lv:["Pola ditemukan dan dirumuskan menjadi aturan umum yang dapat diuji.","Pola ditemukan; rumusan aturan belum konsisten.","Pola disebut tanpa dirumuskan.","Belum menemukan pola yang relevan."]},
+      {c:"Algoritma dan komunikasi",lv:["Langkah urut, lengkap, bebas ambigu, dan telah teruji dijalankan orang lain.","Langkah urut dan logis; masih ada satu-dua langkah ambigu.","Urutan logis tetapi banyak langkah hilang.","Langkah acak atau tidak dapat diikuti."]}
+    ]}
+  },
+  rg:[
+    "Apakah masalah yang saya angkat cukup dekat dengan keseharian peserta didik?",
+    "Apakah waktu simulasi “menjalankan langkah” cukup untuk menemukan ambiguitas?",
+    "Siapa yang tampak diam selama diskusi kelompok, dan bagaimana saya melibatkannya pekan depan?",
+    "Bagian mana yang perlu saya sederhanakan — atau justru perdalam — di kelas berikutnya?"
+  ],
+  rs:[
+    "Bagian mana dari masalah yang paling sulit diurai? Mengapa?",
+    "Pola apa yang berhasil kutemukan, dan bagaimana pola itu mempersingkat pekerjaanku?",
+    "Jika masalah ini kikerjakan ulang, langkah mana yang akan kubahah?",
+    "Kapan lagi aku bisa memakai cara berpikir seperti ini di luar pelajaran informatika?"
+  ]
+},
+{
+  id:"x2", no:"02", kelas:"X", fase:"E", semester:"Gasal",
+  judul:"Teks dan Gerbang Logika",
+  ringkas:"Menerjemahkan huruf menjadi deretan bit, lalu memakai operasi AND, OR, NOT, dan XOR untuk menyaring informasi seperti mesin pencari.",
+  materiPokok:"Representasi Teks · Aljabar Boolean",
+  menit:90, alokasi:{jp:6, teks:"6 JP · 3 pertemuan × 2 JP"},
+  model:"Problem Based Learning — demonstrasi dan praktik",
+  tags:["biner","logika","boolean","ascii","gerbang logika","pencarian"],
+  ident:{penyusun:"Guru Mata Pelajaran Informatika",instansi:"SMA Negeri 1 Nusantara",tahun:"2025/2026",
+    jenjang:"SMA — Kurikulum Merdeka",mapel:"Informatika",kelas:"Kelas X · Fase E",
+    alokasi:"6 JP (3 pertemuan × 2 JP × 45 menit)",model:"Problem Based Learning, demonstrasi, praktik",
+    prasyarat:"Modul 01 — terbiasa menyusun langkah berurutan"},
+  cp:[
+    {e:"Berpikir Komputasional",t:"Pada akhir Fase E, peserta didik diharapkan dapat menerapkan dan membandingkan beberapa teknik penalaran komputasional — termasuk representasi teks sebagai bit dan operasi logika — untuk menyelesaikan berbagai masalah yang disajikan dalam berbagai representasi."},
+    {e:"Dampak Sosial Informatika",t:"Pada akhir Fase E, peserta didik diharapkan dapat menimbangkan dampak penerapan representasi digital dan penyaringan informasi bagi diri dan masyarakat, serta mengikuti kaidah etika yang berlaku."}
+  ],
+  tp:[
+    "Peserta didik mampu mengonversi teks sederhana ke representasi biner (ASCII/Unicode) dan sebaliknya.",
+    "Peserta didik mampu menjelaskan cara komputer menyimpan huruf, angka, dan simbol sebagai rangkaian bit.",
+    "Peserta didik mampu menyusun dan membaca tabel kebenaran untuk operasi AND, OR, NOT, dan XOR.",
+    "Peserta didik mampu merumuskan kueri pencarian Boolean untuk menyaring informasi dan menjelaskan aljabar di baliknya.",
+    "Peserta didik mampu menjelaskan kaitan gerbang logika dengan saklar dan perangkat keras."
+  ],
+  pb:[
+    "Teks yang panjang maupun pendek sama-sama berakhir sebagai susunan bit; yang membedakan hanyalah kesepakatan cara membacanya.",
+    "Operasi logika yang sederhana — dan, atau, tidak — cukup untuk menyaring lautan informasi menjadi beberapa tetes yang relevan.",
+    "Gerbang logika adalah jembatan antara dunia matematis dan dunia listrik: keputusan yang abstrak menjadi arus yang menyala."
+  ],
+  pemantik:[
+    "Bagaimana mesin pencari menemukan hasil dari miliaran dokumen dalam waktu kurang dari sedetik?",
+    "Mengapa komputer yang hanya mengenal 0 dan 1 bisa menyimpan namamu dengan tepat?",
+    "Apa hubungan tiga saklar di rumahmu dengan operasi matematis?"
+  ],
+  keg:[
+    {j:"Huruf yang berubah menjadi angka",
+     pend:[
+       "Peserta didik menuliskan nama panggilannya di kertas; guru bertanya: “berapa tempat yang kira-kira dipakai komputer untuk menyimpan nama itu?”",
+       "Tujuan pembelajaran disampaikan; kesepakatan praktik lab ditegaskan."
+     ],
+     inti:[
+       "Guru membagikan tabel ASCII dan mendemonstrasikan konversi satu huruf ke biner 8 bit di papan.",
+       "Berpasangan, peserta didik saling mengirim “pesan rahasia” dalam biner dan menerjemahkannya.",
+       "Kelas mendiskusikan: apa yang terjadi jika setiap komputer memakai tabel sendiri? Mengapa standar penting?",
+       "Latihan konversi dua arah dengan tingkat kesulitan bertingkat; pasangan cepat membantu pasangan yang tertinggal."
+     ],
+     tutup:[
+       "Kuis kilat lima soal konversi, ditukar dan dikoreksi antarpasangan."
+     ],
+     w:[10,65,15], as:"Formatif — koreksi kuis kilat dan pemeriksaan tabel pesan biner."},
+    {j:"Saklar dan tabel kebenaran",
+     pend:[
+       "Demonstrasi lampu dengan dua saklar (seri dan paralel); kelas memprediksi kapan lampu menyala."
+     ],
+     inti:[
+       "Tiap kelompok menggambar rangkaian seri/paralel, memprediksi semua keadaan nyala, lalu mencocokkannya dengan tabel kebenaran AND dan OR.",
+       "Permainan “gerbang manusia”: tiga peserta didik berperan sebagai masukan A, B, dan gerbang; kelas menebak keluarannya untuk XOR.",
+       "Kelompok menyusun tabel kebenaran gabungan sederhana, misalnya (A AND B) OR NOT A.",
+       "Guru menghubungkan saklar dengan gerbang logika pada prosesor: miliaran saklar kecil yang bekerja tiap detik."
+     ],
+     tutup:[
+       "Refleksi singkat: “keputusan ya/tidak apa di rumahmu yang sebenarnya operasi logika?”"
+     ],
+     w:[10,65,15], as:"Formatif — tabel kebenaran kelompok ditelaah saat berjalan."},
+    {j:"Menyaring seperti mesin pencari",
+     pend:[
+       "Dua soal tantangan: temukan artikel tentang “energi surya di Indonesia” tanpa kata “panel” — bagaimana caranya?"
+     ],
+     inti:[
+       "Peserta didik menyusun kueri Boolean (operator AND, OR, NOT, tanda kutip) pada mesin pencari dan perpustakaan digital sekolah.",
+       "Tiap kelompok mencatat jumlah dan kualitas hasil tiap variasi kueri, lalu menyimpulkan pengaruh tiap operator.",
+       "Peserta didik mengerjakan asesmen sumatif individual: konversi biner, tabel kebenaran, dan satu kueri rancangan sendiri.",
+       "Pengumpulan lembar jawaban; pembahasan singkat soal yang paling banyak keliru."
+     ],
+     tutup:[
+       "Penutup: pengantar modul berikutnya — matematika biner."
+     ],
+     w:[10,60,20], as:"Sumatif — tes tertulis individual dengan rubrik."}
+  ],
+  materi:[
+    {h:"Dari huruf ke bit"},
+    {p:"Komputer tidak menyimpan huruf; ia menyimpan bilangan yang diurus menjadi huruf lewat kesepakatan. ASCII memakai 7 bit (128 karakter) untuk bahasa Inggris, sementara Unicode — khususnya UTF-8 — memperluasnya menjadi ratusan ribu karakter dari hampir semua aksara dunia. Berkat kesepakatan itulah pesan yang kamu kirim terbaca sama oleh siapa pun."},
+    {table:{h:["Karakter","Kode ASCII (desimal)","Biner (8 bit)"],
+      r:[["A","65","0100 0001"],["a","97","0110 0001"],["Z","90","0101 1010"],["0","48","0011 0000"],["?","63","0011 1111"],["spasi","32","0010 0000"]]}},
+    {p:"Kata “OK” tersimpan sebagai 0100 1111 0100 1011 — enam belas bit yang tampak acak, tetapi sebenarnya teratur rapi."},
+    {h:"Aljabar Boolean dan gerbang logika"},
+    {ul:[
+      "AND — benar hanya jika semua masukan benar (serentak).",
+      "OR — benar jika salah satu masukan benar.",
+      "NOT — membalik keadaan satu masukan.",
+      "XOR — benar jika kedua masukan berbeda."
+    ]},
+    {table:{h:["A","B","A AND B","A OR B","A XOR B"],
+      r:[["0","0","0","0","0"],["0","1","0","1","1"],["1","0","0","1","1"],["1","1","1","1","0"]]}},
+    {note:"AND seperti dua saklar seri pada lampu tangga: keduanya harus menyala. OR seperti dua saklar paralel: salah satu cukup. XOR seperti sepasang saklar pintu ganda: mengubah keadaan lampu justru ketika keduanya berbeda. NOT hanyalah saklar pembalik.",label:"Analogi"},
+    {h:"Pencarian Boolean di kehidupan nyata"},
+    {p:"Kueri “menara AND kota NOT virus” meminta dokumen yang memuat dua kata pertama tetapi tidak kata ketiga. Perpustakaan digital, filter tabel, dan mesin pencari memakai logika yang sama — hanya dengan skala jutaan kali lebih besar. Mahir memakainya berarti menghemat waktu menyaring, bukan sekadar mencari."}
+  ],
+  asesmen:{
+    d:{teknik:"Tanya jawab lisan",bentuk:"Pertanyaan terbuka sebelum materi dimulai",
+       contoh:["Menurutmu, bagaimana ponsel menyimpan huruf?","Pernahkah kamu memakai filter pencarian? Bagaimana hasilnya berubah?"]},
+    f:{teknik:"Observasi dan penilaian antarteman",bentuk:"Kuis kilas, tabel kebenaran kelompok, jurnal praktik",
+       contoh:["Periksa kebenaran tabel pesan biner pasanganmu.","Tanyakan alasan pemilihan operator pada tiap kueri kelompok."]},
+    s:{teknik:"Tes tertulis individual",bentuk:"Soal uraian dan kueri rancangan, dinilai dengan rubrik empat tingkat",
+       contoh:["Ubah kata “LOGIKA” menjadi biner ASCII (8 bit per huruf).",
+               "Susun tabel kebenaran untuk (A AND B) OR (NOT A).",
+               "Rancang kueri Boolean untuk mencari artikel tentang “dampak media sosial” yang mengecualikan “berita kriminal”, lalu jelaskan tiap operator yang dipakai."]},
+    rubrik:{k:[
+      {c:"Konversi representasi",lv:["Konversi dua arah tepat, termasuk pesan beberapa karakter.","Konversi tepat dengan satu kekeliruan kecil.","Konversi tepat hanya pada satu arah.","Konversi belum tepat."]},
+      {c:"Logika dan tabel kebenaran",lv:["Semua tabel tepat dan tiap hasil dapat dijelaskan alasannya.","Tabel tepat; penjelasan sebagian.","Tabel sebagian tepat.","Tabel belum benar."]},
+      {c:"Perumusan kueri",lv:["Operator dipilih tepat dan hasilnya diverifikasi.","Kueri logis; operator kadang kurang efisien.","Kueri sederhana tanpa operator gabungan.","Kueri tidak dapat dijalankan."]}
+    ]}
+  },
+  rg:[
+    "Apakah analogi saklar membantu pemahaman, atau justru membingungkan sebagian kelas?",
+    "Apakah latihan konversi cukup bervariasi untuk peserta didik yang cepat dan yang lambat?",
+    "Bagian mana dari tabel kebenaran yang paling sering keliru, dan apa sebabnya?",
+    "Bagaimana saya mengaitkan modul ini dengan pengalaman mencari informasi yang sudah mereka miliki?"
+  ],
+  rs:[
+    "Apa yang tersulit: mengubah huruf menjadi bit, atau membaca tabel kebenaran?",
+    "Kapan aku bisa memakai operator pencarian untuk tugas mata pelajaran lain?",
+    "Mengapa standar seperti ASCII penting? Bayangkan jika tiap komputer memakai tabelnya sendiri.",
+    "Apa yang menarik dari kenyataan bahwa semua data pada akhirnya hanya 0 dan 1?"
+  ]
+},
+{
+  id:"x3", no:"03", kelas:"X", fase:"E", semester:"Gasal",
+  judul:"Matematika Biner",
+  ringkas:"Mengapa dunia digital berhitung dengan dua angka: konversi biner–desimal, penjumlahan bit, dan bagaimana warna serta gambar dikodekan.",
+  materiPokok:"Sistem Bilangan Biner",
+  menit:90, alokasi:{jp:6, teks:"6 JP · 3 pertemuan × 2 JP"},
+  model:"Inkuiri terbimbing — permainan dan latihan bertingkat",
+  tags:["biner","desimal","aritmetika","rgb","hex","overflow","bit"],
+  ident:{penyusun:"Guru Mata Pelajaran Informatika",instansi:"SMA Negeri 1 Nusantara",tahun:"2025/2026",
+    jenjang:"SMA — Kurikulum Merdeka",mapel:"Informatika",kelas:"Kelas X · Fase E",
+    alokasi:"6 JP (3 pertemuan × 2 JP × 45 menit)",model:"Inkuiri terbimbing, permainan kartu, latihan bertingkat",
+    prasyarat:"Aritmetika dasar dan konsep bilangan bulat"},
+  cp:[
+    {e:"Berpikir Komputasional",t:"Pada akhir Fase E, peserta didik diharapkan dapat menerapkan dan membandingkan beberapa teknik penalaran komputasional — termasuk matematika biner — untuk menyelesaikan berbagai masalah yang disajikan dalam berbagai representasi."},
+    {e:"Dampak Sosial Informatika",t:"Pada akhir Fase E, peserta didik diharapkan dapat menimbangkan konsekuensi keterbatasan representasi bilangan (peluapan) pada sistem digital yang menyangkut banyak orang."}
+  ],
+  tp:[
+    "Peserta didik mampu mengonversi bilangan desimal ke biner dan sebaliknya dengan tepat.",
+    "Peserta didik mampu menjelaskan hubungan bit dengan satuan penyimpanan (bit, byte, KB hingga TB).",
+    "Peserta didik mampu melakukan operasi aritmetika biner sederhana (penjumlahan, penggeseran) dan menjelaskan peluapan (overflow).",
+    "Peserta didik mampu menjelaskan pengodean warna RGB dan kedalaman bit pada citra digital, termasuk menghitung ukuran berkas."
+  ],
+  pb:[
+    "Semua yang digital — teks, foto, lagu — pada dasarnya adalah bilangan; karena itu ia bisa dihitung, disalin, dan dikirim tanpa rusak.",
+    "Dua simbol saja cukup untuk mewakili bilangan sebesar apa pun, asalkan posisinya tepat.",
+    "Batas jumlah bit berarti batas nilai; peluapan adalah momen komputer kehabisan digitnya."
+  ],
+  pemantik:[
+    "Mengapa komputer berhitung hanya dengan 0 dan 1, bukan 0 sampai 9 seperti kita?",
+    "Bagaimana deretan lampu menyala-mati bisa menjadi foto keluargamu?",
+    "Apa yang terjadi ketika hitungan komputer kehabisan digit?"
+  ],
+  keg:[
+    {j:"Kartu biner ajaib — mengenal nilai tempat",
+     pend:[
+       "Guru memainkan trik: lima kartu bertuliskan 16, 8, 4, 2, 1; peserta didik menyebut angka pikiran, guru menebak dalam hitungan detik.",
+       "Kelas diminta menebak rahasia trik — pertanyaan pemantik dibuka."
+     ],
+     inti:[
+       "Pembedahan trik: tiap “ya/tidak” kartu bernilai satu bit; peserta didik menemukan sendiri konsep nilai tempat.",
+       "Latihan konversi desimal-biner dua arah dengan metode pembagian berulang; koreksi antarteman.",
+       "Tantangan “tanggal biner”: peserta didik menulis tanggal lahirnya dalam biner dan saling membaca.",
+       "Guru menegaskan satuan: 8 bit = 1 byte; mengapa kapasitas ponsel dihitung dengan kelipatan itu."
+     ],
+     tutup:[
+       "Kuis lisan cepat: 1 KB kira-kira berapa ribu karakter teks?"
+     ],
+     w:[10,65,15], as:"Formatif — latihan konversi dan tantangan tanggal biner."},
+    {j:"Berhitung seperti komputer — penjumlahan dan peluapan",
+     pend:[
+       "Apersepsi: dua bilangan biner dijumlahkan salah di papan; kelas menemukan letak kekeliruan carry."
+     ],
+     inti:[
+       "Kelompok menurunkan aturan penjumlahan biner (0+0, 0+1, 1+1=10) memakai kartu bernomor yang dibalik.",
+       "Demonstrasi penggeseran: menggeser bit satu tempat ke kiri sama dengan mengalikan dua — kelas mengujinya.",
+       "Diskusi kasus peluapan: odometer mobil yang kembali ke nol, kisah Y2K, dan level ke-256 Pac-Man.",
+       "Latihan soal bertingkat dengan kartu tantangan; kelompok selesai lebih cepat membuat soal untuk kelompok lain."
+     ],
+     tutup:[
+       "Refleksi tertulis: “apa artinya bagi pengguna jika jam atau hitungan meluap?”"
+     ],
+     w:[10,65,15], as:"Formatif — hasil latihan dan kualitas soal buatan peserta didik."},
+    {j:"Warna adalah angka — bit dalam piksel",
+     pend:[
+       "Guru menampilkan dua foto: satu penuh warna, satu 1-bit hitam-putih; kelas menebak bedanya dalam angka."
+     ],
+     inti:[
+       "Peserta didik menyelidiki pencampur warna (color picker): nilai R, G, B tiap warna dan padanannya heksadesimal.",
+       "Tantangan: mencampur warna target (misal warna seragam sekolah) hanya dengan mengubah tiga angka.",
+       "Menghitung ukuran berkas citra: lebar × tinggi × kedalaman bit, lalu membandingkan hasil hitung dengan properti berkas asli.",
+       "Asesmen sumatif individual: konversi, penjumlahan biner, dan satu soal penerapan warna."
+     ],
+     tutup:[
+       "Pembahasan singkat; pengantar modul berikutnya — internet dan jaringan komputer."
+     ],
+     w:[10,60,20], as:"Sumatif — tes tertulis dengan rubrik."}
+  ],
+  materi:[
+    {h:"Bilangan posisional: basis 10 dan basis 2"},
+    {p:"Angka 452 dalam basis 10 berarti 4×100 + 5×10 + 2×1. Biner memakai logika yang persis sama, hanya dengan dua simbol dan nilai tempat kelipatan dua: 128, 64, 32, 16, 8, 4, 2, 1. Manusia punya sepuluh jari; sirkuit listrik hanya punya dua keadaan stabil — itulah sebabnya dunia digital memilih biner."},
+    {code:`45 : 2 = 22 sisa 1
+22 : 2 = 11 sisa 0
+11 : 2 = 5  sisa 1
+5  : 2 = 2  sisa 1
+2  : 2 = 1  sisa 0
+1  : 2 = 0  sisa 1   <- baca dari bawah ke atas
+
+45 (desimal) = 101101 (biner)`},
+    {h:"Penjumlahan biner"},
+    {ul:[
+      "0+0 = 0;  0+1 = 1;  1+1 = 10 — tuliskan 0, simpan 1 (carry).",
+      "Menggeser semua bit satu tempat ke kiri sama dengan mengalikan dengan dua.",
+      "Menggeser ke kanan sama dengan membagi dua (pembulatan ke bawah)."
+    ]},
+    {code:`  101101      45
++ 001011    + 11
+= 111000    = 56`},
+    {note:"Peluapan hadir di kehidupan nyata: odometer mobil lama kembali ke nol setelah penuh; bug Y2K membuat tahun 2000 terbaca 1900 pada sistem 2-digit; level ke-256 Pac-Man membuat layar setengah kosong karena penghitung 8-bit habis.",label:"Catatan"},
+    {h:"Dari bit menjadi piksel"},
+    {p:"Setiap piksel warna tersusun dari tiga kanal — merah, hijau, biru — yang masing-masing biasanya memakai 8 bit. Tiga kanal berarti 24 bit, yaitu 224 = 16.777.216 kemungkinan warna. Kode heksadesimal seperti #A8401F hanyalah cara ringkas menuliskan tiga bilangan itu: A8=168, 40=64, 1F=31."},
+    {table:{h:["Kode heksa","R","G","B","Warna"],
+      r:[["#FFFFFF","255","255","255","putih"],["#000000","0","0","0","hitam"],["#FF0000","255","0","0","merah murni"],["#00FF00","0","255","0","hijau murni"],["#804000","128","64","0","cokelat"],["#F2C144","242","193","68","kuning gandum"]]}},
+    {p:"Ukuran berkas citra tanpa kompresi dapat dihitung: lebar × tinggi × kedalaman bit ÷ 8 = byte. Foto 4000×3000 piksel dengan 24 bit berukuran sekitar 36 MB — kompresi seperti JPEG hadir persis karena angka sebesar itu menyusit untuk dikirim."}
+  ],
+  asesmen:{
+    d:{teknik:"Tanya jawab lisan",bentuk:"Pertanyaan pemantik di awal modul",
+       contoh:["Bagaimana cara kita menghitung? Mengapa sepuluh angka?","Di mana kamu menemukan kata “bit” atau “megabyte”?"]},
+    f:{teknik:"Koreksi antarteman dan observasi",bentuk:"Latihan bertingkat, kartu tantangan, jurnal praktik",
+       contoh:["Koreksi hasil konversi pasanganmu dan jelaskan satu kekeliruan yang ditemukan.","Minta tiap kelompok menjelaskan satu baris penjumlahan binernya."]},
+    s:{teknik:"Tes tertulis individual",bentuk:"Soal uraian dan hitungan, dinilai dengan rubrik empat tingkat",
+       contoh:["Konversikan 202 ke biner dan 1011011 ke desimal.",
+               "Hitung 1011 + 110 dalam biner; jelaskan langkah menyimpan satu (carry).",
+               "Warna #C04020 punya nilai R, G, B berapa? Mengapa 8 bit per kanal menghasilkan 16.777.216 warna?"]},
+    rubrik:{k:[
+      {c:"Konversi bilangan",lv:["Konversi dua arah cepat dan tepat.","Tepat, tetapi lambat atau ada satu kekeliruan.","Hanya satu arah, atau sering keliru.","Belum menguasai nilai tempat."]},
+      {c:"Operasi biner dan peluapan",lv:["Penjumlahan, penggeseran, dan peluapan dijelaskan dengan contoh.","Operasi benar; penjelasan peluapan terbatas.","Sebagian operasi benar.","Operasi belum dapat dilakukan."]},
+      {c:"Pengodean warna",lv:["Menerapkan RGB/heksa dan menghitung ukuran berkas dengan tepat.","Penerapan benar; hitungan kurang teliti.","Konsep dikenali tanpa penerapan.","Konsep belum dipahami."]}
+    ]}
+  },
+  rg:[
+    "Apakah jumlah latihan konversi cukup sebelum masuk penjumlahan biner?",
+    "Apakah permainan kartu benar-benar mengantarkan ke nilai tempat, atau sekadar menghibur?",
+    "Siapa yang masih menukar bit pada konversi berulang, dan latihan tambahan seperti apa yang ia butuhkan?",
+    "Apakah konteks warna dan ukuran berkas terasa nyata bagi mereka?"
+  ],
+  rs:[
+    "Kapan aku bisa menjelaskan ke teman mengapa komputer memakai biner?",
+    "Apa yang membuatku paham nilai tempat: kartu, pembagian berulang, atau latihan?",
+    "Apa hubungan bit dengan foto yang kukirim lewat pesan singkat?",
+    "Hal apa yang masih membuatku ragu setelah modul ini berakhir?"
+  ]
+},
+{
+  id:"x4", no:"04", kelas:"X", fase:"E", semester:"Gasal",
+  judul:"Internet dan Jaringan Komputer",
+  ringkas:"Menelusuri perjalanan satu paket data dari ponsel di kelas hingga server di belahan bumi lain: alamat IP, DNS, dan cara internet bertahan dari kerusakan.",
+  materiPokok:"Jaringan Komputer · Internet",
+  menit:90, alokasi:{jp:6, teks:"6 JP · 3 pertemuan × 2 JP"},
+  model:"Problem Based Learning — simulasi dan investigasi",
+  tags:["internet","jaringan","lan","wan","ip","dns","packet switching","traceroute"],
+  ident:{penyusun:"Guru Mata Pelajaran Informatika",instansi:"SMA Negeri 1 Nusantara",tahun:"2025/2026",
+    jenjang:"SMA — Kurikulum Merdeka",mapel:"Informatika",kelas:"Kelas X · Fase E",
+    alokasi:"6 JP (3 pertemuan × 2 JP × 45 menit)",model:"Problem Based Learning, simulasi manusiawi, investigasi lab",
+    prasyarat:"Terbiasa memakai peramban web secara dasar"},
+  cp:[
+    {e:"Teknologi Informasi dan Komunikasi",t:"Pada akhir Fase E, peserta didik diharapkan dapat menjelaskan struktur dan cara kerja jaringan komputer serta internet, memilih perangkat sesuai kebutuhan, dan menggunakannya secara efektif dan etis."},
+    {e:"Dampak Sosial Informatika",t:"Pada akhir Fase E, peserta didik diharapkan dapat menimbangkan dampak penerapan infrastruktur digital bagi masyarakat, termasuk isu akses dan keamanan."}
+  ],
+  tp:[
+    "Peserta didik mampu membedakan jaringan PAN, LAN, MAN, dan WAN beserta contoh nyatanya.",
+    "Peserta didik mampu menjelaskan perbedaan pertukaran paket dan sirkuit tetap beserta keunggulannya.",
+    "Peserta didik mampu menjelaskan peran alamat IP, DNS, dan protokol HTTP/HTTPS saat membuka sebuah situs.",
+    "Peserta didik mampu menjalankan perintah ping/traceroute sederhana dan menafsirkan hasilnya.",
+    "Peserta didik mampu menjelaskan prinsip desain internet yang tahan gangguan."
+  ],
+  pb:[
+    "Internet bukan satu tempat, melainkan kesepakatan jutaan jaringan untuk saling berbicara dengan bahasa yang sama.",
+    "Memecah pesan menjadi paket-paket kecil justru membuatnya tangguh: yang hilang dapat dikirim ulang tanpa mengulang semuanya.",
+    "Nama domain itu untuk manusia; komputer hanya butuh alamat angka — DNS adalah penerjemah di antara keduanya."
+  ],
+  pemantik:[
+    "Saat kamu mengirim stiker ke teman di kota lain, jalur apa saja yang dilalui stiker itu?",
+    "Mengapa internet tetap berfungsi walaupun beberapa kabel bawah laut rusak?",
+    "Kenapa kita mengetik nama situs, bukan deretan angka?"
+  ],
+  keg:[
+    {j:"Peta jaringan sekolah — dari PAN sampai WAN",
+     pend:[
+       "Guru menanyakan: berapa perangkat yang sedang tersambung ke WiFi sekolah sekarang? Tebakan ditulis di papan."
+     ],
+     inti:[
+       "Kelompok menggambar denah jaringan sekolah: lab, titik WiFi, router, koneksi ke ISP.",
+       "Klasifikasi tiap lingkup jaringan pada denah: mana PAN, LAN, WAN; mana yang berkabel dan nirkabel.",
+       "Presentasi kilat denah; kelas mengecek konsistensi label tiap kelompok.",
+       "Guru menutup dengan peta kabel bawah laut dunia — sekolahmu ternyata terhubung ke lautan."
+     ],
+     tutup:[
+       "Tugas ringan: gambar peta jaringan rumahmu, lengkap dengan perangkatnya."
+     ],
+     w:[10,65,15], as:"Formatif — telaah denah kelompok."},
+    {j:"Simulasi manusiawi pertukaran paket",
+     pend:[
+       "Apersepsi: peta rumah dibahas; kelas menebak jalur yang dilalui satu pesan WhatsApp."
+     ],
+     inti:[
+       "Permainan besar: peserta didik berperan sebagai pesan, paket, dan router; sebuah “pesan” dipecah menjadi kartu-kartu bertanda nomor.",
+       "Putaran pertama: salah satu router sengaja “kehilangan” kartu — pengirim mengirim ulang hanya kartu yang hilang (acknowledgment).",
+       "Putaran kedua (sirkuit tetap): satu jalur dipesan khusus; saat jalur “putus”, seluruh komunikasi berhenti — perbandingan dramatis.",
+       "Diskusi pleno: mana yang lebih tahan gangguan, mana yang lebih efisien; kelas menyimpulkan sendiri."
+     ],
+     tutup:[
+       "Refleksi tertulis: “apa yang terjadi pada pesanku saat sinyal satu bar?”"
+     ],
+     w:[10,65,15], as:"Formatif — observasi peran dan kesimpulan pleno."},
+    {j:"Menyelusuri lompatan — praktik ping dan traceroute",
+     pend:[
+       "Guru memperagakan satu perintah ping di papan; kelas membaca arti waktu (ms) dan kehilangan paket."
+     ],
+     inti:[
+       "Praktik lab: tiap kelompok menjalankan ping dan traceroute ke beberapa situs (atau perangkat daring sejenis).",
+       "Hasil lompatan ditandai di peta dunia; kelompok memperkirakan letak tiap router dari nilainya.",
+       "Kelompok menjawab pertanyaan analisis: mengapa ada lompatan dengan waktu melonjak?",
+       "Asesmen sumatif individual: soal konsep dan penafsiran hasil ping."
+     ],
+     tutup:[
+       "Pembahasan; pengantar modul berikutnya — algoritma dan pemrograman visual."
+     ],
+     w:[10,60,20], as:"Sumatif — tes tertulis dan penafsiran keluaran jaringan."}
+  ],
+  materi:[
+    {h:"Skala jaringan"},
+    {ul:[
+      "PAN — jaringan pribadi beberapa meter: ponsel ke earphone (Bluetooth).",
+      "LAN — satu gedung atau sekolah: laboratorium komputer dengan satu router.",
+      "MAN — satu kota: jaringan antarkampus atau kantor cabang.",
+      "WAN — antarnegara dan benua: internet itu sendiri, tersambung lewat kabel laut dan satelit."
+    ]},
+    {h:"Sirkuit tetap atau pertukaran paket?"},
+    {p:"Telepon klasik memesan satu jalur khusus sepanjang percakapan: kualitas stabil, tetapi jalur menganggur saat diam dan komunikasi putus jika jalur rusak. Internet memilih jalan lain — pesan dipecah menjadi paket-paket kecil yang bebas memilih rute, lalu dirangkai ulang di tujuan."},
+    {table:{h:["Aspek","Sirkuit tetap","Pertukaran paket"],
+      r:[["Jalur","satu jalur khusus dipesan sepanjang komunikasi","setiap paket bebas memilih rute yang tersedia"],
+          ["Jika jalur rusak","komunikasi terputus, harus memesan ulang","paket dialihkan ke rute lain"],
+          ["Efisiensi","jalur menganggur saat diam","jalur dibagi bersama banyak pengguna"],
+          ["Contoh","jaringan telepon klasik","internet saat ini"]]}},
+    {h:"Alamat dan penerjemah"},
+    {p:"Setiap perangkat punya alamat IP, misalnya 142.250.4.100 — angka yang mudah bagi mesin tetapi buruk bagi manusia. DNS berperan seperti buku telepon raksasa: saat kamu mengetik sebuah nama situs, DNS menerjemahkannya menjadi alamat angka dalam hitungan milidetik. HTTPS menambahkan TLS: permintaanmu dikirim seperti amplop tersegel, bukan kartu pos terbuka."},
+    {h:"Ketika kamu membuka sebuah situs"},
+    {ul:[
+      "1. Kamu mengetik nama situs; perangkat menanyakan alamatnya ke DNS.",
+      "2. DNS membalas dengan alamat IP milik server.",
+      "3. Perangkat membuka sambungan TCP ke server lewat berbagai router.",
+      "4. Peramban mengirim permintaan HTTP: “mohon halaman ini”.",
+      "5. Server membalas paket demi paket; peramban merakitnya menjadi halaman."
+    ]},
+    {code:`$ ping sekolah.id
+PING sekolah.id (93.184.216.34): 56 data bytes
+64 bytes: icmp_seq=0 ttl=56 time=18.7 ms
+64 bytes: icmp_seq=1 ttl=56 time=19.2 ms
+--- statistik: 2 terkirim, 2 diterima (0% hilang) ---
+
+ $ traceroute sekolah.id
+ 1  router-sekolah.local (10.0.0.1)     1.2 ms
+ 2  isp-kota.net (118.12.x.x)           9.8 ms
+ 3  backbone-jakarta (72.14.x.x)       15.1 ms
+ 4  sekolah.id (93.184.216.34)         18.9 ms`},
+    {note:"Waktu (time) mengukur sekali pulang-pergi dalam milidetik; hilangnya paket ditandai “request timed out”. Traceroute memperlihatkan lompatan router — tiap baris adalah satu keputusan rute yang diambil paketmu.",label:"Cara Membaca"}
+  ],
+  asesmen:{
+    d:{teknik:"Tanya jawab lisan",bentuk:"Pertanyaan pengalaman pribadi",
+       contoh:["Apa yang terlintas saat mendengar kata “internet”?","Pernahkah koneksi rumahmu lambat? Menurutmu kenapa?"]},
+    f:{teknik:"Observasi dan telaah karya",bentuk:"Denah jaringan, kesimpulan simulasi, laporan praktik",
+       contoh:["Telaah peta jaringan tiap kelompok: label lingkup dan arah sambungan.","Dengarkan tafsir hasil traceroute; beri pertanyaan pemandu, bukan jawaban."]},
+    s:{teknik:"Tes tertulis individual",bentuk:"Soal uraian dan penafsiran keluaran, dinilai dengan rubrik empat tingkat",
+       contoh:["Bandingkan circuit switching dan packet switching dari sisi ketahanan gangguan.",
+               "Jelaskan perjalanan satu permintaan situs dari URL diketik hingga halaman tampil.",
+               "Bacakan hasil ping: 4 paket terkirim, 1 hilang, waktu 30 ms. Apa artinya bagi pengguna?"]},
+    rubrik:{k:[
+      {c:"Konsep jaringan",lv:["Perbandingan circuit/packet dan peran IP–DNS dijelaskan runtut dengan contoh.","Konsep benar; urutan atau contoh sebagian.","Istilah dikenali tanpa penjelasan utuh.","Konsep masih tertukar."]},
+      {c:"Praktik investigatif",lv:["Hasil ping/traceroute dijalankan dan ditafsirkan meyakinkan.","Hasil dibaca; tafsir sebagian.","Perintah dijalankan tanpa tafsir.","Belum dapat menjalankan penyelidikan."]},
+      {c:"Penjelasan fenomena",lv:["Kejadian nyata dijelaskan dengan prinsip pertukaran paket secara tepat.","Penjelasan benar tetapi kurang lengkap.","Penjelasan dangkal.","Belum mengaitkan fenomena dengan konsep."]}
+    ]}
+  },
+  rg:[
+    "Apakah simulasi paket manusiawi berjalan sesuai waktu yang tersedia?",
+    "Apakah hasil traceroute di lab sesuai harapan, dan bagaimana saya menangani koneksi yang gagal?",
+    "Apakah peserta didik dapat membedakan waktu tempuh ping dengan kehilangan paket?",
+    "Bagian mana yang perlu saya perlambat di kelas berikutnya?"
+  ],
+  rs:[
+    "Bagian perjalanan paket mana yang paling mengejutkanku?",
+    "Bisakah aku menjelaskan kepada keluargaku mengapa internet kadang lambat?",
+    "Apa beda alamat IP dan nama domain setelah pelajaran ini?",
+    "Pertanyaan apa yang masih kuinginkan jawabannya tentang jaringan?"
+  ]
+},
+{
+  id:"x5", no:"05", kelas:"X", fase:"E", semester:"Gasal",
+  judul:"Algoritma dan Pemrograman Visual",
+  ringkas:"Menerjemahkan resep langkah menjadi program yang hidup di Scratch: urutan, percabangan, perulangan, variabel, kejadian — dan seni menemukan galat.",
+  materiPokok:"Algoritma · Pemrograman Visual (Scratch)",
+  menit:135, alokasi:{jp:9, teks:"9 JP · 3 pertemuan × 3 JP"},
+  model:"Project Based Learning — praktik laboratorium",
+  tags:["algoritma","scratch","pseudocode","percabangan","perulangan","variabel","debugging"],
+  ident:{penyusun:"Guru Mata Pelajaran Informatika",instansi:"SMA Negeri 1 Nusantara",tahun:"2025/2026",
+    jenjang:"SMA — Kurikulum Merdeka",mapel:"Informatika",kelas:"Kelas X · Fase E",
+    alokasi:"9 JP (3 pertemuan × 3 JP × 45 menit)",model:"Project Based Learning, praktik laboratorium, uji coba antarkelompok",
+    prasyarat:"Modul 01–02 — langkah algoritmik dan logika ya/tidak"},
+  cp:[
+    {e:"Algoritma dan Pemrograman",t:"Pada akhir Fase E, peserta didik diharapkan dapat menulis, menguji (debug), dan memperbaiki (fix) program sederhana yang menggunakan urutan, pemilihan, dan perulangan, serta menyajikan hasilnya secara efektif."},
+    {e:"Dampak Sosial Informatika",t:"Pada akhir Fase E, peserta didik diharapkan dapat menimbangkan kebiasaan kerja kolaboratif dan etis dalam mengembangkan karya digital."}
+  ],
+  tp:[
+    "Peserta didik mampu menerjemahkan algoritma ke pseudocode dan diagram alur sederhana, lalu ke blok visual.",
+    "Peserta didik mampu membuat program visual yang memakai urutan dan percabangan (jika–maka).",
+    "Peserta didik mampu memakai perulangan dan variabel (skor, sisa nyawa) dalam interaksi sederhana.",
+    "Peserta didik mampu menangani kejadian antarobjek (tombol, klik, siaran pesan).",
+    "Peserta didik mampu menguji program dan memperbaiki galat (debugging) secara sistematis."
+  ],
+  pb:[
+    "Program adalah algoritma yang bisa dijalankan ulang tanpa lelah dan tanpa berubah.",
+    "Komputer tidak menebak maksud; ketidakjelasan satu langkah akan tampak sebagai galat.",
+    "Debugging bukan kegagalan — ia adalah cara program mengajari pembuatnya."
+  ],
+  pemantik:[
+    "Apa beda resep masakan dengan program? Mengapa kue bisa gagal walau resepnya sama?",
+    "Bagaimana game tahu kamu menabrak rintangan, padahal ia tidak melihat layar?",
+    "Kalau komputer begitu patuh, mengapa program bisa salah?"
+  ],
+  keg:[
+    {j:"Resep yang hidup — dari langkah ke blok",
+     pend:[
+       "Kelas membaca resep mie goreng yang ditulis serampangan; peserta didik memperbaiki urutan dan kelengkapannya.",
+       "Tujuan proyek tiga pertemuan diumumkan: kuis interaktif sepuluh soal."
+     ],
+     inti:[
+       "Kelompok menyusun pseudocode kuis di kertas — persis seperti di materi — lalu memeriksanya sesama kelompok.",
+       "Pseudocode diterjemahkan ke Scratch blok demi blok: tampilkan soal, baca jawaban, bandingkan.",
+       "Pengujian pertama: program dijalankan dengan jawaban benar dan salah; perilaku dicatat.",
+       "Guru berkeliling bertanya: “blok mana yang berjalan ketika jawaban salah?” — bukan membetulkan langsung."
+     ],
+     tutup:[
+       "Simpan berkas proyek; catat satu hal yang berhasil dan satu yang belum."
+     ],
+     w:[15,100,20], as:"Formatif — pseudocode dan catatan pengujian pertama."},
+    {j:"Jika–maka, pengulangan, dan skor yang hidup",
+     pend:[
+       "Demo kilat: program tanpa variabel versus dengan variabel skor — kelas merasakan bedanya."
+     ],
+     inti:[
+       "Kelompok melengkapi kuis: sepuluh soal dalam satu perulangan, variabel skor bertambah saat benar.",
+       "Percabangan dua cabang: pesan “Benar!” atau “Coba lagi” setelah tiap jawaban.",
+       "Kelompok lain mencoba (uji beta) kuis tetangga dan mencatat perilaku yang aneh.",
+       "Perbaikan berdasarkan catatan beta; sinkronisasi antarobjek memakai siaran (broadcast)."
+     ],
+     tutup:[
+       "Kelompok menyerahkan daftar galat yang ditemukan dan perbaikannya."
+     ],
+     w:[15,100,20], as:"Formatif — uji beta antarkelompok dan daftar galat."},
+    {j:"Perburuan galat dan pameran karya",
+     pend:[
+       "Guru menanam satu galat tersembunyi pada salinan program contoh; siapa paling cepat menemukan akarnya?"
+     ],
+     inti:[
+       "Perlombaan debugging: tiap kelompok menerima program ber-galat dan mendiagnosisnya dengan siklus reproduksi–isolasi–hipotesis–uji.",
+       "Perbaikan program masing-masing diselesaikan; tampilan akhir dan pesan penutup dirapikan.",
+       "Pameran kilat: tiap kelompok memainkan kuisnya di depan kelas selama dua menit.",
+       "Asesmen sumatif: proyek dinilai dengan rubrik, ditambah satu soal uraian tentang urutan blok."
+     ],
+     tutup:[
+       "Refleksi dan pengumuman modul berikutnya (Kelas XI — dampak sosial informatika)."
+     ],
+     w:[15,100,20], as:"Sumatif — proyek kuis dan uraian, dinilai dengan rubrik."}
+  ],
+  materi:[
+    {h:"Dari langkah ke blok"},
+    {p:"Algoritma dapat ditulis dalam tiga wajah: pseudocode (kalimat berurutan untuk manusia), diagram alur (panah dan kotak untuk perancang), dan blok visual (untuk dijalankan mesin). Tiga-tiganya menyampaikan hal yang sama — yang berbeda hanyalah pembacanya."},
+    {code:`mulai
+  skor <- 0
+  ulangi sampai 10 soal:
+    tampilkan pertanyaan
+    baca jawaban
+    jika jawaban = kunci maka
+      skor <- skor + 1
+      tampilkan "Benar!"
+    jika tidak maka
+      tampilkan "Coba lagi"
+  tampilkan skor dan pesan akhir
+selesai`},
+    {h:"Lima bahan dasar program"},
+    {ul:[
+      "Urutan — blok berjalan dari atas ke bawah, satu per satu.",
+      "Percabangan — program memilih jalan: “jika… maka… jika tidak…”.",
+      "Perulangan — blok yang sama berjalan berkali-kali tanpa ditulis ulang.",
+      "Variabel — kotak bernama yang isinya bisa berubah: skor, nyawa, nomor soal.",
+      "Kejadian — pemicu yang memulai program: tombol ditekan, sprite diklik, siaran diterima."
+    ]},
+    {h:"Siklus debugging"},
+    {p:"Galat tidak diperbaiki dengan menebak-nebak; ia diperbaiki dengan menyelidiki. Siklusnya: buat galat muncul lagi dengan cara yang sama (reproduksi), sempitkan letaknya (isolasi), tebak sebabnya (hipotesis), uji tebakanmu, lalu ulangi bila perlu."},
+    {note:"Aturan kelas: galat pertama yang ditemukan tidak selalu galat terakhir. Setelah memperbaiki, jalankan ulang seluruh program — perbaikan kadang melahirkan galat baru.",label:"Aturan Kelas"}
+  ],
+  asesmen:{
+    d:{teknik:"Tanya jawab lisan",bentuk:"Pemetaan pengalaman awal",
+       contoh:["Pernahkah kamu memakai Scratch atau aplikasi blok sejenisnya?","Apa yang membuat sebuah program “berjalan dengan benar” menurutmu?"]},
+    f:{teknik:"Observasi praktik dan uji beta antarkelompok",bentuk:"Laporan kemajuan, catatan galat, daftar periksa",
+       contoh:["Catat kemajuan kuis tiap kelompok pada lembar singkat tiap akhir praktik.","Berikan satu galat untuk ditelusuri akar masalahnya, bukan diperbaiki langsung."]},
+    s:{teknik:"Penilaian proyek dan tes uraian",bentuk:"Produk kuis interaktif dan satu soal uraian, dinilai dengan rubrik empat tingkat",
+       contoh:["Buat program kuis 10 soal dengan skor, pesan benar/salah, dan tampilan akhir.",
+               "Tunjukkan satu galat yang kamu temui, sebabnya, dan cara memperbaikinya.",
+               "Jelaskan mengapa mengubah urutan blok mengubah hasil program, disertai contoh."]},
+    rubrik:{k:[
+      {c:"Logika program",lv:["Urutan, percabangan, perulangan, dan variabel dipakai tepat dan efisien.","Struktur benar; satu bagian kurang efisien.","Struktur dasar benar sebagian.","Logika program belum berjalan."]},
+      {c:"Kualitas interaksi",lv:["Program responsif; kejadian tertangani; tampilan rapi dan jelas.","Berjalan baik; kejadian atau umpan balik sebagian.","Program berjalan tetapi kaku.","Interaksi belum berfungsi."]},
+      {c:"Proses debugging",lv:["Galat ditemukan sistematis, diperbaiki, dan seluruh program diuji ulang.","Galat diperbaiki; pengujian ulang sebagian.","Galat diperbaiki dengan bantuan penuh.","Galat tidak tertangani."]}
+    ]}
+  },
+  rg:[
+    "Apakah setiap kelompok mendapat dukungan debugging yang cukup — pertanyaan, bukan jawaban jadi?",
+    "Apakah ukuran proyek kuis realistis untuk waktu yang tersedia?",
+    "Siapa yang tampak menyerah di tengah praktik, dan apa pemicunya?",
+    "Apakah galat yang kutanam pada sesi perburuan terlalu mudah atau terlalu sulit?"
+  ],
+  rs:[
+    "Bagian mana dari programku yang paling membuatku bangga?",
+    "Apa galat terburuk yang kutemui, dan apa yang diajarkannya padaku?",
+    "Kapan aku bisa memakai variabel atau percabangan di luar Scratch?",
+    "Apa yang akan kubuat jika ada satu jam tambahan?"
+  ]
+},
+{
+  id:"y6", no:"06", kelas:"XI", fase:"F", semester:"Gasal",
+  judul:"Dampak Sosial Informatika: Jejak Digital dan Keamanan Data",
+  ringkas:"Menimbang jejak yang kita tinggalkan daring: pengumpulan data, kerja algoritma rekomendasi, kebiasaan pengamanan, dan etika berbagi informasi.",
+  materiPokok:"Dampak Sosial Informatika · Etika Digital",
+  menit:90, alokasi:{jp:6, teks:"6 JP · 3 pertemuan × 2 JP"},
+  model:"Project Based Learning — kampanye digital sehat",
+  tags:["jejak digital","privasi","keamanan","hoaks","deepfake","etika","data"],
+  ident:{penyusun:"Guru Mata Pelajaran Informatika",instansi:"SMA Negeri 1 Nusantara",tahun:"2025/2026",
+    jenjang:"SMA — Kurikulum Merdeka",mapel:"Informatika",kelas:"Kelas XI · Fase F",
+    alokasi:"6 JP (3 pertemuan × 2 JP × 45 menit)",model:"Project Based Learning, studi kasus, kampanye",
+    prasyarat:"Pengalaman menggunakan akun daring dan media sosial"},
+  cp:[
+    {e:"Dampak Sosial Informatika",t:"Pada akhir Fase F, peserta didik diharapkan dapat mengkaji dampak sosial penerapan informatika, mengusulkan solusi atas kajian tersebut, dan menerapkan solusi yang diusulkan."},
+    {e:"Analisis Data",t:"Pada akhir Fase F, peserta didik diharapkan dapat memilih dan menggunakan aplikasi yang sesuai untuk mengelola, menginterpretasi, dan menyajikan data dalam berbagai bentuk — termasuk data tentang perilaku daring sendiri."}
+  ],
+  tp:[
+    "Peserta didik mampu menjelaskan bagaimana data pribadi terkumpul secara daring (kuki, izin aplikasi, pelacak).",
+    "Peserta didik mampu menganalisis cara kerja algoritma rekomendasi serta bias yang mungkin timbul.",
+    "Peserta didik mampu membandingkan praktik pengamanan data: sandi kuat, autentikasi dua faktor, enkripsi.",
+    "Peserta didik mampu mengevaluasi isu etika: hoaks, deepfake, hak cipta, dan kredibilitas sumber.",
+    "Peserta didik mampu menyusun kampanye atau infografis “digital sehat” untuk warga sekolah."
+  ],
+  pb:[
+    "Setiap ketukan layar meninggalkan jejak; produk “gratis” biasanya dibayar dengan data.",
+    "Algoritma menyarankan berdasarkan masa lalu kita — karena itu ia dapat pula mempersempit cara pandang.",
+    "Keamanan digital bukan produk yang dibeli, melainkan kebiasaan yang dilatih."
+  ],
+  pemantik:[
+    "Mengapa iklan yang muncul di ponselmu seperti membaca pikiranmu?",
+    "Apakah kamu tahu berapa aplikasi yang sedang membaca lokasimu sekarang?",
+    "Jika sebuah foto dapat dipalsukan sempurna, apa yang masih membuat kita percaya?"
+  ],
+  keg:[
+    {j:"Seberapa dalam mereka mengenalmu — audit jejak pribadi",
+     pend:[
+       "Guru menayangkan cuplikan “iklan yang aneh tepat” dan membuka pertanyaan pemantik."
+     ],
+     inti:[
+       "Tiap peserta didik mengaudit izin aplikasi di ponselnya sendiri: lokasi, mikrofon, kontak, foto.",
+       "Membuat “peta data diri”: aplikasi apa menyimpan data apa, untuk siapa kira-kira.",
+       "Diskusi kelompok: mana izin yang wajar, mana yang dapat dicabut tanpa merusak fungsi.",
+       "Perbandingan antarkelompok; guru menegaskan konsep kuki dan pelacak lintas situs."
+     ],
+     tutup:[
+       "Tugas: cabut satu izin yang tidak perlu, amati akibatnya selama sepekan."
+     ],
+     w:[10,65,15], as:"Formatif — telaah peta data diri."},
+    {j:"Membedakan buatan dan kenyataan",
+     pend:[
+       "Dua gambar serupa diperlihatkan; kelas memilih mana hasil kamera dan mana buatan mesin — jawabannya diungkap belakangan."
+     ],
+     inti:[
+       "Kelompok menerima kasus (hoaks tersohor, deepfake tokoh, kutipan palsu) untuk diverifikasi.",
+       "Latihan membaca menyamping (lateral reading): mencari sumber lain tentang sumber itu sendiri, bukan sekadar membaca isinya.",
+       "Tiap kelompok melaporkan jejak verifikasinya: alat apa, sumber apa, keputusan apa.",
+       "Diskusi pleno: mengapa “terasa benar” tidak sama dengan “terbukti benar”."
+     ],
+     tutup:[
+       "Refleksi tertulis: satu hal yang selama ini kubagikan tanpa kuperiksa."
+     ],
+     w:[10,65,15], as:"Formatif — laporan verifikasi kasus."},
+    {j:"Kampanye digital sehat",
+     pend:[
+       "Guru mencontohkan satu infografis kampanye yang kuat dan lemah; kelas menyebut bedanya."
+     ],
+     inti:[
+       "Kelompok memilih satu pesan: audit izin, sandi kuat, berhenti sebelum membagikan, atau verifikasi sumber.",
+       "Merancang infografis/pos singkat: satu pesan utama, bukti, ajakan bertindak, sumber rujukan.",
+       "Uji coba ke satu kelompok lain; pesan yang tidak dipahami dalam sepuluh detik direvisi.",
+       "Presentasi final; asesmen sumatif berupa kampanye dan laporan analisisnya."
+     ],
+     tutup:[
+       "Kampanye terbaik diusulkan untuk ditayangkan di media sekolah."
+     ],
+     w:[10,60,20], as:"Sumatif — produk kampanye dan laporan, dinilai dengan rubrik."}
+  ],
+  materi:[
+    {h:"Ekonomi data"},
+    {p:"Kuki mencatat kunjunganmu lintas situs; izin aplikasi membuka lokasi, kontak, dan mikrofon; pelacak menautkannya menjadi profil. Profil itulah barang dagangannya: pengiklan tidak membeli namamu, mereka membeli kecenderunganmu. Memahami alur ini mengubah cara membaca kata “gratis”."},
+    {h:"Cara kerja rekomendasi"},
+    {p:"Sederhananya, mesin rekomendasi mencari orang-orang yang perilakunya mirip denganmu, lalu menyarankan apa yang mereka sukai. Semakin lama dipakai, semakin banyak masa lalumu diketahui — dan semakin sempurna pula dinding ruangan itu dibangun."},
+    {note:"Gelembung penyaring (filter bubble): rekomendasi memperkuat selera lama sehingga hal-hal yang menantang cara pandang jarang sampai ke layar. Kebiasaan sederhana untuk menembusnya: mencari sumber yang sengaja kamu pilih sendiri, bukan yang dipilihkan untukmu.",label:"Catatan"},
+    {h:"Melindungi diri"},
+    {ul:[
+      "Sandi kuat dan berbeda tiap layanan — pengelola sandi membuat ini mungkin.",
+      "Autentikasi dua faktor: sandi yang dicuri pun belum cukup untuk masuk.",
+      "Tinjau izin aplikasi berkala; cabut yang tidak dipakai fungsinya.",
+      "Cadangan data dengan pola 3-2-1: tiga salinan, dua jenis media, satu di lokasi terpisah."
+    ]},
+    {h:"Etika dan literasi"},
+    {ul:[
+      "Periksa sumber sebelum membagikan — termasuk sumber dari sumbernya.",
+      "Hormati hak cipta: cantumkan rujukan, jangan potong tanda air karya orang.",
+      "Waspadai deepfake: verifikasi dengan sumber lain, bukan dengan perasaan yakin.",
+      "Data pribadi orang lain adalah amanah, bukan bahan gosip."
+    ]}
+  ],
+  asesmen:{
+    d:{teknik:"Angket dan tanya jawab",bentuk:"Pertanyaan pengalaman pribadi, tanpa dinilai",
+       contoh:["Menurutmu, aplikasi mengenali minatmu lewat apa?","Apa yang sudah kamu lakukan untuk melindungi akunmu?"]},
+    f:{teknik:"Observasi dan telaah berkas kerja",bentuk:"Peta data diri, laporan verifikasi, catatan diskusi",
+       contoh:["Telaah peta data diri: kelengkapan dan kejujurannya.","Dengarkan analisis kasus; tanyakan sumber dan cara verifikasinya, bukan kesimpulannya."]},
+    s:{teknik:"Penilaian proyek dan laporan",bentuk:"Produk kampanye dan laporan analisis, dinilai dengan rubrik empat tingkat",
+       contoh:["Jelaskan alur data dari satu ketukan “suka” hingga iklan yang muncul.",
+               "Bandingkan tiga praktik pengamanan akun dan alasan memilihnya.",
+               "Rancang infografis “digital sehat” untuk warga sekolah beserta pesan utamanya."]},
+    rubrik:{k:[
+      {c:"Ketajaman analisis",lv:["Jejak data dan kerja algoritma dianalisis dengan bukti yang relevan.","Analisis benar; bukti terbatas.","Analisis umum tanpa bukti.","Analisis belum terarah."]},
+      {c:"Solusi dan kampanye",lv:["Saran konkret, realistis, dan disampaikan persuasif.","Saran baik; penyajian kurang meyakinkan.","Saran masih umum.","Saran belum muncul."]},
+      {c:"Etika penyajian",lv:["Sumber dikutip, data pribadi dilindungi, bahasa santun.","Kutipan sebagian; privasi diperhatikan.","Sumber jarang dicantumkan.","Penyajian mengabaikan etika."]}
+    ]}
+  },
+  rg:[
+    "Apakah audit izin aplikasi membuka diskusi yang jujur, atau justru defensif?",
+    "Apakah contoh kasus hoaks dan deepfake berimbang tanpa menakut-nakuti?",
+    "Siapa yang tampak belum terjangkau pesan kampanye, dan bagaimana menjangkaunya?",
+    "Apakah saya memberi ruang bagi pengalaman pribadi mereka tanpa memaksa?"
+  ],
+  rs:[
+    "Apa yang berubah dari cara pandangku terhadap aplikasi gratis?",
+    "Praktik pengamanan mana yang mulai kulakukan setelah pelajaran ini?",
+    "Bagaimana aku memastikan berita yang kubagikan dapat dipercaya?",
+    "Kapan terakhir aku menimbang jejak digital yang kutinggalkan?"
+  ]
+},
+{
+  id:"y7", no:"07", kelas:"XI", fase:"F", semester:"Gasal",
+  judul:"Struktur Data: Tumpukan dan Antrean",
+  ringkas:"Dua cara paling purba menyusun data — LIFO dan FIFO — dan mengapa perangkat lunak memilih salah satunya: dari tombol undo sampai antrean cetak.",
+  materiPokok:"Struktur Data",
+  menit:90, alokasi:{jp:6, teks:"6 JP · 3 pertemuan × 2 JP"},
+  model:"Demonstrasi dan praktik kolaboratif",
+  tags:["struktur data","stack","queue","lifo","fifo","python","antrean"],
+  ident:{penyusun:"Guru Mata Pelajaran Informatika",instansi:"SMA Negeri 1 Nusantara",tahun:"2025/2026",
+    jenjang:"SMA — Kurikulum Merdeka",mapel:"Informatika",kelas:"Kelas XI · Fase F",
+    alokasi:"6 JP (3 pertemuan × 2 JP × 45 menit)",model:"Demonstrasi, simulasi, praktik kolaboratif",
+    prasyarat:"Menulis program dengan urutan dan percabangan"},
+  cp:[
+    {e:"Algoritma dan Pemrograman",t:"Pada akhir Fase F, peserta didik diharapkan dapat membangun bagian dari sistem yang menerapkan algoritma dan struktur data, berkolaborasi dalam pengembangan, serta menguji program pada kondisi normal dan abnormal."},
+    {e:"Berpikir Komputasional",t:"Pada akhir Fase F, peserta didik diharapkan dapat menyelesaikan masalah — salah satunya yang berkaitan dengan data sekolah dan relevan bagi peserta didik — dengan menerapkan penalaran komputasional."}
+  ],
+  tp:[
+    "Peserta didik mampu menjelaskan karakteristik tumpukan (LIFO) dan antrean (FIFO) beserta operasi dasarnya.",
+    "Peserta didik mampu mengimplementasikan tumpukan dan antrean dalam program sederhana.",
+    "Peserta didik mampu mengidentifikasi kasus nyata yang tepat untuk masing-masing struktur.",
+    "Peserta didik mampu menganalisis akibat pemilihan struktur data terhadap perilaku dan kinerja program."
+  ],
+  pb:[
+    "Cara data disusun menentukan seberapa cepat ia dapat diambil; struktur data adalah arsitektur di balik kecepatan.",
+    "Banyak keajaiban perangkat lunak sehari-hari — undo, riwayat, antrean cetak — hanyalah disiplin menyusun data.",
+    "LIFO dan FIFO adalah dua filosofi: yang terakhir datang dilayani lebih dulu, atau yang paling lama menunggu dilayani lebih dulu."
+  ],
+  pemantik:[
+    "Mengapa tombol undo selalu mengembalikan aksi terakhirmu, bukan yang pertama?",
+    "Kalau antrean kantin diberlakukan seperti tumpukan piring, apa yang terjadi?",
+    "Bagaimana sistem cetak menangani tiga puluh orang menekan tombol “print” hampir bersamaan?"
+  ],
+  keg:[
+    {j:"Drama LIFO–FIFO",
+     pend:[
+       "Permainan pemanasan: buku disusun bertumpuk lalu diambil — siapa yang keluar lebih dulu? Kelas merumuskan aturannya."
+     ],
+     inti:[
+       "Kelompok memainkan dua simulasi fisik: tumpukan kartu (push-pop) dan antrean loket (enqueue-dequeue).",
+       "Setiap kelompok mencatat perilaku keduanya pada berkas kejadian yang sama — hasilnya dibandingkan.",
+       "Kelas memetakan kejadian sehari-hari ke salah satu struktur: riwayat browser, undo, antrean pesan, tumpukan piring kantin.",
+       "Guru merangkum operasi inti dan kosakata baku: push, pop, enqueue, dequeue."
+     ],
+     tutup:[
+       "Kuis lisan cepat: “LIFO atau FIFO?” untuk delapan kasus."
+     ],
+     w:[10,65,15], as:"Formatif — tabel pengamatan simulasi."},
+    {j:"Implementasi — dari lakon ke kode",
+     pend:[
+       "Guru mendemonstrasikan program undo mini sepuluh baris; kelas membaca alurnya bersama."
+     ],
+     inti:[
+       "Praktik: tiap kelompok menulis program penyunting teks dengan undo berbasis tumpukan.",
+       "Lanjutan: simulator antrean cetak — dokumen masuk, keluar sesuai urutan.",
+       "Uji kondisi abnormal: undo saat tumpukan kosong, cetak saat antrean kosong; program harus menolak dengan sopan.",
+       "Kelompok bertukar program dan menguji kondisi batas buatannya masing-masing."
+     ],
+     tutup:[
+       "Kumpulan galat uji ditukar sebagai bahan perbaikan rumah."
+     ],
+     w:[10,65,15], as:"Formatif — uji kondisi batas antarkelompok."},
+    {j:"Memilih struktur — analisis kasus",
+     pend:[
+       "Tiga kasus nyata diperkenalkan: tombol kembali peramban, panggilan pusat layanan, dan penjadwal lift."
+     ],
+     inti:[
+       "Kelompok menganalisis tiap kasus: struktur apa yang paling tepat, dan apa akibatnya bila salah pilih.",
+       "Membuat tabel perbandingan akibat: “undo memakai antrean” — apa yang rusak? Simulasikan bila mungkin.",
+       "Presentasi keputusan tiap kelompok; kelas menimbang argumen terkuat.",
+       "Asesmen sumatif individual: satu kasus baru untuk dianalisis dan diimplementasikan."
+     ],
+     tutup:[
+       "Penutup modul; pengantar basis data."
+     ],
+     w:[10,60,20], as:"Sumatif — analisis kasus dan potongan program, dinilai dengan rubrik."}
+  ],
+  materi:[
+    {h:"Tumpukan (stack)"},
+    {p:"Tumpukan hanya membuka satu pintu: data masuk dan keluar lewat atas. Operasinya tiga: push (menaruh), pop (mengambil paling atas), peek (mengintip tanpa mengambil). Karena itu, urutan keluar selalu kebalikan urutan masuk — prinsip LIFO, last in first out."},
+    {ul:[
+      "Tombol undo: aksi terakhir selalu yang pertama dibatalkan.",
+      "Riwayat “kembali” pada peramban: halaman terakhir dikunjungi lebih dulu ditinggalkan.",
+      "Pemanggilan fungsi: program menumpuk panggilan yang belum selesai, lalu melipatnya kembali."
+    ]},
+    {code:`tumpukan = []
+tumpukan.append("buka berkas")    # push
+tumpukan.append("ketik paragraf") # push
+tumpukan.append("hapus kata")     # push
+tumpukan.pop()  # undo -> "hapus kata" keluar lebih dulu`},
+    {h:"Antrean (queue)"},
+    {p:"Antrean punya dua pintu: masuk dari belakang (enqueue), keluar dari depan (dequeue). Prinsipnya FIFO, first in first out — persis antrean kantin pada hari yang beradab. Keadilan urutan adalah intinya."},
+    {code:`from collections import deque
+antrean = deque()
+antrean.append("dokumen-A")  # enqueue
+antrean.append("dokumen-B")
+antrean.append("dokumen-C")
+antrean.popleft()  # dequeue -> "dokumen-A" dicetak lebih dulu`},
+    {h:"Memilih struktur"},
+    {table:{h:["Aspek","Tumpukan (stack)","Antrean (queue)"],
+      r:[["Prinsip","LIFO — terakhir masuk, pertama keluar","FIFO — pertama masuk, pertama keluar"],
+          ["Operasi inti","push, pop, peek","enqueue, dequeue, peek"],
+          ["Contoh perangkat lunak","undo/redo, riwayat peramban, tumpukan panggilan fungsi","antrean cetak, penyangga papan ketik, penjadwal tugas"],
+          ["Kapan dipilih","urutan terbalik justru diinginkan","keadilan urutan penting"]]}},
+    {note:"Uji cepat nalar: tanyakan “siapa keluar lebih dulu?” Jika jawabannya data yang paling baru, pakai tumpukan. Jika jawabannya data yang paling lama menunggu, pakai antrean. Semua yang lain — nama, ukuran, bahasa — hanya pakaian.",label:"Uji Cepat"}
+  ],
+  asesmen:{
+    d:{teknik:"Tanya jawab lisan",bentuk:"Pertanyaan pengalaman",
+       contoh:["Pernah menekan undo? Menurutmu bagaimana ia bekerja?","Apa itu antrean pada kehidupan sehari-hari?"]},
+    f:{teknik:"Observasi praktik dan uji antarkelompok",bentuk:"Tabel pengamatan simulasi, uji kondisi batas",
+       contoh:["Periksa program undo/antrean cetak tiap kelompok saat berjalan.","Minta satu contoh LIFO dan satu FIFO dari ruangan ini."]},
+    s:{teknik:"Tes tertulis dan penugasan",bentuk:"Analisis kasus dan potongan program, dinilai dengan rubrik empat tingkat",
+       contoh:["Jelaskan mengapa undo memakai tumpukan, bukan antrean.",
+               "Tuliskan program antrean cetak sederhana dan jelaskan tiap operasinya.",
+               "Kasus sistem panggilan loket: struktur apa yang dipilih? Berikan alasannya dan akibat bila keliru memilih."]},
+    rubrik:{k:[
+      {c:"Pemahaman konsep",lv:["LIFO/FIFO dijelaskan dengan operasi dan contoh yang tepat.","Konsep benar; contoh terbatas.","Konsep dikenali sebagian.","Konsep tertukar."]},
+      {c:"Implementasi program",lv:["Program berjalan; operasi dasar dipakai tepat, termasuk kondisi kosong.","Program berjalan dengan perbaikan kecil.","Program sebagian berjalan.","Program belum berjalan."]},
+      {c:"Penalaran pemilihan",lv:["Struktur dipilih dengan alasan yang meyakinkan dan teruji.","Pilihan benar; alasan sebagian.","Pilihan benar tanpa alasan.","Pilihan tidak sesuai kasus."]}
+    ]}
+  },
+  rg:[
+    "Apakah drama LIFO–FIFO membuat konsep menempel, atau hanya ramai?",
+    "Apakah implementasi terlalu cepat bagi yang belum lancar menulis kode?",
+    "Apakah contoh kasus nyata yang kubawa cukup beragam?",
+    "Bagian mana yang sebaiknya menjadi pekerjaan pengayaan?"
+  ],
+  rs:[
+    "Bisakah aku menyebut dua perangkat di rumah yang diam-diam memakai tumpukan atau antrean?",
+    "Bagian implementasi mana yang paling menantang: logika atau penulisan kodenya?",
+    "Kapan struktur data ini muncul di pelajaran atau permainan lain?",
+    "Apa pertanyaan yang ingin kajukan tentang cara program menyimpan sesuatu?"
+  ]
+},
+{
+  id:"y8", no:"08", kelas:"XI", fase:"F", semester:"Genap",
+  judul:"Basis Data dan Bahasa Kueri",
+  ringkas:"Satu tabel hanyalah kertas; ratusan tabel yang saling terhubung adalah sistem: merancang basis data, menormalisasi, lalu menyaringnya dengan SQL.",
+  materiPokok:"Basis Data · SQL",
+  menit:90, alokasi:{jp:6, teks:"6 JP · 3 pertemuan × 2 JP"},
+  model:"Project Based Learning — studi kasus perpustakaan",
+  tags:["basis data","sql","tabel","kunci","relasi","kueri","normalisasi"],
+  ident:{penyusun:"Guru Mata Pelajaran Informatika",instansi:"SMA Negeri 1 Nusantara",tahun:"2025/2026",
+    jenjang:"SMA — Kurikulum Merdeka",mapel:"Informatika",kelas:"Kelas XI · Fase F",
+    alokasi:"6 JP (3 pertemuan × 2 JP × 45 menit)",model:"Project Based Learning, studi kasus perpustakaan",
+    prasyarat:"Membuat tabel sederhana pada aplikasi lembar kerja"},
+  cp:[
+    {e:"Algoritma dan Pemrograman",t:"Pada akhir Fase F, peserta didik diharapkan dapat membangun bagian dari sistem yang menerapkan algoritma dan struktur data — termasuk menyimpan data secara terstruktur dan mengaksesnya melalui bahasa kueri — serta menguji sistem pada kondisi normal dan abnormal."},
+    {e:"Dampak Sosial Informatika",t:"Pada akhir Fase F, peserta didik diharapkan dapat mengkaji dampak sosial pengelolaan data banyak orang, termasuk privasi dan integritas data, dan mengusulkan praktik yang bertanggung jawab."}
+  ],
+  tp:[
+    "Peserta didik mampu menjelaskan struktur tabel basis data: baris, kolom, kunci primer, dan kunci asing.",
+    "Peserta didik mampu merancang skema relasi sederhana dan menormalisasi bentuk yang paling dasar.",
+    "Peserta didik mampu menuliskan kueri SQL dasar: SELECT, WHERE, ORDER BY, INSERT, UPDATE, dan agregasi COUNT.",
+    "Peserta didik mampu menjelaskan risiko data besar: privasi, kebocoran, dan integritas."
+  ],
+  pb:[
+    "Basis data adalah keteraturan yang disengaja: datanya bisa sama, tetapi susunannya menentukan cepat atau lambat ia ditemukan.",
+    "Satu baris adalah satu fakta; satu kolom adalah satu jenis informasi — melanggar ini adalah akar kekacauan data.",
+    "Menyimpan data orang lain berarti memikul tanggung jawab yang datang bersamanya."
+  ],
+  pemantik:[
+    "Bagaimana perpustakaan tahu buku mana yang belum kembali, di antara ribuan judul dan ribuan anggota?",
+    "Mengapa aplikasi bisa menampilkan pengumuman hanya untuk kelasmu, dalam hitungan detik?",
+    "Apa yang terjadi ketika dua petugas menyunting data yang sama pada saat bersamaan?"
+  ],
+  keg:[
+    {j:"Kertas menjadi sistem — merancang tabel",
+     pend:[
+       "Tiap kelompok menerima tumpukan “kartu peminjaman” kertas yang berantakan; diminta mencari satu transaksi tertentu — rasakan lamanya."
+     ],
+     inti:[
+       "Kelompok menata ulang kartu menjadi tabel; masalah segera muncul: nama anggota ditulis berkali-kali dengan ejaan berbeda.",
+       "Diskusi duplikasi: memisahkan data anggota dan data peminjaman menjadi dua tabel.",
+       "Menentukan kunci primer (nim) dan kunci asing (nim pada tabel peminjaman).",
+       "Skema tiap kelompok digambar dan dipertahankan di depan kelas."
+     ],
+     tutup:[
+       "Kesimpulan: normalisasi adalah membuang pengulangan, bukan menambah kerumitan."
+     ],
+     w:[10,65,15], as:"Formatif — telaah skema kelompok."},
+    {j:"Berlatih kueri — bertanya kepada data",
+     pend:[
+       "Guru menjalankan satu kueri di depan kelas pada basis data contoh; kelas membaca struktur perintahnya."
+     ],
+     inti:[
+       "Tiap kelompok memakai basis data contoh perpustakaan pada perangkat SQL daring atau luring.",
+       "Tantangan bertingkat: SELECT sederhana, filter WHERE, urutan ORDER BY, lalu hitung COUNT.",
+       "Kartu misi: tiap kelompok menjawab pertanyaan manajemen perpustakaan hanya lewat kueri (bukan mencari manual).",
+       "INSERT dan UPDATE dicoba pada salinan data; kelompok memverifikasi perubahan dengan kueri ulang."
+     ],
+     tutup:[
+       "Kumpulan kueri favorit dibagikan ke papan kelas."
+     ],
+     w:[10,65,15], as:"Formatif — kartu misi kueri bertingkat."},
+    {j:"Proyek mini — perpustakaan menjawab",
+     pend:[
+       "Kepala perpustakaan (diperankan guru) mengajukan lima pertanyaan nyata tentang data peminjaman."
+     ],
+     inti:[
+       "Kelompok menjawab tiap pertanyaan dengan kueri — lengkap dengan tafsiran hasilnya, bukan sekadar keluaran.",
+       "Menyusun laporan satu halaman: kueri, hasil, tafsiran, dan keputusan yang disarankan.",
+       "Diskusi tanggung jawab: data peminjaman memuat nama dan kebiasaan membaca — bolehkah dibagikan? Kapan boleh?",
+       "Presentasi silang; asesmen sumatif menilai kueri dan penalaran."
+     ],
+     tutup:[
+       "Penutup paket modul; refleksi perjalanan delapan modul."
+     ],
+     w:[10,60,20], as:"Sumatif — kueri dan laporan, dinilai dengan rubrik."}
+  ],
+  materi:[
+    {h:"Tabel, kunci, dan relasi"},
+    {p:"Tabel anggota menyimpan satu baris untuk satu orang; tabel peminjaman menyimpan satu baris untuk satu peristiwa pinjam. Kolom nim pada tabel peminjaman menjadi kunci asing yang merujuk ke kunci primer tabel anggota — dari sinilah kata “relasi” berasal. Dua tabel kecil yang rapi lebih kuat daripada satu tabel raksasa yang kacau."},
+    {table:{h:["nim","nama","kelas"],
+      r:[["2311","Anindita","XI-2"],["2312","Bagas","XI-1"],["2313","Citra","XI-3"]]}},
+    {table:{h:["kode","nim","kode_buku","tanggal"],
+      r:[["1","2311","IN-014","2026-01-12"],["2","2313","IN-002","2026-01-13"],["3","2311","IN-077","2026-01-14"]]}},
+    {h:"Bahasa kueri SQL"},
+    {ul:[
+      "SELECT … FROM … WHERE — mengambil baris yang memenuhi syarat.",
+      "ORDER BY — mengurutkan hasil, menaik atau menurun.",
+      "COUNT, AVG — meringkas: berapa banyak, berapa rata-rata.",
+      "INSERT INTO … VALUES — menambah baris baru.",
+      "UPDATE … SET … WHERE — mengubah baris yang memenuhi syarat."
+    ]},
+    {code:`-- Siapa saja anggota kelas XI-2?
+SELECT nama, kelas FROM anggota
+WHERE kelas = 'XI-2' ORDER BY nama;
+
+-- Berapa kali Anindita meminjam bulan ini?
+SELECT COUNT(*) AS total FROM peminjaman
+WHERE nim = '2311';
+
+-- Menambah dan memperbarui data
+INSERT INTO anggota (nim, nama, kelas)
+VALUES ('2314', 'Dimas', 'XI-1');
+
+UPDATE anggota SET kelas = 'XI-2'
+WHERE nim = '2314';`},
+    {note:"Kueri tanpa WHERE pada UPDATE atau DELETE mengubah seluruh tabel. Kebiasaan aman: tulis WHERE lebih dulu, periksa dengan SELECT, baru jalankan perubahan.",label:"Prinsip"},
+    {h:"Risiko dan tanggung jawab"},
+    {ul:[
+      "Privasi: data peminjaman memuat kebiasaan membaca — laporan harus menampilkan agregat, bukan nama, kecuali perlu.",
+      "Kebocoran: sandi basis data tersimpan terpisah dan teracak (hash), bukan teks polos.",
+      "Integritas: dua petugas menyunting bersamaan dapat saling menimpa; transaksi dan penguncian adalah jawabannya."
+    ]}
+  ],
+  asesmen:{
+    d:{teknik:"Tanya jawab lisan",bentuk:"Pertanyaan pengalaman sebelum materi",
+       contoh:["Di mana data kamu tersimpan di sekolah?","Apa kesulitan mencari data pada map kertas?"]},
+    f:{teknik:"Observasi dan telaah berkas kerja",bentuk:"Skema kelompok, kartu misi kueri",
+       contoh:["Telaah rancangan tabel: kunci dan duplikasi.","Koreksi kueri latihan bersama di papan — bahas WHERE yang terlupakan."]},
+    s:{teknik:"Penilaian proyek dan tes tertulis",bentuk:"Kueri, laporan tafsiran, dan soal konsep, dinilai dengan rubrik empat tingkat",
+       contoh:["Rancang dua tabel (anggota, peminjaman) dengan kunci yang tepat untuk perpustakaan.",
+               "Tuliskan kueri untuk mencari seluruh anggota kelas XI-1 yang meminjam bulan ini.",
+               "Jelaskan risiko jika dua petugas menyunting data yang sama bersamaan dan cara menguranginya."]},
+    rubrik:{k:[
+      {c:"Perancangan skema",lv:["Tabel, kunci, dan relasi dirancang tanpa duplikasi.","Skema benar; masih ada duplikasi ringan.","Skema berjalan tetapi masih tercampur.","Belum terstruktur."]},
+      {c:"Ketepatan kueri",lv:["Kueri tepat, efisien, dan hasilnya diverifikasi ulang.","Kueri benar; kurang efisien.","Kueri sederhana benar sebagian.","Kueri menghasilkan galat."]},
+      {c:"Integritas dan privasi",lv:["Risiko data diidentifikasi dan dikendalikan secara sadar.","Risiko disebut; pengendalian sebagian.","Risiko disebut secara umum.","Aspek belum dipertimbangkan."]}
+    ]}
+  },
+  rg:[
+    "Apakah kasus perpustakaan terasa cukup nyata bagi seluruh kelas?",
+    "Apakah kartu misi kueri bertingkat dapat diselesaikan oleh semua kelompok?",
+    "Bagaimana saya menangani peserta didik yang tertukar antara WHERE dan ORDER BY?",
+    "Apakah diskusi privasi mendapat waktu yang layak, atau tergerus praktik?"
+  ],
+  rs:[
+    "Bagian mana yang paling membuatku paham: merancang tabel atau menulis kueri?",
+    "Bisakah aku menjelaskan mengapa data tidak cukup disimpan dalam satu lemari besar?",
+    "Apa risiko menyimpan data pribadi teman-temanku, dan bagaimana menguranginya?",
+    "Kapan aku bisa memakai cara berpikir basis data pada data klub atau panitia?"
+  ]
+}
+];
+
+/* ================= KEADAAN & PENYIMPANAN ================= */
+const LS_DONE="modulajar.done.v1", LS_EDITS="modulajar.edits.v1";
+const GROUPS=[{k:"X",label:"Kelas X · Fase E"},{k:"XI",label:"Kelas XI · Fase F"}];
+const store={
+  get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}
+};
+function safeParse(s,fallback){try{return JSON.parse(s)}catch(e){return fallback}}
+
+let state={cur:null,editing:false,q:""};
+let done=new Set(safeParse(store.get(LS_DONE)||"[]",[]));
+let edits=safeParse(store.get(LS_EDITS)||"{}", {});
+let pristine=null, spy=null;
+let lastRange=null, currentImg=null, currentCell=null, tblAnchor=null;
+let modalOpen=false, modalDismiss=null;
+
+const $=id=>document.getElementById(id);
+const view=$("view"), tb=$("toolbar"), rail=$("rail"), sidebar=$("sidebar");
+const pad=n=>String(n).padStart(2,"0");
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const persist=()=>{
+  const ok1=store.set(LS_DONE,JSON.stringify([...done]));
+  const ok2=store.set(LS_EDITS,JSON.stringify(edits));
+  if(ok1===false||ok2===false)
+    toast("Penyimpanan lokal penuh — kemungkinan karena gambar yang besar. Cadangkan data ke berkas, atau ganti gambar dengan yang lebih kecil / tautan.","info");
+};
+const isModified=id=>Object.keys(edits).some(k=>k.startsWith(id+"::"));
+
+/* ================= UTILITAS: SANITASI & UNDUH ================= */
+const OK_ATTR=new Set(["class","style","align","alt","src","href","target","rel","width","height","colspan","rowspan","start","type","title","data-align","dir"]);
+function sanitizeHTML(html){
+  const d=document.createElement("div"); d.innerHTML=html==null?"":String(html);
+  d.querySelectorAll("script,style,iframe,object,embed,link,meta,base,form,input,select,textarea,button").forEach(n=>n.remove());
+  d.querySelectorAll("*").forEach(el=>{
+    [...el.attributes].forEach(at=>{
+      const name=(at.name||"").toLowerCase();
+      if(!OK_ATTR.has(name)||/^on/i.test(name)||/^\s*(javascript|vbscript)\s*:/i.test(at.value||"")) el.removeAttribute(at.name);
+    });
+    if(el.tagName==="A"){
+      const h=(el.getAttribute("href")||"").trim();
+      if(!/^(https?:|#|mailto:)/i.test(h)) el.setAttribute("href","#");
+      el.setAttribute("rel","noopener");
+    }
+    if(el.tagName==="IMG"){
+      const s=(el.getAttribute("src")||"").trim();
+      if(!/^(https?:|data:image\/)/i.test(s)) el.removeAttribute("src");
+    }
+  });
+  return d.innerHTML;
+}
+function download(name,content,mime){
+  const b=new Blob([content],{type:mime});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement("a");
+  a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),4000);
+}
+const fmtKB=src=>Math.round(src.length*0.75/1024)+" KB";
+
+/* ================= TOAST ================= */
+function toast(msg,icon="info"){
+  const t=document.createElement("div"); t.className="toast";
+  t.innerHTML='<i data-lucide="'+icon+'"></i><span>'+msg+"</span>";
+  $("toasts").appendChild(t); renderIcons(t);
+  setTimeout(()=>{t.classList.add("out");setTimeout(()=>t.remove(),380)},4200);
+}
+
+/* ================= NAVIGASI ================= */
+function matchMod(m,q){
+  if(!q) return true;
+  const hay=(m.judul+" "+m.ringkas+" "+m.materiPokok+" "+(m.tags||[]).join(" ")).toLowerCase();
+  return hay.includes(q);
+}
+function renderNav(){
+  const q=state.q.trim().toLowerCase(); let html="";
+  GROUPS.forEach(g=>{
+    const items=MODULES.filter(m=>m.kelas===g.k&&matchMod(m,q));
+    if(!items.length) return;
+    html+='<div class="nav-cap">'+g.label+"</div>";
+    items.forEach(m=>{
+      const st=done.has(m.id)?'<i data-lucide="check"></i>':(isModified(m.id)?'<span class="dot"></span>':"<span></span>");
+      html+='<button class="mod-item '+(state.cur===m.id?"on":"")+'" data-open="'+m.id+'" title="'+m.judul+'">'+
+        '<span class="mi-no">'+m.no+"</span>"+
+        '<span class="mi-body"><span class="mi-title">'+m.judul+"</span>"+
+        '<span class="mi-meta">'+m.alokasi.jp+" JP · Fase "+m.fase+"</span></span>"+
+        '<span class="mi-state">'+st+"</span></button>";
+    });
+  });
+  $("moduleNav").innerHTML=html||'<div class="nav-empty">Tidak ada modul yang cocok dengan pencarianmu.</div>';
+  renderIcons(); updateProgress();
+}
+function updateProgress(){
+  $("progFill").style.width=(done.size/MODULES.length*100)+"%";
+  $("progText").textContent=done.size+" dari "+MODULES.length+" modul selesai diajarkan";
+}
+
+/* ================= HALAMAN AWAL ================= */
+function renderLanding(){
+  state.cur=null; rail.innerHTML=""; hideBars();
+  const totJP=MODULES.reduce((a,m)=>a+m.alokasi.jp,0);
+  const totP=MODULES.reduce((a,m)=>a+m.keg.length,0);
+  let rows="";
+  GROUPS.forEach(g=>{
+    rows+='<div class="toc-group">'+g.label+"</div>";
+    MODULES.filter(m=>m.kelas===g.k).forEach(m=>{
+      rows+='<button class="toc-row" data-open="'+m.id+'">'+
+        '<span class="toc-no">'+m.no+'</span><span class="toc-t">'+m.judul+"</span>"+
+        '<span class="toc-dots"></span><span class="toc-m">'+m.alokasi.jp+" JP</span></button>";
+    });
+  });
+  view.innerHTML=`
+  <div class="landing">
+    <div class="land-kicker">Paket Perangkat Ajar · Kurikulum Merdeka</div>
+    <h1 class="land-title">Modul ajar <em>Informatika</em> SMA — siap dipakai, siap disunting.</h1>
+    <p class="lede">Delapan modul, dari penalaran komputasional sampai basis data, masing-masing disusun lengkap:
+    informasi umum (identitas dan capaian pembelajaran) serta tujuh komponen inti — dari tujuan pembelajaran
+    hingga refleksi guru dan peserta didik. Mode sunting dilengkapi penyunting teks, <b>sisip gambar</b>
+    (unggah, tautan, atau tempel tangkapan layar), pengatur tabel, dan tautan; tandai modul yang sudah
+    diajarkan, unduh sebagai berkas Word, lalu cetak sebagai dokumen siap tanda tangan.</p>
+    <div class="land-stats">
+      <div class="stat"><b>${MODULES.length}</b><span>modul ajar</span></div>
+      <div class="stat"><b>${totJP}</b><span>jam pelajaran</span></div>
+      <div class="stat"><b>2</b><span>fase — E dan F</span></div>
+      <div class="stat"><b>${totP}</b><span>pertemuan terjadwal</span></div>
+    </div>
+    <div class="toc-cap">Daftar Isi</div>
+    <div class="toc-list">${rows}</div>
+    <p class="land-hint">Pilih modul dari daftar sisi kiri atau dari daftar isi di atas, lalu tekan <b>Sunting</b>
+      untuk mengubah apa pun — termasuk menyisipkan gambar ilustrasi pada materi.
+      Tekan <kbd>/</kbd> untuk mencari, <kbd>Ctrl</kbd>+<kbd>S</kbd> untuk menyimpan suntingan.</p>
+    <div class="land-bits">01010011 · 01001101 · 01000001 — tiga huruf, dua puluh empat bit, satu cara berpikir.</div>
+  </div>`;
+  renderNav();
+}
+
+/* ================= TOOLBAR + BILAH PENYUNTING ================= */
+function renderToolbar(){
+  const m=MODULES.find(x=>x.id===state.cur);
+  if(!m){tb.hidden=true;return;}
+  tb.hidden=false;
+  const editbar=`
+  <div class="editbar" id="editbar">
+    <button type="button" data-cmd="undo" title="Urungkan (Ctrl+Z)"><i data-lucide="undo"></i></button>
+    <button type="button" data-cmd="redo" title="Jadikan ulang (Ctrl+Y)"><i data-lucide="redo"></i></button>
+    <span class="eb-sep"></span>
+    <button type="button" data-cmd="bold" title="Tebal (Ctrl+B)"><i data-lucide="bold"></i></button>
+    <button type="button" data-cmd="italic" title="Miring (Ctrl+I)"><i data-lucide="italic"></i></button>
+    <button type="button" data-cmd="underline" title="Garis bawah (Ctrl+U)"><i data-lucide="underline"></i></button>
+    <button type="button" data-cmd="strikeThrough" title="Coret"><i data-lucide="strike"></i></button>
+    <span class="eb-sep"></span>
+    <button type="button" class="eb-txt" data-cmd="formatBlock" data-val="p" title="Paragraf biasa">P</button>
+    <button type="button" class="eb-txt" data-cmd="formatBlock" data-val="h3" title="Sub-judul kecil">H3</button>
+    <button type="button" class="eb-txt" data-cmd="formatBlock" data-val="h2" title="Sub-judul">H2</button>
+    <span class="eb-sep"></span>
+    <button type="button" data-cmd="insertUnorderedList" title="Daftar butir"><i data-lucide="list"></i></button>
+    <button type="button" data-cmd="insertOrderedList" title="Daftar bernomor"><i data-lucide="list-ol"></i></button>
+    <span class="eb-sep"></span>
+    <button type="button" data-cmd="justifyLeft" title="Rata kiri"><i data-lucide="align-left"></i></button>
+    <button type="button" data-cmd="justifyCenter" title="Rata tengah"><i data-lucide="align-center"></i></button>
+    <button type="button" data-cmd="justifyRight" title="Rata kanan"><i data-lucide="align-right"></i></button>
+    <span class="eb-sep"></span>
+    <button type="button" data-act="link" title="Sisipkan tautan"><i data-lucide="link"></i></button>
+    <button type="button" data-cmd="unlink" title="Lepas tautan"><i data-lucide="unlink"></i></button>
+    <button type="button" data-cmd="insertHorizontalRule" title="Garis pemisah"><i data-lucide="minus"></i></button>
+    <button type="button" data-cmd="removeFormat" title="Bersihkan format"><i data-lucide="eraser"></i></button>
+    <span class="eb-sep"></span>
+    <button type="button" class="eb-img" data-act="image" title="Sisipkan gambar"><i data-lucide="image"></i>Gambar</button>
+  </div>`;
+  tb.innerHTML=`
+    <div class="crumb">Kelas ${m.kelas} · Fase ${m.fase} · Modul ${m.no}</div>
+    <div class="tb-actions">${state.editing
+      ?`<button class="tbtn accent" id="btnSave"><i data-lucide="save"></i>Simpan</button>
+        <button class="tbtn" id="btnCancel"><i data-lucide="x"></i>Batal</button>`
+      :`<button class="tbtn ${done.has(m.id)?"on":""}" id="btnDone"><i data-lucide="check"></i>${done.has(m.id)?"Sudah diajarkan":"Tandai diajarkan"}</button>
+        <button class="tbtn" id="btnEdit"><i data-lucide="pencil"></i>Sunting</button>
+        <button class="tbtn" id="btnPrint"><i data-lucide="printer"></i>Cetak</button>
+        <button class="tbtn" id="btnWord"><i data-lucide="file-text"></i>Word</button>
+        ${isModified(m.id)?`<button class="tbtn" id="btnReset" title="Buang perubahan lokal"><i data-lucide="rotate-ccw"></i></button>`:""}`}
+    </div>
+    ${state.editing?editbar:""}
+    <div class="edit-tip"><i data-lucide="pen-line"></i>Mode sunting — klik teks untuk mengubah; sisipkan gambar, tautan, atau baris tabel baru. Klik gambar untuk mengaturnya. Tekan <b>Ctrl+S</b> untuk menyimpan.</div>
+    <div class="readprog" id="readprog"></div>`;
+  renderIcons();
+  $("btnDone")&&$("btnDone").addEventListener("click",toggleDone);
+  $("btnEdit")&&$("btnEdit").addEventListener("click",enterEdit);
+  $("btnPrint")&&$("btnPrint").addEventListener("click",()=>window.print());
+  $("btnWord")&&$("btnWord").addEventListener("click",exportWord);
+  $("btnReset")&&$("btnReset").addEventListener("click",resetModule);
+  $("btnSave")&&$("btnSave").addEventListener("click",saveEdits);
+  $("btnCancel")&&$("btnCancel").addEventListener("click",cancelEdit);
+}
+function toggleDone(){
+  const id=state.cur;
+  if(done.has(id)){done.delete(id);toast("Tanda selesai dihapus.","x");}
+  else{done.add(id);toast("Modul ditandai selesai diajarkan.","check");}
+  persist(); renderNav(); renderToolbar(); renderDocHeadChips();
+}
+function renderDocHeadChips(){
+  const m=MODULES.find(x=>x.id===state.cur); if(!m) return;
+  const k=document.querySelector(".dh-kicker"); if(!k) return;
+  const chips=(isModified(m.id)?'<span class="chip chip-local">versi lokal</span>':"")+
+    (done.has(m.id)?'<span class="chip chip-done">selesai diajarkan</span>':"");
+  k.innerHTML="Kelas "+m.kelas+" · Fase "+m.fase+" · Semester "+m.semester+" "+chips;
+}
+
+/* ================= RENDER DOKUMEN ================= */
+function tbl(t,key){
+  const h=t.h.map(x=>"<th>"+x+"</th>").join("");
+  const rows=t.r.map(row=>"<tr>"+row.map(c=>"<td>"+c+"</td>").join("")+"</tr>").join("");
+  return '<table class="m-table" data-e="'+key+'"><thead><tr>'+h+'</tr></thead><tbody>'+rows+"</tbody></table>";
+}
+function renderMateri(m){
+  let out="",firstP=true;
+  m.materi.forEach((b,i)=>{
+    if(b.h) out+='<h3 class="m-h" data-e="mat-'+i+'-h">'+b.h+"</h3>";
+    else if(b.p!=null){out+='<p class="m-p'+(firstP?" lead":"")+'" data-e="mat-'+i+'">'+b.p+"</p>";firstP=false;}
+    else if(b.ul) out+='<ul class="m-ul" data-e="mat-'+i+'">'+b.ul.map(t=>"<li>"+t+"</li>").join("")+"</ul>";
+    else if(b.note) out+='<div class="m-note"><div class="n-cap">'+(b.label||"Kotak Konsep")+'</div><div class="n-t" data-e="mat-'+i+'">'+b.note+"</div></div>";
+    else if(b.code) out+='<pre class="m-code" data-e="mat-'+i+'">'+esc(b.code)+"</pre>";
+    else if(b.table) out+=tbl(b.table,"mat-"+i);
+  });
+  return out;
+}
+function renderKeg(m){
+  return m.keg.map((k,p)=>{
+    const seg=(w,cls)=>'<span class="tb-seg '+cls+'" style="flex:'+w+'" title="'+w+' menit"></span>';
+    return `<article class="pert open">
+      <button class="pert-head" aria-expanded="true">
+        <span class="pert-no">Pertemuan ${p+1}</span>
+        <span class="pert-judul" data-e="keg${p}-j">${k.j}</span>
+        <span class="pert-menit"><i data-lucide="clock"></i>${k.w[0]+k.w[1]+k.w[2]}'</span>
+        <i data-lucide="chevron-down" class="chev"></i>
+      </button>
+      <div class="timebar">${seg(k.w[0],"c-p")}${seg(k.w[1],"c-i")}${seg(k.w[2],"c-t")}</div>
+      <div class="tb-legend">
+        <span><b class="c-p"></b>${k.w[0]}' pendahuluan</span>
+        <span><b class="c-i"></b>${k.w[1]}' kegiatan inti</span>
+        <span><b class="c-t"></b>${k.w[2]}' penutup</span>
+      </div>
+      <div class="pert-body"><div class="pert-inner">
+        <div class="phase"><h4>Pendahuluan</h4>
+          <ul class="dash-list" data-e="keg${p}-pend">${k.pend.map(t=>"<li>"+t+"</li>").join("")}</ul></div>
+        <div class="phase phase-inti"><h4>Kegiatan Inti</h4>
+          <ul class="inti-list" data-e="keg${p}-inti">${k.inti.map(t=>"<li>"+t+"</li>").join("")}</ul></div>
+        <div class="phase"><h4>Penutup</h4>
+          <ul class="dash-list" data-e="keg${p}-tutup">${k.tutup.map(t=>"<li>"+t+"</li>").join("")}</ul></div>
+        <div class="pert-ases"><b>Asesmen</b><span data-e="keg${p}-as">${k.as}</span></div>
+      </div></div>
+    </article>`;
+  }).join("");
+}
+function renderAs(m){
+  const a=m.asesmen;
+  const blk=(key,name,when,d)=>`
+    <div class="as-block">
+      <div class="as-head"><span class="as-name">${name}</span><span class="as-when">${when}</span></div>
+      <div class="as-body">
+        <div class="as-rows">
+          <div class="as-row"><span>Teknik</span><p data-e="as-${key}-tek">${d.teknik}</p></div>
+          <div class="as-row"><span>Bentuk</span><p data-e="as-${key}-ben">${d.bentuk}</p></div>
+        </div>
+        <div class="as-contoh"><div class="cap">Contoh instrumen</div>
+          <ol data-e="as-${key}-c">${d.contoh.map(q=>"<li>"+q+"</li>").join("")}</ol></div>
+      </div>
+    </div>`;
+  const LV=["Sangat Baik","Baik","Cukup","Perlu Bimbingan"];
+  const rub=`<div class="rubrik-wrap">
+    <div class="rubrik-cap">Rubrik penilaian — skala empat tingkat</div>
+    <table class="rubrik" data-e="rub"><thead><tr><th>Kriteria</th>${LV.map((l,i)=>`<th><span>${l}</span><i class="lv">${4-i}</i></th>`).join("")}</tr></thead>
+    <tbody>${a.rubrik.k.map(row=>`<tr><th>${row.c}</th>${row.lv.map(v=>"<td>"+v+"</td>").join("")}</tr>`).join("")}</tbody></table>
+  </div>`;
+  return blk("d","Asesmen Diagnostik","sebelum modul dimulai",a.d)
+       + blk("f","Asesmen Formatif","selama proses belajar",a.f)
+       + blk("s","Asesmen Sumatif","pada akhir modul",a.s)+rub;
+}
+function openModule(id){
+  const m=MODULES.find(x=>x.id===id); if(!m) return;
+  const wasEditing=state.editing;
+  if(wasEditing){state.editing=false;document.body.classList.remove("editing");}
+  state.cur=id; renderNav(); renderDoc();
+  if(wasEditing) toast("Penyuntingan dibatalkan sebelum berpindah modul.","x");
+}
+function renderDoc(){
+  hideBars();
+  const m=MODULES.find(x=>x.id===state.cur); if(!m) return;
+  renderToolbar();
+  const idx=MODULES.indexOf(m), prev=MODULES[idx-1], next=MODULES[idx+1];
+  const identRows=[
+    ["Penyusun",m.ident.penyusun],["Instansi",m.ident.instansi],["Tahun Pelajaran",m.ident.tahun],
+    ["Jenjang",m.ident.jenjang],["Mata Pelajaran",m.ident.mapel],["Kelas / Fase",m.ident.kelas],
+    ["Alokasi Waktu",m.ident.alokasi],["Model Pembelajaran",m.ident.model],["Prasyarat",m.ident.prasyarat]
+  ].map(([l,v])=>'<div class="id-row"><dt>'+l+'</dt><dd data-e="id-'+slug(l)+'">'+v+"</dd></div>").join("");
+  view.innerHTML=`<article class="doc" id="docEl">
+    <div class="print-head"><span>Modul Ajar · Informatika SMA · Kurikulum Merdeka</span><span>Kelas ${m.kelas} · Fase ${m.fase} · ${m.alokasi.jp} JP</span></div>
+    <header class="doc-head">
+      <div class="dh-top">
+        <div class="dh-num"><div class="cap">Modul</div><div class="n">${m.no}</div></div>
+        <div class="dh-right">
+          <div class="dh-kicker">Kelas ${m.kelas} · Fase ${m.fase} · Semester ${m.semester}
+            ${isModified(m.id)?'<span class="chip chip-local">versi lokal</span>':""}
+            ${done.has(m.id)?'<span class="chip chip-done">selesai diajarkan</span>':""}</div>
+          <h1 class="dh-title" data-e="judul">${m.judul}</h1>
+          <p class="dh-ringkas" data-e="ringkas">${m.ringkas}</p>
+        </div>
+      </div>
+      <div class="meta-strip">
+        <div class="ms"><div class="k">Alokasi</div><div class="v" data-e="ms-alokasi">${m.alokasi.teks}</div></div>
+        <div class="ms"><div class="k">Pertemuan</div><div class="v" data-e="ms-pertemuan">${m.keg.length} × ${m.menit} menit</div></div>
+        <div class="ms"><div class="k">Model</div><div class="v" data-e="ms-model">${m.model}</div></div>
+        <div class="ms"><div class="k">Materi pokok</div><div class="v" data-e="ms-materi">${m.materiPokok}</div></div>
+      </div>
+    </header>
+
+    <div class="band"><span class="b-no">I</span><h2>Informasi Umum</h2><span class="b-cap">identitas dan capaian pembelajaran</span></div>
+    <section class="sec" id="sec-ident" data-spy>
+      <div class="sub-h"><span class="sub-no">A</span><h3 class="sub-t">Identitas Modul</h3></div>
+      <dl class="id-grid">${identRows}</dl>
+    </section>
+    <section class="sec" id="sec-cp" data-spy>
+      <div class="sub-h"><span class="sub-no">B</span><h3 class="sub-t">Capaian Pembelajaran</h3></div>
+      ${m.cp.map((c,i)=>`<div class="cp-item"><div class="cp-e">Elemen · ${c.e}</div><p class="cp-t" data-e="cp-${i}">${c.t}</p></div>`).join("")}
+    </section>
+
+    <div class="band"><span class="b-no">II</span><h2>Komponen Inti</h2><span class="b-cap">perencanaan dan pelaksanaan pembelajaran</span></div>
+    <section class="sec" id="sec-tp" data-spy>
+      <div class="sub-h"><span class="sub-no">1</span><h3 class="sub-t">Tujuan Pembelajaran</h3></div>
+      <div class="tp-list">${m.tp.map((t,i)=>`<div class="tp"><span class="tp-no">${pad(i+1)}</span><p data-e="tp-${i}">${t}</p></div>`).join("")}</div>
+    </section>
+    <section class="sec" id="sec-pb" data-spy>
+      <div class="sub-h"><span class="sub-no">2</span><h3 class="sub-t">Pemahaman Bermakna</h3></div>
+      <div class="pb-list">${m.pb.map((t,i)=>`<p class="pb" data-e="pb-${i}">${t}</p>`).join("")}</div>
+    </section>
+    <section class="sec" id="sec-pm" data-spy>
+      <div class="sub-h"><span class="sub-no">3</span><h3 class="sub-t">Pertanyaan Pemantik</h3></div>
+      <div class="pm-list">${m.pemantik.map((q,i)=>`<div class="pm"><span class="pm-no">Pertanyaan ${pad(i+1)}</span><p class="pm-q" data-e="pm-${i}">${q}</p></div>`).join("")}</div>
+    </section>
+    <section class="sec" id="sec-keg" data-spy>
+      <div class="sub-h"><span class="sub-no">4</span><h3 class="sub-t">Kegiatan Pembelajaran</h3></div>
+      <p class="sec-intro">Rangkaian ${m.keg.length} pertemuan, masing-masing ${m.menit} menit, dengan model <b>${m.model}</b>. Saat menyunting, klik judul pertemuan untuk mengubahnya; saat membaca, panel dapat dilipat pada tanda panahnya.</p>
+      ${renderKeg(m)}
+    </section>
+    <section class="sec" id="sec-mat" data-spy>
+      <div class="sub-h"><span class="sub-no">5</span><h3 class="sub-t">Materi Pembelajaran</h3></div>
+      ${renderMateri(m)}
+    </section>
+    <section class="sec" id="sec-as" data-spy>
+      <div class="sub-h"><span class="sub-no">6</span><h3 class="sub-t">Asesmen</h3></div>
+      ${renderAs(m)}
+    </section>
+    <section class="sec" id="sec-ref" data-spy>
+      <div class="sub-h"><span class="sub-no">7</span><h3 class="sub-t">Refleksi Guru dan Peserta Didik</h3></div>
+      <div class="ref-grid">
+        <div class="ref-panel ref-guru">
+          <div class="ref-cap">Refleksi Guru</div>
+          <h3 class="ref-h">Setelah mengajar, saya menimbang…</h3>
+          <ul data-e="rg">${m.rg.map(t=>"<li>"+t+"</li>").join("")}</ul>
+        </div>
+        <div class="ref-panel ref-siswa">
+          <div class="ref-cap">Refleksi Peserta Didik</div>
+          <h3 class="ref-h">Setelah belajar, aku menimbang kembali…</h3>
+          <ul data-e="rs">${m.rs.map(t=>"<li>"+t+"</li>").join("")}</ul>
+        </div>
+      </div>
+    </section>
+
+    <nav class="pager">
+      ${prev?`<button class="pg-btn" data-open="${prev.id}"><span class="pg-lab">Modul sebelumnya</span><span class="pg-tit">${prev.judul}</span></button>`:"<div></div>"}
+      ${next?`<button class="pg-btn pg-next" data-open="${next.id}"><span class="pg-lab">Modul berikutnya</span><span class="pg-tit">${next.judul}</span></button>`:"<div></div>"}
+    </nav>
+    <footer class="doc-foot">Disusun mengikuti struktur modul ajar Kurikulum Merdeka — informasi umum dan komponen inti.<br>Sunting sesuai konteks sekolah, lalu cetak, unduh Word, atau simpan sebagai PDF.</footer>
+  </article>`;
+  pristine=collectVals();
+  applyEdits(view,m.id);
+  buildRail();
+  renderIcons();
+  const html=document.documentElement, old=html.style.scrollBehavior;
+  html.style.scrollBehavior="auto"; window.scrollTo(0,0);
+  requestAnimationFrame(()=>html.style.scrollBehavior=old);
+}
+
+/* ================= EDISI LOKAL ================= */
+function applyEdits(root,modId){
+  root.querySelectorAll("[data-e]").forEach(el=>{
+    const v=edits[modId+"::"+el.dataset.e];
+    if(v!=null) el.innerHTML=sanitizeHTML(v);
+  });
+}
+function collectVals(){
+  const o={};
+  view.querySelectorAll("[data-e]").forEach(el=>{
+    o[el.dataset.e]=el.innerHTML.replace(/<span class="fig-resize"[^>]*>\s*<\/span>/g,"");
+  });
+  return o;
+}
+function enterEdit(){
+  state.editing=true; document.body.classList.add("editing");
+  lastRange=null; hideBars();
+  view.querySelectorAll("[data-e]").forEach(el=>el.setAttribute("contenteditable","true"));
+  view.querySelectorAll(".m-fig").forEach(f=>{
+    if(!f.querySelector(".fig-resize")){
+      const s=document.createElement("span"); s.className="fig-resize"; f.appendChild(s);
+    }
+  });
+  renderToolbar();
+  toast("Mode sunting aktif — teks, tabel, tautan, dan gambar dapat diubah atau disisipkan.","pencil");
+}
+function saveEdits(){
+  const id=state.cur, cur=collectVals(); let n=0;
+  Object.keys(cur).forEach(k=>{
+    const ck=id+"::"+k;
+    if(cur[k]!==pristine[k]){edits[ck]=cur[k];n++;}
+    else if(edits[ck]!=null) delete edits[ck];
+  });
+  persist();
+  state.editing=false; document.body.classList.remove("editing");
+  renderNav(); renderDoc();
+  n>0?toast("Tersimpan — "+n+" bagian diperbarui di perangkat ini.","save")
+     :toast("Tidak ada perubahan untuk disimpan.","info");
+}
+function cancelEdit(){
+  state.editing=false; document.body.classList.remove("editing");
+  renderNav(); renderDoc();
+  toast("Penyuntingan dibatalkan.","x");
+}
+function resetModule(){
+  const id=state.cur; let had=false;
+  Object.keys(edits).forEach(k=>{if(k.startsWith(id+"::")){delete edits[k];had=true;}});
+  if(had){persist();renderNav();renderToolbar();renderDoc();
+    toast("Perubahan lokal dibuang — dokumen kembali ke versi asli.","rotate-ccw");}
+  else toast("Tidak ada perubahan lokal pada modul ini.","info");
+}
+
+/* ================= EKSPOR WORD & CADANGAN ================= */
+function exportWord(){
+  const m=MODULES.find(x=>x.id===state.cur);
+  if(!m){toast("Buka modul dulu sebelum mengunduh.","info");return;}
+  if(state.editing){toast("Simpan dulu suntingan sebelum mengunduh.","x");return;}
+  const el=view.querySelector("#docEl"); if(!el) return;
+  const clone=el.cloneNode(true);
+  clone.querySelectorAll(".fig-resize").forEach(n=>n.remove());
+  clone.querySelectorAll("[contenteditable]").forEach(n=>n.removeAttribute("contenteditable"));
+  const css="body{font-family:Georgia,'Times New Roman',serif;font-size:11pt;line-height:1.65;color:#232019}"+
+    "h1{font-size:22pt}h2{font-size:16pt}h3{font-size:13pt}p{margin:0 0 8pt}"+
+    "table{border-collapse:collapse;width:100%;margin:8pt 0}th,td{border:1px solid #8a8377;padding:5pt 7pt;vertical-align:top;font-size:10pt}"+
+    "pre{font-family:Consolas,'Courier New',monospace;font-size:9.5pt;background:#eee;padding:8pt;border-left:3pt solid #999}"+
+    "figure{margin:10pt 0}figure img{max-width:100%}figcaption{font-style:italic;color:#666;font-size:9pt;text-align:center}"+
+    "ul,ol{margin:0 0 8pt 16pt}a{color:#A8401F}";
+  const html="<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='ProgId' content='Word.Document'>"+
+    "<title>"+esc(m.judul)+"</title><style>"+css+"</style></head><body>"+clone.innerHTML+"</body></html>";
+  download("Modul-"+m.no+"-"+slug(m.judul)+".doc",html,"application/msword");
+  toast("Dokumen Word diunduh — buka di pengolah kata untuk kop sekolah dan tanda tangan.","file-text");
+}
+function doBackup(){
+  download("modul-ajar-informatika-cadangan.json",
+    JSON.stringify({v:1,app:"modul-ajar-informatika",done:[...done],edits},null,1),"application/json");
+  toast("Berkas cadangan diunduh — memuat semua penanda, suntingan, dan gambar yang disisipkan.","save");
+}
+function doRestore(file){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    let d; try{d=JSON.parse(fr.result)}catch(err){toast("Berkas cadangan tidak valid.","x");return;}
+    if(!d||typeof d!=="object"||!Array.isArray(d.done)||typeof d.edits!=="object"){
+      toast("Struktur cadangan tidak dikenali.","x");return;}
+    done=new Set(d.done.filter(x=>typeof x==="string"&&MODULES.some(m=>m.id===x)));
+    edits=d.edits;
+    persist(); renderNav();
+    if(state.cur) renderDoc(); else renderLanding();
+    toast("Data dipulihkan — "+done.size+" penanda dan "+Object.keys(edits).length+" suntingan tersimpan.","check");
+  };
+  fr.readAsText(file);
+}
+
+/* ================= SELEKSI & PERINTAH PENYUNTING ================= */
+function getRange(){
+  const s=window.getSelection();
+  if(s.rangeCount&&s.anchorNode&&view.contains(s.anchorNode)) return s.getRangeAt(0).cloneRange();
+  return lastRange;
+}
+function editableFrom(r){
+  if(!r) return null;
+  let n=r.commonAncestorContainer; if(n.nodeType===3)n=n.parentNode;
+  return (n.closest&&n.closest('[contenteditable="true"]'))||null;
+}
+function insertHTMLAtSel(html){
+  const r=getRange();
+  if(!r||!view.contains(r.commonAncestorContainer)){
+    toast("Klik dulu posisi sisipan di dalam dokumen.","info");return false;}
+  const ed=editableFrom(r);
+  if(!ed){toast("Klik dulu di dalam area yang dapat disunting.","info");return false;}
+  if(ed.tagName==="PRE"){toast("Gambar tidak dapat disisipkan di dalam blok kode.","x");return false;}
+  ed.focus();
+  const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  const ok=document.execCommand("insertHTML",false,html);
+  return ok!==false;
+}
+function runCmd(cmd,val){
+  const r=getRange();
+  const ed=r&&editableFrom(r);
+  if(!r||!ed){toast("Klik dulu pada teks yang akan diformat.","info");return;}
+  ed.focus();
+  const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  let v=val||null;
+  if(cmd==="formatBlock") v="<"+val+">";
+  document.execCommand(cmd,false,v);
+}
+
+/* ================= GAMBAR ================= */
+function buildFigHTML(src,caption,align){
+  align=align||"center";
+  const alt=(caption||"ilustrasi modul").replace(/"/g,"&quot;");
+  return '<figure class="m-fig" data-align="'+align+'"><img src="'+src+'" alt="'+alt+'" style="width:100%">'+
+    (caption?'<figcaption>'+esc(caption)+"</figcaption>":"")+'<span class="fig-resize"></span></figure>';
+}
+function compressImage(file,cb){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    const src=fr.result, im=new Image();
+    im.onload=()=>{
+      const MAX=1200, sc=Math.min(1,MAX/Math.max(im.width,im.height));
+      if(sc>=1&&(file.size<200000||src.length<260000)) return cb({src,w:im.width,h:im.height});
+      const c=document.createElement("canvas");
+      c.width=Math.max(1,Math.round(im.width*sc)); c.height=Math.max(1,Math.round(im.height*sc));
+      const x=c.getContext("2d");
+      x.fillStyle="#FFFFFF"; x.fillRect(0,0,c.width,c.height);
+      x.drawImage(im,0,0,c.width,c.height);
+      let out=c.toDataURL("image/jpeg",0.85);
+      if(file.type==="image/png"&&sc>=1&&out.length>src.length) out=src;
+      cb({src:out,w:c.width,h:c.height});
+    };
+    im.onerror=()=>cb({src,w:0,h:0});
+    im.src=src;
+  };
+  fr.readAsDataURL(file);
+}
+function openImageModal(){
+  lastRange=getRange()||lastRange;
+  const wasReplace=!!(currentImg&&document.contains(currentImg));
+  const body=`
+   <div class="seg-tabs">
+     <button type="button" class="seg on" data-tab="file">Unggah berkas</button>
+     <button type="button" class="seg" data-tab="url">Tautan gambar</button>
+   </div>
+   <div id="tabFile">
+     <label class="dropzone" id="dz">
+       <i data-lucide="image"></i>
+       <b>Seret berkas gambar ke sini</b>
+       <span>atau klik untuk memilih — JPG/PNG otomatis dikompresi (maks. sisi 1200 px)</span>
+       <input type="file" id="imgFile" accept="image/*" hidden>
+     </label>
+   </div>
+   <div id="tabUrl" hidden>
+     <label class="f-label">Alamat gambar (URL)</label>
+     <div class="url-row">
+       <input class="f-input" id="imgUrl" type="text" placeholder="https://contoh.com/gambar.jpg" autocomplete="off">
+       <button type="button" class="tbtn" id="btnUrlPrev">Pratampil</button>
+     </div>
+     <p class="f-err" id="urlErr" hidden>Tautan tidak dapat dimuat — periksa alamatnya (harus diawali https://).</p>
+   </div>
+   <div class="fig-prev" id="figPrev" hidden><img id="prevImg" alt="pratampilan"><div class="fig-meta" id="figMeta"></div></div>
+   <label class="f-label">Keterangan gambar (opsional)</label>
+   <input class="f-input" id="imgCap" type="text" placeholder="mis. Tabel kebenaran gerbang AND" autocomplete="off">
+   <div class="modal-actions">
+     <button type="button" class="tbtn" id="mBatal">Batal</button>
+     <button type="button" class="tbtn accent" id="mSisip" disabled>${wasReplace?"Ganti gambar":"Sisipkan gambar"}</button>
+   </div>`;
+  openModal(wasReplace?"Ganti Gambar":"Sisipkan Gambar",body,bd=>{
+    let pend=null;
+    const setPend=p=>{
+      pend=p;
+      bd.querySelector("#mSisip").disabled=!p;
+      const fp=bd.querySelector("#figPrev");
+      if(!p){fp.hidden=true;return;}
+      bd.querySelector("#prevImg").src=p.src;
+      bd.querySelector("#figMeta").textContent=p.w?(p.w+" × "+p.h+" px · "+fmtKB(p.src)):"dimuat dari tautan";
+      fp.hidden=false;
+    };
+    bd.querySelectorAll(".seg").forEach(t=>t.addEventListener("click",()=>{
+      bd.querySelectorAll(".seg").forEach(x=>x.classList.toggle("on",x===t));
+      bd.querySelector("#tabFile").hidden=t.dataset.tab!=="file";
+      bd.querySelector("#tabUrl").hidden=t.dataset.tab!=="url";
+      if(t.dataset.tab==="url") bd.querySelector("#imgUrl").focus();
+    }));
+    const dz=bd.querySelector("#dz"), fi=bd.querySelector("#imgFile");
+    dz.addEventListener("click",e=>{if(e.target!==fi) fi.click();});
+    fi.addEventListener("change",()=>{if(fi.files&&fi.files[0]) handleFile(fi.files[0]); fi.value="";});
+    dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("over");});
+    dz.addEventListener("dragleave",()=>dz.classList.remove("over"));
+    dz.addEventListener("drop",e=>{
+      e.preventDefault();dz.classList.remove("over");
+      const f=e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) handleFile(f);
+    });
+    function handleFile(f){
+      if(!/^image\//.test(f.type)){toast("Berkas itu bukan gambar.","x");return;}
+      compressImage(f,p=>{
+        setPend(p);
+        if(p.src.length>1400000)
+          toast("Gambar cukup besar — pertimbangkan tautan agar hemat penyimpanan.","info");
+      });
+    }
+    bd.querySelector("#btnUrlPrev").addEventListener("click",()=>{
+      let u=bd.querySelector("#imgUrl").value.trim(); if(!u) return;
+      if(!/^https?:\/\//i.test(u)) u="https://"+u;
+      bd.querySelector("#imgUrl").value=u;
+      bd.querySelector("#urlErr").hidden=true; setPend(null);
+      const im=new Image();
+      im.onload=()=>setPend({src:u,w:im.width,h:im.height});
+      im.onerror=()=>{bd.querySelector("#urlErr").hidden=false;};
+      im.src=u;
+    });
+    bd.querySelector("#mBatal").addEventListener("click",()=>closeModal(true));
+    bd.querySelector("#mSisip").addEventListener("click",()=>{
+      if(!pend) return;
+      const cap=bd.querySelector("#imgCap").value.trim();
+      closeModal(false);
+      if(wasReplace&&currentImg&&document.contains(currentImg)){
+        currentImg.src=pend.src;
+        toast("Gambar diganti.","image");
+      }else{
+        const ok=insertHTMLAtSel(buildFigHTML(pend.src,cap));
+        if(ok) toast("Gambar disisipkan — klik gambar untuk mengatur, seret pegangan merah untuk mengubah ukuran.","image");
+      }
+    });
+  });
+}
+function imgBarAction(act,arg){
+  if(!currentImg||!document.contains(currentImg)){hideImgBar();return;}
+  const fig=currentImg.closest(".m-fig");
+  if(act==="align") fig.setAttribute("data-align",arg);
+  else if(act==="width") currentImg.style.width=arg;
+  else if(act==="replace"){openImageModal();return;}
+  else if(act==="delete"){fig.remove();hideImgBar();toast("Gambar dihapus.","trash");return;}
+  placeImgBar();
+}
+
+/* ================= TABEL ================= */
+function tableOp(op){
+  const cell=currentCell;
+  if(!cell||!document.contains(cell)){hideTblBar();return;}
+  const tr=cell.parentElement, table=tr.closest("table");
+  if(!table) return;
+  const idx=Math.max(0,[...tr.children].indexOf(cell));
+  if(op==="row+"){
+    const nr=document.createElement("tr");
+    [...tr.children].forEach(c=>{
+      const t=document.createElement(c.tagName.toLowerCase());
+      t.innerHTML="&nbsp;"; nr.appendChild(t);
+    });
+    tr.after(nr);
+  }else if(op==="row-"){
+    if(table.querySelectorAll("tr").length>2) tr.remove();
+    else toast("Tabel minimal menyisakan satu baris.","info");
+  }else if(op==="col+"){
+    table.querySelectorAll("tr").forEach(r=>{
+      const ref=r.children[idx]||r.lastElementChild;
+      if(ref){const t=document.createElement(ref.tagName.toLowerCase()); t.innerHTML="&nbsp;"; ref.after(t);}
+    });
+  }else if(op==="col-"){
+    const anyLonger=[...table.querySelectorAll("tr")].some(r=>r.children.length>1);
+    if(!anyLonger){toast("Tabel minimal menyisakan satu kolom.","info");return;}
+    table.querySelectorAll("tr").forEach(r=>{
+      const c=r.children[idx];
+      if(c&&r.children.length>1) c.remove();
+    });
+  }
+  hideTblBar();
+}
+
+/* ================= TAUTAN ================= */
+function openLinkModal(){
+  lastRange=getRange()||lastRange;
+  const selText=(lastRange&&lastRange.toString)?lastRange.toString().slice(0,120):"";
+  const body=`
+   <label class="f-label">Alamat tautan</label>
+   <input class="f-input" id="lnkUrl" type="text" placeholder="https://contoh.com/halaman" autocomplete="off">
+   <label class="f-label">Teks yang tampil</label>
+   <input class="f-input" id="lnkTxt" type="text" value="${esc(selText)}" placeholder="boleh dikosongkan" autocomplete="off">
+   <div class="modal-actions">
+     <button type="button" class="tbtn" id="lBatal">Batal</button>
+     <button type="button" class="tbtn accent" id="lSisip">Sisipkan tautan</button>
+   </div>`;
+  openModal("Sisipkan Tautan",body,bd=>{
+    bd.querySelector("#lnkUrl").focus();
+    bd.querySelector("#lBatal").addEventListener("click",()=>closeModal(true));
+    bd.querySelector("#lSisip").addEventListener("click",()=>{
+      let u=bd.querySelector("#lnkUrl").value.trim();
+      if(!u){toast("Isi alamat tautannya terlebih dahulu.","info");return;}
+      if(!/^https?:\/\//i.test(u)) u="https://"+u;
+      const t=bd.querySelector("#lnkTxt").value.trim()||u;
+      closeModal(false);
+      if(insertHTMLAtSel('<a href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(t)+"</a>"))
+        toast("Tautan disisipkan.","link");
+    });
+  });
+}
+
+/* ================= MODAL ================= */
+const modalScrim=$("modalScrim");
+function openModal(title,html,onReady){
+  $("modalTitle").textContent=title;
+  $("modalBody").innerHTML=html;
+  renderIcons($("modalBody"));
+  modalScrim.hidden=false; modalOpen=true;
+  if(onReady) onReady($("modalBody"));
+}
+function closeModal(dismiss){
+  if(!modalOpen) return;
+  modalScrim.hidden=true; modalOpen=false;
+  const d=modalDismiss; modalDismiss=null;
+  if(dismiss&&d) d();
+}
+ $("modalClose").addEventListener("click",()=>closeModal(true));
+modalScrim.addEventListener("mousedown",e=>{if(e.target===modalScrim) closeModal(true);});
+
+/* ================= BILAH MELAYANG ================= */
+function placeBar(bar,rect){
+  bar.hidden=false;
+  const bw=bar.offsetWidth,bh=bar.offsetHeight;
+  let left=Math.max(10,Math.min(rect.left,innerWidth-bw-10));
+  let top=rect.top-bh-8;
+  if(top<10) top=Math.min(innerHeight-bh-10,rect.bottom+8);
+  bar.style.left=Math.round(left)+"px";
+  bar.style.top=Math.round(Math.max(10,top))+"px";
+}
+function showImgBar(img){ currentImg=img; placeBar($("imgBar"),img.getBoundingClientRect()); }
+function hideImgBar(){ $("imgBar").hidden=true; }
+function placeImgBar(){
+  if($("imgBar").hidden) return;
+  if(currentImg&&document.contains(currentImg)) placeBar($("imgBar"),currentImg.getBoundingClientRect());
+  else hideImgBar();
+}
+function showTblBar(cell){
+  currentCell=cell; tblAnchor=cell.closest("table");
+  placeBar($("tblBar"),tblAnchor.getBoundingClientRect());
+}
+function hideTblBar(){ $("tblBar").hidden=true; }
+function placeTblBar(){
+  if($("tblBar").hidden) return;
+  if(tblAnchor&&document.contains(tblAnchor)) placeBar($("tblBar"),tblAnchor.getBoundingClientRect());
+  else hideTblBar();
+}
+function hideBars(){ hideImgBar(); hideTblBar(); }
+
+function startFigResize(e){
+  const h=e.target.closest(".fig-resize"); if(!h) return;
+  e.preventDefault();
+  const fig=h.closest(".m-fig"), img=fig.querySelector("img");
+  const figW=Math.max(1,fig.getBoundingClientRect().width);
+  const startW=img.getBoundingClientRect().width, sx=e.clientX;
+  document.body.classList.add("noselect");
+  const move=ev=>{
+    let pct=(startW+(ev.clientX-sx))/figW*100;
+    pct=Math.max(8,Math.min(100,pct));
+    img.style.width=pct.toFixed(1)+"%";
+    if(currentImg===img) placeImgBar();
+  };
+  const up=()=>{
+    document.removeEventListener("mousemove",move);
+    document.removeEventListener("mouseup",up);
+    document.body.classList.remove("noselect");
+  };
+  document.addEventListener("mousemove",move);
+  document.addEventListener("mouseup",up);
+}
+
+/* ================= RAIL + SCROLL ================= */
+function buildRail(){
+  rail.innerHTML='<div class="rail-cap">Di halaman ini</div>'+
+    '<div class="rail-grp">Informasi Umum</div>'+
+    '<a href="#sec-ident">Identitas Modul</a><a href="#sec-cp">Capaian Pembelajaran</a>'+
+    '<div class="rail-grp">Komponen Inti</div>'+
+    '<a href="#sec-tp">Tujuan Pembelajaran</a><a href="#sec-pb">Pemahaman Bermakna</a>'+
+    '<a href="#sec-pm">Pertanyaan Pemantik</a><a href="#sec-keg">Kegiatan Pembelajaran</a>'+
+    '<a href="#sec-mat">Materi Pembelajaran</a><a href="#sec-as">Asesmen</a><a href="#sec-ref">Refleksi</a>';
+  if(spy) spy.disconnect();
+  if(typeof IntersectionObserver==="undefined") return;
+  const links={};
+  rail.querySelectorAll("a").forEach(a=>links[a.getAttribute("href").slice(1)]=a);
+  spy=new IntersectionObserver(es=>{
+    es.forEach(en=>{
+      if(en.isIntersecting){
+        rail.querySelectorAll("a.on").forEach(a=>a.classList.remove("on"));
+        const l=links[en.target.id]; if(l) l.classList.add("on");
+      }
+    });
+  },{rootMargin:"-90px 0px -76% 0px"});
+  view.querySelectorAll("[data-spy]").forEach(s=>spy.observe(s));
+}
+window.addEventListener("scroll",()=>{
+  placeImgBar(); placeTblBar();
+  const d=$("docEl"), bar=$("readprog");
+  if(!d||!bar) return;
+  const total=d.offsetHeight-window.innerHeight+140;
+  const y=Math.max(0,Math.min(window.scrollY-d.offsetTop,total));
+  bar.style.width=(total>0?y/total*100:100)+"%";
+},{passive:true});
+
+/* ================= PEMANTAUAN SELEKSI ================= */
+document.addEventListener("selectionchange",()=>{
+  if(!state.editing) return;
+  const s=window.getSelection();
+  if(s.rangeCount&&s.anchorNode&&view.contains(s.anchorNode))
+    lastRange=s.getRangeAt(0).cloneRange();
+});
+
+/* ================= EVENT GLOBAL ================= */
+document.addEventListener("mousedown",e=>{
+  const b=e.target.closest("#editbar button,.fbar button");
+  if(b){e.preventDefault();return;}
+  if(state.editing&&e.target.closest&&e.target.closest(".m-fig img")){e.preventDefault();return;}
+  if(state.editing&&e.target.closest&&e.target.closest(".fig-resize")) startFigResize(e);
+});
+document.addEventListener("click",e=>{
+  const cmd=e.target.closest("#editbar button[data-cmd]");
+  if(cmd){runCmd(cmd.dataset.cmd,cmd.dataset.val);return;}
+  const act=e.target.closest("#editbar button[data-act]");
+  if(act){act.dataset.act==="image"?openImageModal():openLinkModal();return;}
+  const ib=e.target.closest("#imgBar button");
+  if(ib){imgBarAction(ib.dataset.act,ib.dataset.arg);return;}
+  const tbB=e.target.closest("#tblBar button");
+  if(tbB){tableOp(tbB.dataset.act);return;}
+  const open=e.target.closest("[data-open]");
+  if(open){openModule(open.dataset.open);
+    if(innerWidth<=1024) closeDrawer(); return;}
+  const head=e.target.closest(".pert-head");
+  if(head&&!state.editing){
+    const p=head.closest(".pert"), willOpen=!p.classList.contains("open");
+    p.classList.toggle("open");
+    head.setAttribute("aria-expanded",willOpen);
+  }
+});
+view.addEventListener("click",e=>{
+  if(!state.editing){hideBars();return;}
+  const img=e.target.closest(".m-fig img");
+  if(img) showImgBar(img); else hideImgBar();
+  const cell=e.target.closest("td,th");
+  if(cell&&cell.closest("table.m-table,table.rubrik")&&view.contains(cell)) showTblBar(cell);
+  else hideTblBar();
+});
+view.addEventListener("paste",e=>{
+  if(!state.editing) return;
+  const cd=e.clipboardData; if(!cd) return;
+  const items=cd.items||[];
+  for(let i=0;i<items.length;i++){
+    const it=items[i];
+    if(it.kind==="file"&&it.type&&it.type.indexOf("image/")===0){
+      e.preventDefault();
+      const f=it.getAsFile(); if(!f) return;
+      compressImage(f,p=>{
+        if(insertHTMLAtSel(buildFigHTML(p.src,"")))
+          toast("Gambar dari papan klip disisipkan — otomatis dikompresi.","image");
+      });
+      return;
+    }
+  }
+  const t=e.target;
+  if(t&&t.closest&&t.closest("pre")) return;
+  const html=cd.getData&&cd.getData("text/html");
+  if(html){ e.preventDefault(); insertHTMLAtSel(sanitizeHTML(html)); }
+});
+
+const searchInput=$("searchInput");
+searchInput.addEventListener("input",()=>{state.q=searchInput.value;renderNav();});
+document.addEventListener("keydown",e=>{
+  if(modalOpen){ if(e.key==="Escape"){e.preventDefault();closeModal(true);} return; }
+  if((e.ctrlKey||e.metaKey)&&(e.key==="s"||e.key==="S")){
+    if(state.editing){e.preventDefault();saveEdits();} return;
+  }
+  if(state.editing&&e.key==="Enter"&&!e.shiftKey){
+    const r=getRange(), ed=r&&editableFrom(r);
+    if(ed){
+      let n=r.startContainer; if(n.nodeType===3)n=n.parentNode;
+      const inLi=n.closest&&n.closest("li");
+      const inCell=n.closest&&n.closest("td,th");
+      if(!inLi&&!inCell){
+        e.preventDefault();
+        ed.focus();
+        const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        if(!document.execCommand("insertLineBreak"))
+          document.execCommand("insertHTML",false,"<br>");
+        return;
+      }
+    }
+  }
+  const a=document.activeElement,
+        typing=a&&(a.tagName==="INPUT"||a.tagName==="TEXTAREA"||a.isContentEditable);
+  if(e.key==="/"&&!typing){e.preventDefault();searchInput.focus();}
+  else if(e.key==="Escape"){
+    if(state.editing) cancelEdit();
+    else if(sidebar.classList.contains("open")) closeDrawer();
+    else if(a===searchInput) searchInput.blur();
+  }
+});
+window.addEventListener("beforeunload",e=>{
+  if(state.editing){e.preventDefault();e.returnValue="";}
+});
+function closeDrawer(){sidebar.classList.remove("open");$("scrim").classList.remove("show");}
+ $("btnMenu").addEventListener("click",()=>{sidebar.classList.add("open");$("scrim").classList.add("show");});
+ $("scrim").addEventListener("click",closeDrawer);
+ $("btnBackup").addEventListener("click",doBackup);
+ $("btnRestore").addEventListener("click",()=>$("fileRestore").click());
+ $("fileRestore").addEventListener("change",e=>{
+  const f=e.target.files&&e.target.files[0]; e.target.value="";
+  if(f) doRestore(f);
+});
+
+/* ================= MULAI ================= */
+try{
+  renderIcons();
+  renderLanding();
+}catch(err){
+  console.error(err);
+  view.innerHTML='<div class="landing" style="padding:90px 40px">'+
+    '<div class="land-kicker">Kendala teknis</div>'+
+    '<h1 class="land-title">Halaman gagal disiapkan</h1>'+
+    '<p class="lede">Terjadi galat saat merender modul: <b>'+
+    esc(err&&err.message?String(err.message):"tidak diketahui")+
+    '</b>. Muat ulang halaman; bila berlanjut, buka konsol peramban (F12) untuk rincian galat.</p></div>';
+}
+</script>
+</body>
+</html>
