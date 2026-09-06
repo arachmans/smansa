@@ -1,0 +1,2288 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Ajar Informatika SMA — Rumus IF &amp; VLOOKUP Excel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ DASAR & VARIABEL ============ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --paper:#F6F1E6; --paper2:#EFE7D4; --paper3:#E6DCC4;
+  --ink:#1D2B24; --ink2:#5B6757;
+  --line:#DDD3BB; --line2:#C9BC9E;
+  --green:#1F5C44; --green-hard:#1F5C44; --green-ic:#8FD9AE;
+  --amber:#A26E12; --amber-t:#F4EAD0; --amber-line:#E0CFA4;
+  --red:#A83E28; --ok:#2C6E49; --ok-t:#E3EEE5; --bad-t:#F3E0DA;
+  --ghost:rgba(29,43,36,.16);
+  --code-bg:#132018; --code-tx:#E8E2CF; --code-kw:#8FD9AE; --code-str:#E5B661; --code-cm:#8A9683;
+  --shadow-c:rgba(29,43,36,.08);
+}
+[data-theme="dark"]{
+  --paper:#131C17; --paper2:#192620; --paper3:#223228;
+  --ink:#EBE4D2; --ink2:#AEB8A8;
+  --line:#2A382F; --line2:#3A483D;
+  --green:#7CC9A0; --green-hard:#7CC9A0; --green-ic:#7CC9A0;
+  --amber:#E0A93F; --amber-t:rgba(224,169,63,.10); --amber-line:rgba(224,169,63,.28);
+  --red:#E08B6A; --ok:#7CC9A0; --ok-t:rgba(124,201,160,.12); --bad-t:rgba(224,139,106,.14);
+  --ghost:rgba(235,228,210,.14);
+  --code-bg:#0C1310; --code-tx:#E8E2CF; --code-kw:#8FD9AE; --code-str:#E5B661; --code-cm:#6E7A6C;
+  --shadow-c:rgba(0,0,0,.3);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9990;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+::selection{background:var(--amber-t);color:var(--ink)}
+button{font-family:inherit;color:inherit}
+svg[data-lucide]{width:16px;height:16px}
+
+/* ============ SIDEBAR ============ */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:320px;z-index:800;background:var(--paper);border-right:1px solid var(--line2);display:flex;flex-direction:column;transition:transform .28s ease}
+.s-head{padding:20px 18px 14px;border-bottom:1px solid var(--line)}
+.s-brand{display:flex;gap:12px;align-items:center}
+.s-brand .bmark{flex:0 0 40px;height:40px;border:1.5px solid var(--ink);border-radius:9px;display:grid;place-items:center;background:var(--paper2)}
+.s-brand h1{font-family:'Fraunces',serif;font-weight:600;font-size:1.1rem;line-height:1.1}
+.s-brand .bsub{font:600 .58rem 'IBM Plex Mono';letter-spacing:.16em;color:var(--green);margin-top:4px}
+.s-tools{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.icon-btn{width:34px;height:34px;border:1.5px solid var(--ink);border-radius:8px;display:grid;place-items:center;background:var(--paper);cursor:pointer;transition:.15s}
+.icon-btn:hover{background:var(--paper2);transform:translateY(-1px)}
+.icon-btn svg{width:15px;height:15px}
+[data-theme="light"] .ic-sun{display:none}
+[data-theme="dark"] .ic-moon{display:none}
+body:not(.editing) .ic-pencil-off{display:none}
+body.editing .ic-pencil{display:none}
+.s-progress{padding:14px 18px;border-bottom:1px solid var(--line)}
+.prog-top{display:flex;justify-content:space-between;align-items:center;font:600 .64rem 'IBM Plex Mono';letter-spacing:.12em;color:var(--ink2)}
+.prog-top b{color:var(--green)}
+.pbar{height:6px;background:var(--paper3);border-radius:99px;overflow:hidden;margin-top:8px}
+.pfill{height:100%;background:var(--green);width:0;transition:width .45s ease}
+.reset-link{margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font:600 .62rem 'IBM Plex Mono';letter-spacing:.08em;color:var(--ink2);padding:0}
+.reset-link:hover{color:var(--red)}
+.reset-link svg{width:11px;height:11px}
+.toc{flex:1;overflow-y:auto;padding:10px 12px;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+.toc::-webkit-scrollbar{width:5px}
+.toc::-webkit-scrollbar-thumb{background:var(--line2);border-radius:9px}
+.toc-item{display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;cursor:pointer;color:var(--ink2);border:1px solid transparent;margin-bottom:2px;transition:.15s}
+.toc-item:hover{background:var(--paper2);color:var(--ink)}
+.toc-item.active{background:var(--paper2);border-color:var(--line2);color:var(--ink);font-weight:600}
+.toc-num{font:600 .62rem 'IBM Plex Mono';color:var(--green);width:22px;flex:0 0 22px}
+.toc-title{flex:1;font-size:.82rem;line-height:1.35}
+.toc-check{width:13px;height:13px;color:var(--ok);opacity:0;flex:0 0 13px;transition:.2s}
+.toc-item.done .toc-check{opacity:1}
+.s-foot{padding:14px 18px;border-top:1px solid var(--line);font-size:.68rem;color:var(--ink2);line-height:1.5}
+
+/* ============ MOBILE BAR, EDITBAR, SCRIM ============ */
+.mobilebar{display:none;position:fixed;top:0;left:0;right:0;height:58px;z-index:700;background:var(--paper);border-bottom:1px solid var(--line2);align-items:center;gap:10px;padding:0 16px}
+.mobilebar .m-title{font-family:'Fraunces',serif;font-weight:600;font-size:.95rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scrim{position:fixed;inset:0;background:rgba(20,28,24,.45);z-index:750;opacity:0;pointer-events:none;transition:.25s}
+.scrim.show{opacity:1;pointer-events:auto}
+.editbar{position:fixed;top:0;left:320px;right:0;z-index:820;display:none;align-items:center;gap:12px;padding:10px 20px;background:var(--paper);border-bottom:2px solid var(--amber);box-shadow:0 6px 18px var(--shadow-c);flex-wrap:wrap}
+body.editing .editbar{display:flex}
+.eb-badge{display:flex;gap:9px;align-items:center;font:700 .68rem 'IBM Plex Mono';letter-spacing:.14em;color:var(--amber);white-space:nowrap}
+.eb-dot{width:9px;height:9px;border-radius:50%;background:var(--amber);animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+#ebDirty{font:700 .62rem 'IBM Plex Mono';color:var(--ok);white-space:nowrap}
+#ebDirty.is-dirty{color:var(--red)}
+.eb-spacer{flex:1}
+.eb-btns{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ============ MAIN ============ */
+.main{margin-left:320px;padding:48px 40px 80px}
+body.editing .main{padding-top:116px}
+.chapter{display:none;max-width:800px;margin:0 auto}
+.chapter.active{display:block;animation:fadeUp .45s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+p{margin:0 0 1rem}
+.lead{font-size:1.05rem;color:var(--ink);line-height:1.8}
+.lead::first-letter{font-family:'Fraunces',serif;font-weight:600;font-size:3.3em;float:left;line-height:.78;padding:8px 12px 0 0;color:var(--green)}
+.ch-eyebrow{display:flex;gap:9px;align-items:center;font:600 .68rem 'IBM Plex Mono';letter-spacing:.15em;color:var(--green);text-transform:uppercase;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:24px;flex-wrap:wrap}
+.ch-eyebrow svg{width:13px;height:13px;flex:0 0 13px}
+.ch-title{display:flex;gap:22px;align-items:flex-start;margin-bottom:10px}
+.ch-num{font-family:'Fraunces',serif;font-weight:300;font-size:4.4rem;line-height:.85;color:var(--ghost);flex:0 0 auto}
+.chapter h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.65rem,3.2vw,2.25rem);line-height:1.12;letter-spacing:-.01em;margin:4px 0 6px}
+.ch-sub{color:var(--ink2);font-size:.95rem;margin:0}
+.comp{margin:36px 0}
+.comp-label{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.comp-label svg{width:15px;height:15px;color:var(--green);flex:0 0 15px}
+.comp-label span{font:600 .72rem 'IBM Plex Mono';letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.comp-label::after{content:"";flex:1;height:1px;background:var(--line2)}
+.tp-list{list-style:none;counter-reset:tp}
+.tp-list li{counter-increment:tp;position:relative;padding-left:74px;margin:.6rem 0;min-height:32px}
+.tp-list li::before{content:"TP " attr(data-prefix) counter(tp);position:absolute;left:0;top:.35em;font:600 .66rem/1 'IBM Plex Mono';color:var(--green);border:1px solid var(--line2);padding:5px 7px;border-radius:5px;background:var(--paper2)}
+.mb-list{list-style:none}
+.mb-list li{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:1.16rem;line-height:1.55;padding-left:2.6rem;position:relative;margin:1.1rem 0}
+.mb-list li::before{content:"\201C";position:absolute;left:0;top:-.4em;font-size:2.8rem;color:var(--amber);font-family:'Fraunces',serif;line-height:1}
+.spark{background:var(--amber-t);border:1px solid var(--amber-line);border-left:4px solid var(--amber);padding:20px 24px;border-radius:10px}
+.spark-head{display:flex;gap:9px;align-items:center;font:600 .7rem 'IBM Plex Mono';letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:12px}
+.spark-head svg{width:14px;height:14px}
+.spark ul{list-style:none}
+.spark li{position:relative;padding-left:44px;margin:.85rem 0;font-weight:500;line-height:1.6}
+.spark li .qn{position:absolute;left:0;top:.22em;font:600 .66rem 'IBM Plex Mono';color:var(--amber);border:1px solid var(--amber-line);background:var(--paper);padding:4px 7px;border-radius:5px}
+.tl{display:flex;flex-direction:column;gap:30px}
+.tl-phase{position:relative;padding-left:28px;border-left:2px solid var(--line2)}
+.tl-phase::before{content:"";position:absolute;left:-8px;top:4px;width:13px;height:13px;border-radius:50%;background:var(--paper);border:3px solid var(--green)}
+.tl-phase.core::before{border-color:var(--amber)}
+.tl-phase.core .ph-name{color:var(--amber)}
+.ph-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.ph-name{font:600 .72rem 'IBM Plex Mono';letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.ph-time{font:600 .64rem 'IBM Plex Mono';color:var(--ink2);border:1px solid var(--line2);border-radius:99px;padding:3px 10px;background:var(--paper2)}
+.tl-step{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.tl-step:last-child{border-bottom:none}
+.st-time{flex:0 0 46px;font:600 .68rem 'IBM Plex Mono';color:var(--green);border:1px solid var(--line2);border-radius:6px;padding:4px 0;text-align:center;height:fit-content;background:var(--paper2);margin-top:2px}
+.st-body h4{font-weight:700;font-size:.95rem;margin:0 0 3px}
+.st-body p{font-size:.9rem;color:var(--ink2);margin:0}
+.sum-list{list-style:none}
+.sum-list li{position:relative;padding-left:26px;margin:.5rem 0;font-size:.95rem}
+.sum-list li::before{content:"";position:absolute;left:4px;top:.62em;width:7px;height:7px;background:var(--green);flex:0 0 7px}
+.jump-link{display:inline-flex;align-items:center;gap:9px;margin-top:16px;padding:10px 16px;border:1.5px solid var(--ink);border-radius:8px;background:var(--paper);cursor:pointer;font:700 .78rem 'Plus Jakarta Sans';box-shadow:3px 3px 0 var(--green-hard);transition:.15s}
+.jump-link:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--green-hard)}
+.jump-link:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--green-hard)}
+.jump-link svg{width:14px;height:14px;color:var(--green)}
+.as-mini{font-size:.92rem;color:var(--ink2)}
+.as-mini strong{color:var(--ink)}
+.tbl-scroll{overflow-x:auto;margin:8px 0}
+table.tbl{width:100%;border-collapse:collapse;font-size:.88rem;min-width:560px}
+.tbl th{text-align:left;font:600 .64rem 'IBM Plex Mono';letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);border-bottom:2px solid var(--ink);padding:10px 12px;white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .c-em{font-weight:700;color:var(--green)}
+.id-table{border:1px solid var(--line2);border-radius:12px;overflow:hidden;background:var(--paper2)}
+.id-row{display:grid;grid-template-columns:230px 1fr;border-bottom:1px solid var(--line)}
+.id-row:last-child{border-bottom:none}
+.id-row dt{font:600 .64rem 'IBM Plex Mono';letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);padding:13px 18px;border-right:1px solid var(--line)}
+.id-row dd{padding:12px 18px;font-size:.93rem;font-weight:500}
+.cp-quote{border:1.5px solid var(--ink);border-left:6px solid var(--green);border-radius:12px;padding:24px 28px;background:var(--paper2);box-shadow:4px 4px 0 var(--green-hard)}
+.cp-quote p{font-family:'Fraunces',serif;font-size:1.08rem;line-height:1.7;font-weight:500;margin:0}
+.cp-quote footer{margin-top:12px;font:600 .64rem 'IBM Plex Mono';letter-spacing:.12em;color:var(--ink2)}
+.doc{border:1px solid var(--line2);border-radius:12px;margin-bottom:14px;background:var(--paper2);scroll-margin-top:24px}
+.doc>summary{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;list-style:none;user-select:none}
+.doc>summary::-webkit-details-marker{display:none}
+.doc .doc-num{font:600 .66rem 'IBM Plex Mono';color:var(--green);border:1px solid var(--line2);background:var(--paper);padding:5px 8px;border-radius:5px;flex:0 0 auto}
+.doc .doc-title{flex:1;font-family:'Fraunces',serif;font-weight:600;font-size:1.12rem;line-height:1.25}
+.doc .chev{transition:transform .2s;color:var(--ink2)}
+.doc[open] .chev{transform:rotate(90deg)}
+.doc-body{padding:6px 24px 24px;border-top:1px solid var(--line)}
+.doc-body h4{font-family:'Fraunces',serif;font-size:1.02rem;font-weight:600;margin:22px 0 8px}
+.doc-body p{font-size:.94rem;color:var(--ink)}
+.doc-body p.mut{color:var(--ink2)}
+.doc-body ul,.doc-body ol{margin:0 0 1rem 1.2rem;font-size:.94rem}
+.doc-body li{margin:.35rem 0}
+details.key{margin:14px 0;border:1px dashed var(--amber-line);border-radius:9px;background:var(--amber-t)}
+details.key>summary{display:flex;align-items:center;gap:9px;padding:11px 16px;cursor:pointer;list-style:none;font:600 .72rem 'IBM Plex Mono';letter-spacing:.08em;color:var(--amber)}
+details.key>summary::-webkit-details-marker{display:none}
+details.key svg{width:13px;height:13px}
+details.key .key-body{padding:0 18px 14px;font-size:.9rem}
+details.key .key-body p{margin:0}
+.exercise{border:1px solid var(--line2);border-left:4px solid var(--green);border-radius:9px;padding:16px 20px;margin:16px 0;background:var(--paper)}
+.exercise .ex-tag{font:600 .64rem 'IBM Plex Mono';letter-spacing:.14em;color:var(--green);margin-bottom:8px}
+.exercise p{margin:0;font-size:.94rem}
+pre.code{background:var(--code-bg);color:var(--code-tx);padding:18px 20px;border-radius:10px;font:500 .8rem/1.7 'IBM Plex Mono';overflow-x:auto;border:1px solid var(--line);margin:14px 0}
+pre.code .kw{color:var(--code-kw);font-weight:600}
+pre.code .str{color:var(--code-str)}
+pre.code .cm{color:var(--code-cm);font-style:italic}
+.flow{width:100%;height:auto;display:block}
+.nrect,.ndia,.npara{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}
+.npill{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}
+.nend{fill:var(--green-hard);stroke:var(--ink);stroke-width:1.5}
+[data-theme="dark"] .nend{fill:var(--green);stroke:var(--ink)}
+.ntext{font:600 11px 'IBM Plex Mono';fill:var(--ink);text-anchor:middle}
+[data-theme="dark"] .nend + .ntext, .ntext.on-end{fill:#F6F1E6}
+[data-theme="dark"] .ntext.on-end{fill:#0F1713}
+.edge{stroke:var(--green);stroke-width:1.6;fill:none;stroke-dasharray:7 5;animation:flow 1.1s linear infinite}
+.edge.loop{stroke:var(--amber)}
+@keyframes flow{to{stroke-dashoffset:-12}}
+.arr{fill:var(--green-hard)}
+[data-theme="dark"] .arr{fill:var(--green)}
+.arr.loop{fill:var(--amber)}
+.blabel{font:600 10px 'IBM Plex Mono';fill:var(--ink2);text-anchor:middle}
+.blabel.yes{fill:var(--green)}
+.blabel.no{fill:var(--amber)}
+.vhead{fill:var(--paper3);stroke:var(--ink);stroke-width:1.2}
+.vrow{fill:var(--paper);stroke:var(--ink);stroke-width:1.2}
+.vrow.hl{fill:var(--amber-t);stroke:var(--amber);stroke-width:1.6}
+.figpanel{border:1.5px solid var(--ink);border-radius:14px;background:var(--paper2);padding:24px 16px 14px;box-shadow:5px 5px 0 var(--green-hard)}
+.figpanel figcaption{font:600 .6rem 'IBM Plex Mono';letter-spacing:.14em;color:var(--ink2);text-align:center;margin-top:10px}
+.sym{display:block;margin:0 auto}
+.quiz-box{border:2px solid var(--ink);border-radius:14px;padding:26px;background:var(--paper2);box-shadow:5px 5px 0 var(--amber);margin-top:16px}
+.quiz-head{display:flex;gap:10px;align-items:center;font:600 .72rem 'IBM Plex Mono';letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.quiz-head svg{width:15px;height:15px}
+.q-card{border:1px solid var(--line2);border-radius:11px;margin-bottom:16px;padding:18px 20px;background:var(--paper)}
+.q-num{font:600 .66rem 'IBM Plex Mono';color:var(--amber);letter-spacing:.1em}
+.q-text{font-weight:700;font-size:.98rem;margin:6px 0 12px;line-height:1.55}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:10px 14px;border:1px solid var(--line2);border-radius:8px;background:var(--paper);cursor:pointer;font-size:.9rem;line-height:1.5;margin:7px 0;transition:.13s}
+.opt .otag{font:600 .66rem 'IBM Plex Mono';color:var(--ink2);flex:0 0 auto;padding-top:2px}
+.opt:hover:not(:disabled){border-color:var(--ink);transform:translateX(3px)}
+.opt:disabled{cursor:default;opacity:.45}
+.opt.ok{border-color:var(--ok);background:var(--ok-t);opacity:1}
+.opt.ok .otag{color:var(--ok)}
+.opt.bad{border-color:var(--red);background:var(--bad-t);opacity:1}
+.opt.bad .otag{color:var(--red)}
+.why{margin-top:10px;padding:12px 16px;border-left:3px solid var(--green);background:var(--paper2);font-size:.88rem;border-radius:0 8px 8px 0}
+.why b{color:var(--green)}
+.q-result{border:2px solid var(--ink);border-radius:12px;padding:28px;text-align:center;background:var(--paper);margin-top:20px}
+.score-num{font-family:'Fraunces',serif;font-weight:600;font-size:3.2rem;line-height:1;color:var(--green)}
+.score-msg{margin:10px 0 18px;font-size:.92rem;color:var(--ink2)}
+.form-block{border:1px solid var(--line2);border-radius:12px;padding:24px 26px;background:var(--paper2);margin-bottom:22px}
+.f-label{font:600 .68rem 'IBM Plex Mono';letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);display:block;margin:16px 0 7px}
+.f-label:first-of-type{margin-top:0}
+textarea.ta{width:100%;min-height:92px;padding:12px 14px;border:1px solid var(--line2);border-radius:8px;background:var(--paper);font:400 .9rem/1.6 'Plus Jakarta Sans';color:var(--ink);resize:vertical}
+textarea.ta:focus{outline:none;border-color:var(--green)}
+.likert-row{padding:13px 0;border-bottom:1px dashed var(--line)}
+.likert-row:last-of-type{border-bottom:none}
+.likert-q{font-weight:600;font-size:.92rem;margin-bottom:9px}
+.likert-opts{display:flex;gap:7px;flex-wrap:wrap}
+.likert-opts label{cursor:pointer;position:relative}
+.likert-opts input{position:absolute;opacity:0}
+.likert-opts span{display:inline-block;padding:6px 11px;border:1px solid var(--line2);border-radius:6px;font:600 .64rem 'IBM Plex Mono';color:var(--ink2);transition:.13s;background:var(--paper)}
+.likert-opts label:hover span{border-color:var(--ink);color:var(--ink)}
+.likert-opts input:checked+span{background:var(--green-hard);border-color:var(--green-hard);color:#F6F1E6}
+[data-theme="dark"] .likert-opts input:checked+span{background:var(--green);border-color:var(--green);color:#0F1713}
+.likert-legend{font:500 .64rem 'IBM Plex Mono';color:var(--ink2);margin-bottom:10px}
+.save-row{display:flex;align-items:center;gap:16px;margin-top:20px;flex-wrap:wrap}
+.saved-at{font:600 .64rem 'IBM Plex Mono';color:var(--ok)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:700 .8rem 'Plus Jakarta Sans';padding:11px 18px;border-radius:8px;border:1.5px solid var(--ink);cursor:pointer;transition:.15s;background:var(--paper);color:var(--ink)}
+.btn svg{width:14px;height:14px}
+.btn.solid{background:var(--ink);color:var(--paper);box-shadow:3px 3px 0 var(--green-hard)}
+.btn.solid:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--green-hard)}
+.btn.solid:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--green-hard)}
+.btn.amber{background:var(--amber);color:#FFF7EC;box-shadow:3px 3px 0 var(--amber-line)}
+.btn.amber:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--amber-line)}
+.btn.ghost:hover{background:var(--paper2)}
+.btn.mark.is-done{background:var(--ok-t);border-color:var(--ok);color:var(--ok);box-shadow:none}
+.btn.danger{background:var(--red);color:#FFF7EC;border-color:var(--ink)}
+.ch-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:44px;padding-top:20px;border-top:1px solid var(--line);flex-wrap:wrap}
+.ch-foot .fr{display:flex;gap:10px;flex-wrap:wrap}
+.toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:1000;align-items:center}
+.toast{display:flex;gap:10px;align-items:center;background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:9px;box-shadow:4px 4px 0 var(--green-hard);font-size:.85rem;font-weight:600;animation:toastIn .3s ease}
+.toast svg{width:15px;height:15px;color:var(--green-ic)}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.modal-overlay{position:fixed;inset:0;background:rgba(20,28,24,.5);display:none;align-items:center;justify-content:center;z-index:900;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--paper);border:1.5px solid var(--ink);border-radius:13px;max-width:440px;width:100%;padding:28px;box-shadow:6px 6px 0 var(--green-hard);animation:popIn .22s ease}
+.modal h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.35rem;margin-bottom:8px}
+.modal p{font-size:.9rem;color:var(--ink2)}
+.modal .m-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;flex-wrap:wrap}
+@keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.hero{display:grid;grid-template-columns:1.12fr .88fr;gap:44px;align-items:center;padding:8px 0 44px}
+.hero-eyebrow{font:600 .66rem 'IBM Plex Mono';letter-spacing:.2em;color:var(--green);display:flex;align-items:center;gap:10px}
+.hero-eyebrow::before{content:"";width:26px;height:1.5px;background:var(--green)}
+.hero h2.big{font-family:'Fraunces',serif;font-size:clamp(2.5rem,4.8vw,3.9rem);line-height:1.04;font-weight:600;letter-spacing:-.015em;margin:16px 0 18px}
+.hero h2.big em{font-style:italic;font-weight:500;border-bottom:5px solid var(--amber);padding-bottom:1px}
+.hero-sub{font-size:1.05rem;color:var(--ink2);max-width:46ch;line-height:1.75}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0}
+.chip{font:600 .62rem 'IBM Plex Mono';letter-spacing:.1em;border:1px solid var(--ink);padding:6px 11px;border-radius:99px;background:var(--paper2);white-space:nowrap}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.formula{border:1.5px dashed var(--line2);border-radius:10px;padding:16px 22px;background:var(--paper);text-align:center;font-family:'Fraunces',serif;font-size:1.05rem;margin:16px 0}
+.formula .fx{color:var(--green);font-weight:600}
+
+/* ============ MODE EDIT ============ */
+.edit-only{display:none!important}
+body.editing .edit-only{display:inline-flex!important}
+body.editing .add-btn{display:flex!important}
+.rm-btn{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--red);color:var(--red);background:var(--paper);font:700 14px/1 'Plus Jakarta Sans';align-items:center;justify-content:center;cursor:pointer;padding:0;flex:0 0 auto;transition:.13s}
+.rm-btn:hover{background:var(--red);color:#FFF6EE}
+.add-btn{width:100%;justify-content:center;align-items:center;gap:8px;padding:9px 14px;border:1.5px dashed var(--green);border-radius:8px;background:var(--paper);color:var(--green);font:700 .76rem 'Plus Jakarta Sans';cursor:pointer;margin:10px 0;transition:.13s}
+.add-btn:hover{background:var(--ok-t)}
+.add-chapter{max-width:800px;margin:18px auto 0}
+body.editing li{position:relative}
+body.editing .tp-list li,body.editing .mb-list li,body.editing .sum-list li,body.editing .spark li{padding-right:38px}
+body.editing li>.rm-btn{position:absolute;right:4px;top:2px}
+body.editing .tl-step{position:relative;padding-right:34px}
+body.editing .tl-step>.rm-btn{position:absolute;right:2px;top:10px}
+body.editing .q-card{position:relative;padding-right:36px}
+body.editing .q-card>.rm-btn{position:absolute;right:10px;top:12px}
+body.editing .id-row{position:relative}
+body.editing .id-row>.rm-btn{position:absolute;right:8px;top:10px;z-index:2}
+body.editing .id-row dd{padding-right:44px}
+body.editing .tbl td{position:relative}
+body.editing .tbl td>.rm-btn{position:static;display:inline-flex;margin-right:8px;vertical-align:middle}
+body.editing .ch-eyebrow .rm-btn,body.editing .ph-head .rm-btn{margin-left:8px;position:static}
+body.editing [contenteditable="true"]{outline:1.5px dashed var(--amber-line);outline-offset:2px;border-radius:4px}
+body.editing [contenteditable="true"]:hover{outline-color:var(--amber)}
+body.editing [contenteditable="true"]:focus{outline:2px solid var(--amber);background:var(--amber-t)}
+body.editing [contenteditable="true"]:empty::before{content:"(tulis di sini…)";color:var(--ink2);font-style:italic;opacity:.7}
+body.editing [contenteditable="false"]{outline:none}
+.opt-row{display:flex;gap:8px;align-items:flex-start}
+.opt-row .opt{flex:1;margin:7px 0}
+.qk-btn{flex:0 0 auto;font:700 .56rem 'IBM Plex Mono';letter-spacing:.08em;border:1.5px solid var(--line2);border-radius:6px;padding:5px 8px;background:var(--paper);color:var(--ink2);cursor:pointer;margin:7px 0 0}
+.qk-btn.on{border-color:var(--ok);color:var(--ok);background:var(--ok-t)}
+.qk-btn.del{border-color:var(--red);color:var(--red)}
+.qk-btn.del:hover{background:var(--red);color:#FFF6EE}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1060px){.hero{grid-template-columns:1fr}.hero-fig{max-width:400px}}
+@media(max-width:960px){
+  .mobilebar{display:flex}
+  .sidebar{transform:translateX(-104%)}
+  .sidebar.open{transform:none;box-shadow:8px 0 30px rgba(0,0,0,.2)}
+  .main{margin-left:0;padding:82px 20px 70px}
+  body.editing .main{padding-top:166px}
+  .editbar{left:0;top:58px}
+  .ch-title{gap:14px}.ch-num{font-size:3rem}
+  .id-row{grid-template-columns:1fr}
+  .id-row dt{border-right:none;border-bottom:1px dashed var(--line);padding-bottom:2px}
+  .id-row dd{padding-top:8px}
+}
+@media print{
+  @page{margin:16mm 15mm}
+  body{background:#fff;font-size:11.5pt}
+  body::after,.sidebar,.mobilebar,.scrim,.ch-foot,.btn,.hero-actions,.reset-link,.jump-link,.q-result,.save-row,.no-print,.toast-wrap,.modal-overlay,#jsErrBanner{display:none!important}
+  .main{margin:0;padding:0;max-width:100%}
+  .chapter{display:block!important;page-break-after:always;animation:none}
+  .chapter:last-child{page-break-after:auto}
+  .quiz-box,.form-block,.figpanel,.spark{box-shadow:none}
+  textarea.ta{border:1px solid #999;min-height:60px}
+  .doc,.quiz-box{break-inside:avoid}
+  .editbar{display:none!important}
+  body.editing .edit-only{display:none!important}
+  body.editing .main{padding-top:0!important}
+}
+</style>
+</head>
+<body>
+
+<!-- bilah mobile -->
+<div class="mobilebar">
+  <button class="icon-btn" id="menuBtn" aria-label="Buka daftar isi"><i data-lucide="menu"></i></button>
+  <span class="m-title">Modul Ajar — IF &amp; VLOOKUP Excel</span>
+  <button class="icon-btn dl-btn" aria-label="Unduh DOCX"><i data-lucide="file-down"></i></button>
+  <button class="icon-btn print-btn" aria-label="Cetak"><i data-lucide="printer"></i></button>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<!-- bilah mode edit -->
+<div class="editbar" id="editbar">
+  <span class="eb-badge"><span class="eb-dot"></span>MODE EDIT AKTIF</span>
+  <span id="ebDirty">tersimpan</span>
+  <span class="eb-spacer"></span>
+  <div class="eb-btns">
+    <button class="btn amber" id="ebSave"><i data-lucide="save"></i> Simpan Perubahan</button>
+    <button class="btn ghost" id="ebRestore"><i data-lucide="undo-2"></i> Kembalikan ke Asli</button>
+    <button class="btn solid" id="ebDone"><i data-lucide="check"></i> Selesai</button>
+  </div>
+</div>
+
+<!-- sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="s-head">
+    <div class="s-brand">
+      <span class="bmark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--green)">
+          <rect x="3" y="3" width="18" height="18" rx="4"/>
+          <circle cx="8.5" cy="8.5" r="2" fill="currentColor" stroke="none"/>
+          <circle cx="15.5" cy="15.5" r="2" fill="currentColor" stroke="none"/>
+          <path d="M10 10l4 4"/>
+        </svg>
+      </span>
+      <div>
+        <h1>Modul Ajar</h1>
+        <div class="bsub">INFORMATIKA · SMA · FASE F</div>
+      </div>
+    </div>
+    <div class="s-tools">
+      <button class="icon-btn" id="themeBtn" aria-label="Ganti tema">
+        <span class="ic-moon"><i data-lucide="moon"></i></span>
+        <span class="ic-sun"><i data-lucide="sun"></i></span>
+      </button>
+      <button class="icon-btn" id="editToggleBtn" aria-label="Mode edit" title="Mode edit lengkap">
+        <span class="ic-pencil"><i data-lucide="pencil"></i></span>
+        <span class="ic-pencil-off"><i data-lucide="pencil-off"></i></span>
+      </button>
+      <button class="icon-btn dl-btn" aria-label="Unduh DOCX" title="Unduh modul sebagai file Word (.docx)"><i data-lucide="file-down"></i></button>
+      <button class="icon-btn print-btn" aria-label="Cetak modul"><i data-lucide="printer"></i></button>
+    </div>
+  </div>
+  <div class="s-progress">
+    <div class="prog-top"><span>PROGRES BACA</span><b id="progText">0/10</b></div>
+    <div class="pbar"><div class="pfill" id="progFill"></div></div>
+    <button class="reset-link" id="resetBtn"><i data-lucide="rotate-ccw"></i> RESET PROGRES</button>
+  </div>
+  <!-- DAFTAR ISI: tertanam statis agar selalu tampil, diperbarui ulang oleh JS -->
+  <nav class="toc" id="toc">
+    <a class="toc-item active" data-goto="s-cover"><span class="toc-num">01</span><span class="toc-title">Sampul &amp; Identitas Modul</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-cp"><span class="toc-num">02</span><span class="toc-title">Capaian Pembelajaran</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-p1"><span class="toc-num">03</span><span class="toc-title">Pertemuan 1 — Rumus IF Tunggal</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-p2"><span class="toc-num">04</span><span class="toc-title">Pertemuan 2 — IF Bertingkat &amp; AND/OR</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-p3"><span class="toc-num">05</span><span class="toc-title">Pertemuan 3 — VLOOKUP</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-p4"><span class="toc-num">06</span><span class="toc-title">Pertemuan 4 — Kombinasi IF &amp; VLOOKUP</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-p5"><span class="toc-num">07</span><span class="toc-title">Pertemuan 5 — Proyek Lembar Nilai</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-materi"><span class="toc-num">08</span><span class="toc-title">Materi Pembelajaran</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-asesmen"><span class="toc-num">09</span><span class="toc-title">Asesmen</span><i data-lucide="check" class="toc-check"></i></a>
+    <a class="toc-item" data-goto="s-refleksi"><span class="toc-num">10</span><span class="toc-title">Refleksi Guru &amp; Peserta Didik</span><i data-lucide="check" class="toc-check"></i></a>
+  </nav>
+  <noscript><div style="padding:10px 16px;font:600 .66rem 'IBM Plex Mono';color:var(--red);border-top:1px solid var(--line)">JavaScript nonaktif — navigasi, kuis, dan mode edit tidak berfungsi. Buka file ini di Chrome/Edge/Firefox dengan JavaScript aktif.</div></noscript>
+  <div class="s-foot">Progres baca, suntingan isi (mode edit), jawaban kuis, dan refleksi tersimpan otomatis di perangkat ini. Tombol unduh menghasilkan file Word (.docx) dari isi modul terkini.</div>
+</aside>
+
+<main class="main" id="appMain">
+
+<!-- ============ 01 SAMPUL & IDENTITAS ============ -->
+<section class="chapter active" id="s-cover" data-key="cover" data-toclabel="Sampul &amp; Identitas Modul">
+  <div class="hero">
+    <div class="hero-text">
+      <div class="hero-eyebrow">MODUL AJAR · INFORMATIKA · KURIKULUM MERDEKA</div>
+      <h2 class="big">Rumus <em>IF &amp; VLOOKUP</em> di Excel</h2>
+      <p class="hero-sub">Satu materi, lima pertemuan: melatih peserta didik membuat lembar kerja yang mampu mengambil keputusan sendiri — dari IF tunggal, IF bertingkat, VLOOKUP, hingga kombinasi IF–VLOOKUP–IFERROR untuk mengelola data kelas secara otomatis.</p>
+      <div class="hero-meta">
+        <span class="chip">FASE F · KELAS XI</span>
+        <span class="chip">10 JP · 5 PERTEMUAN</span>
+        <span class="chip">ELEMEN: ANALISIS DATA</span>
+      </div>
+      <div class="hero-actions">
+        <button class="btn solid nav-btn" data-goto="s-cp">Mulai Baca <i data-lucide="arrow-right"></i></button>
+        <button class="btn ghost dl-btn"><i data-lucide="file-down"></i> Unduh DOCX</button>
+        <button class="btn ghost print-btn"><i data-lucide="printer"></i> Cetak Modul</button>
+      </div>
+    </div>
+    <figure class="figpanel hero-fig">
+      <svg class="flow" viewBox="0 0 340 340" role="img" aria-label="Diagram alur keputusan fungsi IF">
+        <line class="edge" x1="170" y1="36" x2="170" y2="49"/><polygon class="arr" points="163,44 177,44 170,52"/>
+        <line class="edge" x1="170" y1="90" x2="170" y2="100"/><polygon class="arr" points="163,96 177,96 170,104"/>
+        <line class="edge" x1="244" y1="138" x2="282" y2="138"/><line class="edge" x1="282" y1="138" x2="282" y2="174"/><polygon class="arr" points="275,168 289,168 282,176"/>
+        <line class="edge" x1="96" y1="138" x2="58" y2="138"/><line class="edge" x1="58" y1="138" x2="58" y2="174"/><polygon class="arr" points="51,168 65,168 58,176"/>
+        <line class="edge" x1="282" y1="212" x2="282" y2="253"/><line class="edge" x1="282" y1="253" x2="240" y2="253"/><polygon class="arr" points="248,247 248,259 239,253"/>
+        <line class="edge" x1="58" y1="212" x2="58" y2="253"/><line class="edge" x1="58" y1="253" x2="100" y2="253"/><polygon class="arr" points="92,247 92,259 101,253"/>
+        <rect class="npill" x="100" y="6" width="140" height="30" rx="15"/><text class="ntext" x="170" y="26">MULAI</text>
+        <polygon class="npara" points="118,52 266,52 246,90 98,90"/><text class="ntext" x="182" y="76">BACA NILAI (B2)</text>
+        <polygon class="ndia" points="170,104 244,138 170,172 96,138"/><text class="ntext" x="170" y="142">B2 &gt;= 75?</text>
+        <rect class="nrect" x="220" y="178" width="124" height="34" rx="6"/><text class="ntext" x="282" y="200">TULIS "LULUS"</text>
+        <rect class="nrect" x="0" y="178" width="116" height="34" rx="6"/><text class="ntext" x="58" y="200">TULIS "REMEDIAL"</text>
+        <rect class="nend" x="105" y="238" width="130" height="30" rx="15"/><text class="ntext on-end" x="170" y="258">SELESAI</text>
+        <rect class="nrect" x="28" y="292" width="284" height="32" rx="8"/><text class="ntext" x="170" y="313">=IF(B2&gt;=75; "LULUS"; "REMEDIAL")</text>
+        <text class="blabel yes" x="264" y="130">ya</text>
+        <text class="blabel no" x="76" y="130">tidak</text>
+      </svg>
+      <figcaption>FIG. 01 — LOGIKA KEPUTUSAN FUNGSI IF</figcaption>
+    </figure>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="info"></i><span>Identitas Modul</span></div>
+    <dl class="id-table">
+      <div class="id-row"><dt>Penyusun</dt><dd>Dra. Ratna Kusuma, M.Pd.</dd></div>
+      <div class="id-row"><dt>Institusi</dt><dd>SMA Negeri 1 Nusantara</dd></div>
+      <div class="id-row"><dt>Tahun Penyusunan</dt><dd>2025 — Kurikulum Merdeka</dd></div>
+      <div class="id-row"><dt>Jenjang</dt><dd>SMA / MA</dd></div>
+      <div class="id-row"><dt>Fase / Kelas</dt><dd>F / XI (sebelas)</dd></div>
+      <div class="id-row"><dt>Mata Pelajaran</dt><dd>Informatika</dd></div>
+      <div class="id-row"><dt>Elemen</dt><dd>Analisis Data</dd></div>
+      <div class="id-row"><dt>Materi</dt><dd>Penggunaan Rumus IF dan VLOOKUP pada Aplikasi Lembar Kerja (Microsoft Excel)</dd></div>
+      <div class="id-row"><dt>Alokasi Waktu</dt><dd>10 JP — 5 pertemuan × 2 JP (1 JP = 45 menit)</dd></div>
+      <div class="id-row"><dt>Model Pembelajaran</dt><dd>Discovery Learning, Inkuiri Terbimbing, Problem Based Learning, Project Based Learning</dd></div>
+      <div class="id-row"><dt>Sarana Prasarana</dt><dd>Laboratorium komputer dengan Excel (alternatif: LibreOffice Calc / Google Sheets), proyektor, berkas latihan .xlsx, LKPD 1–4, lembar proyek</dd></div>
+      <div class="id-row"><dt>Target Peserta Didik</dt><dd>Peserta didik reguler; menguasai keterampilan dasar komputer, tanpa prasyarat rumus Excel</dd></div>
+    </dl>
+  </div>
+
+  <footer class="ch-foot">
+    <span style="font:600 .64rem 'IBM Plex Mono';color:var(--ink2)">INFORMASI UMUM — BAGIAN 1 DARI 10</span>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="cover"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-cp">Berikutnya <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 02 CAPAIAN PEMBELAJARAN ============ -->
+<section class="chapter" id="s-cp" data-key="cp" data-toclabel="Capaian Pembelajaran">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="award"></i> INFORMASI UMUM · CAPAIAN PEMBELAJARAN</div>
+    <div class="ch-title"><span class="ch-num">02</span><div>
+      <h2>Capaian Pembelajaran</h2>
+      <p class="ch-sub">Elemen Analisis Data — Fase F, Informatika SMA/MA.</p>
+    </div></div>
+  </header>
+
+  <p class="lead">Capaian pembelajaran (CP) adalah kompetensi akhir yang diharapkan dapat ditunjukkan peserta didik pada akhir Fase F. Seluruh tujuan pembelajaran, kegiatan, dan asesmen dalam modul ini dirumuskan turunannya dari CP berikut.</p>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="quote"></i><span>Capaian Pembelajaran Elemen Analisis Data</span></div>
+    <blockquote class="cp-quote">
+      <p>Di akhir Fase F, peserta didik dapat mengumpulkan dan mengolah data, menerapkan prinsip-prinsip pengolahan data untuk menghasilkan informasi yang bermakna. Peserta didik mengolah data untuk kebutuhan komunikasi dengan aplikasi pengolah angka dengan memanfaatkan rumus, fungsi, dan grafik yang sesuai dengan kebutuhan analisis data, kemudian menyajikannya dalam bentuk visualisasi data agar mudah dipahami.</p>
+      <footer>KURIKULUM MERDEKA · INFORMATIKA · FASE F</footer>
+    </blockquote>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="target"></i><span>Kriteria Ketercapaian</span></div>
+    <ul class="sum-list">
+      <li>Menuliskan formula dan fungsi pada aplikasi lembar kerja dengan benar, termasuk penggunaan alamat sel relatif dan absolut <strong>(=, $)</strong>.</li>
+      <li>Menyusun fungsi IF tunggal dan IF bertingkat <strong>(termasuk AND/OR)</strong> untuk pengambilan keputusan otomatis dari data.</li>
+      <li>Membangun tabel referensi dan menerapkan VLOOKUP <strong>(pencarian persis dan pencarian rentang)</strong> untuk mengambil data antartabel.</li>
+      <li>Menggabungkan beberapa fungsi <strong>(IF, VLOOKUP, IFERROR)</strong> dalam satu formula untuk mengolah data secara utuh.</li>
+      <li>Menyajikan hasil pengolahan data dalam lembar kerja yang rapi, terstruktur, dan mudah dibaca.</li>
+    </ul>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="users"></i><span>Profil Pelajar Pancasila</span></div>
+    <div class="tbl-scroll"><table class="tbl">
+      <tr><th>Dimensi</th><th>Wujud dalam Modul Ini</th></tr>
+      <tr><td class="c-em">Bernalar kritis <span style="font-weight:400">(utama)</span></td><td>Menganalisis mengapa sebuah rumus menghasilkan galat, menelusuri logika IF langkah demi langkah, dan membandingkan hasil antar-rumus.</td></tr>
+      <tr><td class="c-em">Kreatif</td><td>Merancang struktur lembar nilai kelas versi kelompok sendiri pada proyek mini pertemuan kelima.</td></tr>
+      <tr><td class="c-em">Gotong royong</td><td>Kerja kelompok di laboratorium komputer: bergantian mengetik, memeriksa, dan menguji rumus.</td></tr>
+      <tr><td class="c-em">Mandiri</td><td>Latihan mandiri pada tiap LKPD dan refleksi individu di akhir pertemuan.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="lightbulb"></i><span>Pertanyaan Pemantik Modul</span></div>
+    <div class="spark"><ul>
+      <li><span class="qn">Q1</span> Bagaimana cara wali kelas mengetahui siapa yang lulus di antara 40 siswa hanya dalam hitungan detik — padahal ia bahkan tidak melihat satu per satu nilai mereka?</li>
+    </ul></div>
+  </div>
+
+  <p class="mut" style="font-size:.88rem;color:var(--ink2)">Prasyarat: keterampilan dasar komputer (mengetik, menyimpan berkas). Asesmen diagnostik singkat dilakukan pada awal Pertemuan 1 untuk memetakan pengetahuan awal (lihat bagian Asesmen).</p>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-cover"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="cp"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-p1">Pertemuan 1 <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 03 PERTEMUAN 1 ============ -->
+<section class="chapter" id="s-p1" data-key="p1" data-toclabel="Pertemuan 1 — Rumus IF Tunggal">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="calendar-days"></i> PERTEMUAN 01 · 90 MENIT (2 JP) · DISCOVERY LEARNING</div>
+    <div class="ch-title"><span class="ch-num">03</span><div>
+      <h2>Fungsi IF — Membuat Excel Mengambil Keputusan</h2>
+      <p class="ch-sub">Pertemuan pembuka: formula dan fungsi dasar, lalu rumus IF tunggal untuk pengambilan keputusan otomatis.</p>
+    </div></div>
+  </header>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="target"></i><span>Tujuan Pembelajaran</span></div>
+    <ol class="tp-list" data-prefix="1.">
+      <li>Menjelaskan struktur formula pada aplikasi lembar kerja: penulisan diawali tanda sama dengan (=), penggunaan alamat sel, dan pemisah argumen.</li>
+      <li>Menjelaskan sintaks fungsi IF beserta tugas ketiga argumennya (uji logika, hasil jika benar, hasil jika salah) dan operator perbandingan.</li>
+      <li>Menyusun rumus IF tunggal pada data nilai siswa dan menjelaskan mengapa hasil berubah ketika data berubah.</li>
+    </ol>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="quote"></i><span>Pemahaman Bermakna</span></div>
+    <ul class="mb-list">
+      <li>Komputer tidak bisa menilai — ia hanya bisa membandingkan; IF adalah cara kita memberi aturan perbandingan itu.</li>
+      <li>Formula yang benar adalah aturan yang tidak perlu ditulis ulang meski datanya berganti.</li>
+    </ul>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="lightbulb"></i><span>Pertanyaan Pemantik</span></div>
+    <div class="spark"><ul>
+      <li><span class="qn">Q1</span> Jika kalian hanya boleh mengajukan satu pertanyaan berjawab YA/TIDAK untuk menentukan kelulusan seorang siswa, apa pertanyaan kalian?</li>
+      <li><span class="qn">Q2</span> Mana yang lebih melelahkan: mengecek 40 nilai satu per satu, atau menulis satu kalimat aturan lalu membiarkan komputer yang mengecek?</li>
+    </ul></div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="route"></i><span>Kegiatan Pembelajaran</span></div>
+    <div class="tl">
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Pendahuluan</span><span class="ph-time">15 menit</span></div>
+        <div class="tl-step"><span class="st-time">5'</span><div class="st-body"><h4>Pembukaan</h4><p>Salam, doa, presensi, dan penegasan kontrak belajar di laboratorium komputer. Guru menyampaikan tujuan pembelajaran hari ini.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Apersepsi &amp; asesmen diagnostik</h4><p>Guru memproyeksikan dua versi daftar nilai: yang diisi manual satu per satu versus yang terisi otomatis oleh satu rumus. Asesmen diagnostik lisan: siapa yang pernah membuka Excel? Apa yang terjadi jika formula tidak diawali tanda =?</p></div></div>
+      </div>
+      <div class="tl-phase core">
+        <div class="ph-head"><span class="ph-name">Kegiatan Inti</span><span class="ph-time">60 menit</span></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Stimulasi masalah</h4><p>Secara berkelompok (satu komputer per 2 siswa), peserta didik membuka berkas latihan berisi 40 nilai dan diminta menandai LULUS/REMEDIAL — dulu secara manual beberapa baris, agar terasa betapa lambatnya.</p></div></div>
+        <div class="tl-step"><span class="st-time">15'</span><div class="st-body"><h4>Eksplorasi — dari kalimat ke rumus</h4><p>Tiap kelompok menuliskan aturan kelulusan dalam kalimat ("jika nilai sekurang-kurangnya 75 maka LULUS, selain itu REMEDIAL"), lalu menerjemahkannya ke pola <em>IF(syarat; hasil jika benar; hasil jika salah)</em> di kertas sebelum menyentuh komputer.</p></div></div>
+        <div class="tl-step"><span class="st-time">15'</span><div class="st-body"><h4>Praktik terbimbing</h4><p>Peserta didik mengetik rumus IF pada sel keterangan, lalu mengisinya ke bawah dengan fill handle. Guru mendemonstrasikan perubahan hasil secara langsung ketika nilai di sel diubah — kelas mengamati bahwa rumus yang sama memberi hasil berbeda karena datanya berbeda.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Verifikasi</h4><p>Beberapa peserta didik bergantian mengubah angka nilai dan memprediksi hasil <em>sebelum</em> menekan Enter; kelas memverifikasi bersama. Guru mengangkat kesalahan umum: lupa tanda =, lupa tanda kutip pada teks, tertukar ; dengan ,.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Generalisasi</h4><p>Guru merangkum tiga bagian IF dan operator perbandingan di papan/layar, lalu menegaskan posisi IF sebagai fungsi pengambil keputusan paling dasar.</p></div></div>
+      </div>
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Penutup</span><span class="ph-time">15 menit</span></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Refleksi &amp; penguatan</h4><p>Refleksi tiga pertanyaan: "Bagian rumus mana yang harus diubah jika syarat kelulusan menjadi 70?", "Kenapa teks hasil harus diapit tanda kutip?", "Di mana kalian bisa memakai IF di luar sekolah?" Guru memberi penguatan dan peserta didik mengerjakan LKPD 1.</p></div></div>
+        <div class="tl-step"><span class="st-time">5'</span><div class="st-body"><h4>Penutupan</h4><p>Informasi materi pertemuan berikutnya (IF bertingkat), pesan moral tentang ketelitian, mematikan komputer dengan benar, doa, dan salam.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="book-open"></i><span>Materi Pembelajaran</span></div>
+    <ul class="sum-list">
+      <li>Rumus dan fungsi dasar: tanda =, alamat sel relatif dan absolut, pemisah argumen.</li>
+      <li>Sintaks IF tiga argumen dan enam operator perbandingan.</li>
+      <li>Contoh penerapan IF pada data nilai dan latihan berkunci jawaban.</li>
+    </ul>
+    <button class="jump-link" data-anchor="m-if"><i data-lucide="book-open"></i> Buka bacaan lengkap — Fungsi IF</button>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="clipboard-check"></i><span>Asesmen Pertemuan</span></div>
+    <p class="as-mini"><strong>Formatif.</strong> Teknik: observasi praktik di laboratorium (lembar observasi), penilaian LKPD 1, dan exit ticket satu pertanyaan: "Tuliskan satu keputusan di rumahmu yang bisa dituliskan sebagai rumus IF."</p>
+  </div>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-cp"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="p1"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-p2">Pertemuan 2 <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 04 PERTEMUAN 2 ============ -->
+<section class="chapter" id="s-p2" data-key="p2" data-toclabel="Pertemuan 2 — IF Bertingkat &amp; AND/OR">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="calendar-days"></i> PERTEMUAN 02 · 90 MENIT (2 JP) · INKUIRI TERBIMBING</div>
+    <div class="ch-title"><span class="ch-num">04</span><div>
+      <h2>IF Bertingkat dan Operator AND/OR</h2>
+      <p class="ch-sub">Ketika jawabannya bukan lagi dua pilihan: mengklasifikasi data ke banyak kategori dengan IF bersarang dan syarat gabungan.</p>
+    </div></div>
+  </header>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="target"></i><span>Tujuan Pembelajaran</span></div>
+    <ol class="tp-list" data-prefix="2.">
+      <li>Menjelaskan struktur IF bertingkat (nested IF) dan pentingnya urutan pengujian batas nilai.</li>
+      <li>Menyusun rumus IF bertingkat untuk mengklasifikasi nilai ke lima kategori predikat (A–E).</li>
+      <li>Menggabungkan IF dengan operator logika AND dan OR untuk menguji lebih dari satu syarat sekaligus.</li>
+    </ol>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="quote"></i><span>Pemahaman Bermakna</span></div>
+    <ul class="mb-list">
+      <li>Keputusan berjenjang dimulai dari pertanyaan yang paling menentukan — salah urutan bertanya, salah pula hasilnya.</li>
+      <li>AND dan OR adalah cara bertanya dua hal sekaligus: keduanya harus benar, atau cukup salah satunya.</li>
+    </ul>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="lightbulb"></i><span>Pertanyaan Pemantik</span></div>
+    <div class="spark"><ul>
+      <li><span class="qn">Q1</span> Bagaimana aplikasi beasiswa memilah ribuan pelamar ke kategori A, B, C, D, dan E dalam hitungan detik?</li>
+      <li><span class="qn">Q2</span> Urutan mana yang lebih dulu ditanyakan: "apakah nilainya di atas 90?" atau "apakah di atas 60?" — dan mengapa urutan itu menentukan hasil?</li>
+    </ul></div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="route"></i><span>Kegiatan Pembelajaran</span></div>
+    <div class="tl">
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Pendahuluan</span><span class="ph-time">15 menit</span></div>
+        <div class="tl-step"><span class="st-time">5'</span><div class="st-body"><h4>Pembukaan &amp; apersepsi</h4><p>Salam, doa, presensi. Kuis lisan kilat tentang rumus IF pertemuan lalu (3 pertanyaan, jawaban serentak).</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Pengantar masalah</h4><p>Guru menayangkan kolom predikat yang harus diisi A/B/C/D/E: "Masih bisakah satu IF mengurus lima kemungkinan?" Tujuan pembelajaran disampaikan.</p></div></div>
+      </div>
+      <div class="tl-phase core">
+        <div class="ph-head"><span class="ph-name">Kegiatan Inti</span><span class="ph-time">60 menit</span></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Mengajukan pertanyaan penyelidikan</h4><p>Tiap kelompok merumuskan satu pertanyaan, misalnya: "Bagaimana satu rumus menghasilkan A untuk 92, C untuk 78, dan E untuk 40?"</p></div></div>
+        <div class="tl-step"><span class="st-time">15'</span><div class="st-body"><h4>Eksplorasi — pohon pertanyaan</h4><p>Kelompok menggambar pohon keputusan di kertas: nilai ≥ 90? tidak → ≥ 80? tidak → ≥ 70? … lalu menuliskan rumus IF bersarang berdasarkan pohon itu, lengkap dengan jumlah tanda kurung.</p></div></div>
+        <div class="tl-step"><span class="st-time">15'</span><div class="st-body"><h4>Praktik &amp; perbandingan</h4><p>Peserta didik mengetik IF bertingkat di lembar latihan dan mengisinya ke bawah. Dua kelompok dengan urutan pengujian berbeda membandingkan hasil — diskusi: kapan hasil tetap sama, kapan berbeda.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>AND dan OR</h4><p>Guru memberi kasus baru: "lulus hanya jika nilai teori DAN praktik keduanya ≥ 75." Peserta didik mencoba AND, lalu menggantinya dengan OR dan mencatat perbedaan perilakunya.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Uji hipotesis &amp; kesimpulan</h4><p>Tiap kelompok mengubah batas dan urutan pengujian lalu mengamati hasilnya; kesalahan tanda kurung yang paling sering muncul dibahas bersama. LKPD 2 dikerjakan.</p></div></div>
+      </div>
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Penutup</span><span class="ph-time">15 menit</span></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Refleksi &amp; penguatan</h4><p>Refleksi terpandu: "Apa beda AND dan OR dalam satu kalimatmu sendiri?" Guru menegaskan aturan praktis: mulai IF bertingkat dari batas tertinggi.</p></div></div>
+        <div class="tl-step"><span class="st-time">5'</span><div class="st-body"><h4>Penutupan</h4><p>Informasi pertemuan berikutnya (VLOOKUP), pesan tentang membangun logika bertahap, doa, dan salam.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="book-open"></i><span>Materi Pembelajaran</span></div>
+    <ul class="sum-list">
+      <li>Pola IF bertingkat dan alasan urutan batas harus dari tertinggi.</li>
+      <li>Fungsi AND dan OR sebagai syarat gabungan di dalam IF.</li>
+      <li>Contoh predikat lima kategori dan latihan berkunci jawaban.</li>
+    </ul>
+    <button class="jump-link" data-anchor="m-ifnest"><i data-lucide="book-open"></i> Buka bacaan lengkap — IF Bertingkat</button>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="clipboard-check"></i><span>Asesmen Pertemuan</span></div>
+    <p class="as-mini"><strong>Formatif.</strong> Teknik: observasi kerja kelompok, penilaian LKPD 2, dan exit ticket: "Jelaskan beda AND dan OR dengan contoh sehari-hari."</p>
+  </div>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-p1"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="p2"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-p3">Pertemuan 3 <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 05 PERTEMUAN 3 ============ -->
+<section class="chapter" id="s-p3" data-key="p3" data-toclabel="Pertemuan 3 — VLOOKUP">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="calendar-days"></i> PERTEMUAN 03 · 90 MENIT (2 JP) · DISCOVERY LEARNING</div>
+    <div class="ch-title"><span class="ch-num">05</span><div>
+      <h2>VLOOKUP — Mencari Data Lintas Tabel</h2>
+      <p class="ch-sub">Mengisi kolom secara otomatis dari tabel referensi: sintaks empat argumen, alamat absolut, dan dua mode pencarian.</p>
+    </div></div>
+  </header>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="target"></i><span>Tujuan Pembelajaran</span></div>
+    <ol class="tp-list" data-prefix="3.">
+      <li>Menjelaskan sintaks VLOOKUP dan tugas keempat argumennya (nilai dicari, tabel referensi, nomor kolom, mode pencarian).</li>
+      <li>Membangun tabel referensi yang memenuhi syarat VLOOKUP dan menguncinya dengan alamat absolut (tanda $).</li>
+      <li>Menerapkan VLOOKUP mode pencarian persis (FALSE) dan pencarian rentang (TRUE), lalu menjelaskan perbedaan hasilnya.</li>
+    </ol>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="quote"></i><span>Pemahaman Bermakna</span></div>
+    <ul class="mb-list">
+      <li>VLOOKUP adalah jembatan dua tabel: data cukup sekali diketik di tempat referensinya, lalu dipanggil dari mana saja.</li>
+      <li>Tabel yang tidak dikunci akan "ikut berpindah" ketika rumus diisi ke bawah — tanda $ adalah cara kita berkata: tetap di sini.</li>
+    </ul>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="lightbulb"></i><span>Pertanyaan Pemantik</span></div>
+    <div class="spark"><ul>
+      <li><span class="qn">Q1</span> Mengapa nomor pokok siswa (NISN) cukup diketik sekali untuk memunculkan seluruh datanya di sistem sekolah?</li>
+      <li><span class="qn">Q2</span> Apa persamaan daftar isi sebuah buku dengan tabel referensi di Excel?</li>
+    </ul></div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="route"></i><span>Kegiatan Pembelajaran</span></div>
+    <div class="tl">
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Pendahuluan</span><span class="ph-time">15 menit</span></div>
+        <div class="tl-step"><span class="st-time">5'</span><div class="st-body"><h4>Pembukaan &amp; apersepsi</h4><p>Salam, doa, presensi. Kuis lisan kilat tentang IF bertingkat. Guru menyinggung pengalaman datang ke admin sekolah: cukup menyebut NISN, semua data muncul.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Stimulasi masalah</h4><p>Berkas latihan berisi 40 nilai dan tabel referensi predikat terpisah. Masalah: "Bagaimana mengisi kolom predikat tanpa melihat tabel satu per satu?" Tujuan pembelajaran disampaikan.</p></div></div>
+      </div>
+      <div class="tl-phase core">
+        <div class="ph-head"><span class="ph-name">Kegiatan Inti</span><span class="ph-time">60 menit</span></div>
+        <div class="tl-step"><span class="st-time">15'</span><div class="st-body"><h4>Eksplorasi — membedah sintaks</h4><p>Kelompok membaca sintaks VLOOKUP dari LKPD dan memetakan empat argumen ke kasus: nilai apa yang dicari, tabel referensi di mana, hasil di kolom ke berapa, mode FALSE atau TRUE. Guru memantik: "Mengapa tabel harus ditulis dengan tanda $?"</p></div></div>
+        <div class="tl-step"><span class="st-time">15'</span><div class="st-body"><h4>Praktik terbimbing</h4><p>Peserta didik mengetik rumus VLOOKUP mode FALSE pada kasus kode barang, lalu mode TRUE pada kasus predikat nilai; rumus diisi ke bawah dan hasil dibandingkan antar-mode.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Uji galat #N/A</h4><p>Secara sengaja, peserta didik mencari kode/nilai yang tidak ada di tabel. Galat #N/A muncul; kelompok menyelidiki penyebabnya dan mencatat hipotesis di LKPD.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Verifikasi &amp; generalisasi</h4><p>Dua–tiga kelompok mempresentasikan temuannya; guru merangkum kapan FALSE dan kapan TRUE dipakai serta syarat tabel referensi: kolom pertama adalah kolom acuan, urut menaik bila mode TRUE.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Latihan mandiri (LKPD 3)</h4><p>Peserta didik mengerjakan soal VLOOKUP secara individu: membangun tabel referensi sendiri dan menulis rumusnya.</p></div></div>
+      </div>
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Penutup</span><span class="ph-time">15 menit</span></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Refleksi &amp; penguatan</h4><p>Refleksi: "Argumen VLOOKUP mana yang paling mudah keliru menurutmu?" Guru menguatkan pentingnya membangun tabel referensi yang rapi sebelum menulis rumus.</p></div></div>
+        <div class="tl-step"><span class="st-time">5'</span><div class="st-body"><h4>Penutupan</h4><p>Informasi pertemuan berikutnya (kombinasi IF dan VLOOKUP), pesan tentang merapikan data, doa, dan salam.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="book-open"></i><span>Materi Pembelajaran</span></div>
+    <ul class="sum-list">
+      <li>Sintaks VLOOKUP dan tugas empat argumennya.</li>
+      <li>Tabel referensi, alamat absolut ($), dan perbedaan mode FALSE/TRUE.</li>
+      <li>Contoh pencarian persis dan pencarian rentang, latihan berkunci jawaban.</li>
+    </ul>
+    <button class="jump-link" data-anchor="m-vlookup"><i data-lucide="book-open"></i> Buka bacaan lengkap — VLOOKUP</button>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="clipboard-check"></i><span>Asesmen Pertemuan</span></div>
+    <p class="as-mini"><strong>Formatif.</strong> Teknik: observasi praktik, penilaian LKPD 3 (tabel referensi + rumus), dan exit ticket: "Kapan VLOOKUP memakai FALSE dan kapan TRUE? Berikan satu contoh masing-masing."</p>
+  </div>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-p2"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="p3"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-p4">Pertemuan 4 <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 06 PERTEMUAN 4 ============ -->
+<section class="chapter" id="s-p4" data-key="p4" data-toclabel="Pertemuan 4 — Kombinasi IF &amp; VLOOKUP">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="calendar-days"></i> PERTEMUAN 04 · 90 MENIT (2 JP) · PROBLEM BASED LEARNING</div>
+    <div class="ch-title"><span class="ch-num">06</span><div>
+      <h2>Menggabungkan IF, VLOOKUP, dan IFERROR</h2>
+      <p class="ch-sub">Menuntaskan masalah nyata: lembar nilai yang rapi tanpa galat mencolok — fungsi bekerja di dalam fungsi.</p>
+    </div></div>
+  </header>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="target"></i><span>Tujuan Pembelajaran</span></div>
+    <ol class="tp-list" data-prefix="4.">
+      <li>Menjelaskan pola kombinasi fungsi: VLOOKUP di dalam IF sebagai syarat atau hasil, dan IFERROR sebagai pembungkus penangkap galat.</li>
+      <li>Menyusun rumus gabungan IF–VLOOKUP untuk mengisi kolom predikat yang aman ketika sel data masih kosong.</li>
+      <li>Menggunakan IFERROR untuk menangani galat #N/A sehingga lembar kerja menampilkan teks yang informatif, bukan galat.</li>
+    </ol>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="quote"></i><span>Pemahaman Bermakna</span></div>
+    <ul class="mb-list">
+      <li>Galat bukan kegagalan — ia adalah pesan yang perlu dibaca, lalu ditangani dengan aturan yang kita tulis sendiri.</li>
+      <li>Fungsi boleh bersarang seperti boneka rusia: hasil yang paling dalam dikerjakan lebih dulu.</li>
+    </ul>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="lightbulb"></i><span>Pertanyaan Pemantik</span></div>
+    <div class="spark"><ul>
+      <li><span class="qn">Q1</span> Apa yang harus dilakukan sistem ketika data yang dicari ternyata tidak ada — diam, atau berkata sesuatu?</li>
+      <li><span class="qn">Q2</span> Mengapa kolom predikat pada lembar nilai yang belum terisi penuh penuh dengan galat #N/A yang mencolok?</li>
+    </ul></div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="route"></i><span>Kegiatan Pembelajaran</span></div>
+    <div class="tl">
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Pendahuluan</span><span class="ph-time">15 menit</span></div>
+        <div class="tl-step"><span class="st-time">5'</span><div class="st-body"><h4>Pembukaan &amp; apersepsi</h4><p>Salam, doa, presensi. Kuis lisan kilat tentang argumen VLOOKUP.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Orientasi masalah</h4><p>Wali kelas meminta "lembar nilai yang rapi": kolom keterangan dan predikat harus terisi otomatis, sel yang belum ada nilainya tidak boleh menampilkan galat. Rubrik penilaian disampaikan; tujuan pembelajaran dibacakan.</p></div></div>
+      </div>
+      <div class="tl-phase core">
+        <div class="ph-head"><span class="ph-name">Kegiatan Inti</span><span class="ph-time">60 menit</span></div>
+        <div class="tl-step"><span class="st-time">20'</span><div class="st-body"><h4>Mengorganisasi &amp; merancang solusi</h4><p>Kelompok merancang rumus di kertas: (1) IF untuk memeriksa sel nilai kosong, (2) VLOOKUP untuk predikat, (3) IFERROR membungkus semuanya. Struktur bersarang digambar sebagai diagram sebelum diketik.</p></div></div>
+        <div class="tl-step"><span class="st-time">20'</span><div class="st-body"><h4>Praktik &amp; uji coba</h4><p>Rumus diketik dan diisi ke bawah, lalu diuji dengan tiga skenario: nilai terisi, sel kosong, dan data yang tidak ada di tabel referensi. Hasil tiap skenario dicatat pada lembar uji.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Analisis &amp; evaluasi</h4><p>Kelompok membandingkan dua pendekatan (IF di dalam IFERROR, atau IFERROR di dalam IF) dan menyimpulkan pendekatan mana yang lebih mudah dibaca dan dirawat.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Presentasi kilat</h4><p>Dua kelompok mempresentasikan rumusnya; kelompok lain menanggapi dan memberi satu saran perbaikan. LKPD 4 dikerjakan.</p></div></div>
+      </div>
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Penutup</span><span class="ph-time">15 menit</span></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Refleksi &amp; penguatan</h4><p>Refleksi: "Bagian rumus gabungan mana yang paling sulit dilacak?" Guru menegaskan cara membaca rumus bersarang: dari kurung paling dalam.</p></div></div>
+        <div class="tl-step"><span class="st-time">5'</span><div class="st-body"><h4>Penutupan</h4><p>Briefing proyek mini pertemuan berikutnya (kelompok tetap, bawa data nilai asli kelas bila diizinkan), doa, dan salam.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="book-open"></i><span>Materi Pembelajaran</span></div>
+    <ul class="sum-list">
+      <li>Pola kombinasi: IF untuk kondisi kosong, IFERROR untuk penangkap galat, VLOOKUP di dalamnya.</li>
+      <li>Contoh rumus gabungan lengkap dan cara membaca rumus bersarang.</li>
+      <li>Latihan kombinasi berkunci jawaban.</li>
+    </ul>
+    <button class="jump-link" data-anchor="m-komb"><i data-lucide="book-open"></i> Buka bacaan lengkap — Kombinasi Fungsi</button>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="clipboard-check"></i><span>Asesmen Pertemuan</span></div>
+    <p class="as-mini"><strong>Formatif.</strong> Teknik: penilaian LKPD 4 (rumus gabungan + lembar uji tiga skenario), observasi diskusi rancangan, dan exit ticket: "Tuliskan satu galat Excel yang pernah kamu temui dan apa yang seharusnya ditampilkan sebagai gantinya."</p>
+  </div>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-p3"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="p4"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-p5">Pertemuan 5 <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 07 PERTEMUAN 5 ============ -->
+<section class="chapter" id="s-p5" data-key="p5" data-toclabel="Pertemuan 5 — Proyek Lembar Nilai">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="calendar-days"></i> PERTEMUAN 05 · 90 MENIT (2 JP) · PROJECT BASED LEARNING</div>
+    <div class="ch-title"><span class="ch-num">07</span><div>
+      <h2>Proyek Mini — Lembar Nilai Kelas Otomatis</h2>
+      <p class="ch-sub">Pertemuan puncak: merancang lembar nilai utuh yang memuat input nilai, kelulusan IF, predikat VLOOKUP, penanganan galat, dan ringkasan — lalu dipresentasikan dan dinilai dengan rubrik.</p>
+    </div></div>
+  </header>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="target"></i><span>Tujuan Pembelajaran</span></div>
+    <ol class="tp-list" data-prefix="5.">
+      <li>Mengintegrasikan IF, IF bertingkat, VLOOKUP, dan IFERROR dalam satu lembar kerja yang mengolah data nilai kelas secara utuh.</li>
+      <li>Merancang struktur lembar kerja yang terpisah antara area input, tabel referensi, dan area hasil agar mudah dirawat.</li>
+      <li>Menyajikan dan menilai hasil proyek kelompok lain secara objektif menggunakan rubrik yang disepakati.</li>
+    </ol>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="quote"></i><span>Pemahaman Bermakna</span></div>
+    <ul class="mb-list">
+      <li>Otomatisasi terbaik membuat pekerjaan dikerjakan sekali, lalu dipakai berkali-kali — semester depan tinggal mengganti data.</li>
+      <li>Lembar kerja yang baik dibaca orang lain tanpa perlu bertanya: rapi, berlabel, dan bebas galat mencolok.</li>
+    </ul>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="lightbulb"></i><span>Pertanyaan Pemantik</span></div>
+    <div class="spark"><ul>
+      <li><span class="qn">Q1</span> Berapa jam waktu wali kelas kalian habiskan setiap akhir semester untuk menghitung dan menyalin nilai — dan berapa jam yang bisa diselamatkan?</li>
+      <li><span class="qn">Q2</span> Jika kepala sekolah hanya memberimu tiga menit untuk menunjukkan lembar buatan kelompokmu — bagian mana yang kamu tunjukkan lebih dulu?</li>
+    </ul></div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="route"></i><span>Kegiatan Pembelajaran</span></div>
+    <div class="tl">
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Pendahuluan</span><span class="ph-time">10 menit</span></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Orientasi proyek</h4><p>Salam, doa, presensi. Guru membagikan lembar proyek dan rubrik penilaian, menjelaskan alur 60 menit, dan membacakan spesifikasi: 10–15 baris data siswa, kolom keterangan (IF), kolom predikat (VLOOKUP), penanganan sel kosong, dan satu baris ringkasan. Kelompok boleh memakai data fiktif atau data kelas bila diizinkan.</p></div></div>
+      </div>
+      <div class="tl-phase core">
+        <div class="ph-head"><span class="ph-name">Kegiatan Inti</span><span class="ph-time">60 menit</span></div>
+        <div class="tl-step"><span class="st-time">30'</span><div class="st-body"><h4>Mendesain &amp; membangun</h4><p>Kelompok mengerjakan empat langkah: (1) menyusun area input (No, Nama, Nilai) dengan rapi dan berlabel; (2) membangun tabel referensi predikat dengan alamat absolut; (3) menulis kolom keterangan IF dan kolom predikat VLOOKUP yang dibungkus IFERROR; (4) membuat ringkasan, misalnya jumlah siswa lulus dengan COUNTIF. Guru berkeliling sebagai konsultan.</p></div></div>
+        <div class="tl-step"><span class="st-time">20'</span><div class="st-body"><h4>Presentasi &amp; penilaian sejawat</h4><p>Tiap kelompok presentasi maksimal 3 menit: mendemonstrasikan perubahan hasil secara langsung ketika satu nilai diubah atau dikosongkan. Kelompok lain menilai dengan rubrik ringkas dan memberi satu pertanyaan/saran tertulis.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Evaluasi karya</h4><p>Guru memberi umpan balik langsung pada dua–tiga karya terpilih dan membahas pola kesalahan yang berulang antarkelompok (tanda kurung, tanda $, urutan batas).</p></div></div>
+      </div>
+      <div class="tl-phase">
+        <div class="ph-head"><span class="ph-name">Penutup</span><span class="ph-time">20 menit</span></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Asesmen sumatif &amp; refleksi akhir modul</h4><p>Peserta didik mengerjakan kuis tertulis singkat (5 soal, lihat bagian Asesmen) dilanjutkan refleksi akhir modul secara tertulis pada lembar refleksi peserta didik.</p></div></div>
+        <div class="tl-step"><span class="st-time">10'</span><div class="st-body"><h4>Apresiasi &amp; penutupan</h4><p>Pengumuman kelompok dengan lembar paling rapi dan paling tahan uji, apresiasi semua kelompok, pesan penutup modul, doa, dan salam.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="book-open"></i><span>Materi Pembelajaran</span></div>
+    <ul class="sum-list">
+      <li>Struktur lembar nilai otomatis: area input, tabel referensi, area hasil, dan ringkasan.</li>
+      <li>Bonus fungsi COUNTIF untuk menghitung ringkasan.</li>
+      <li>Rubrik penilaian proyek (dibahas rinci pada bagian Asesmen).</li>
+    </ul>
+    <button class="jump-link" data-anchor="m-proy"><i data-lucide="book-open"></i> Buka bacaan lengkap — Merancang Lembar Nilai</button>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="clipboard-check"></i><span>Asesmen Pertemuan</span></div>
+    <p class="as-mini"><strong>Sumatif.</strong> Teknik: penilaian produk dan presentasi proyek dengan rubrik 5 kriteria × 4 level, penilaian antar kelompok, serta kuis tertulis 5 soal pilihan ganda.</p>
+  </div>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-p4"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="p5"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-materi">Materi Lengkap <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 08 MATERI PEMBELAJARAN ============ -->
+<section class="chapter" id="s-materi" data-key="materi" data-toclabel="Materi Pembelajaran">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="book-open"></i> KOMPONEN INTI · MATERI PEMBELAJARAN</div>
+    <div class="ch-title"><span class="ch-num">08</span><div>
+      <h2>Materi Pembelajaran</h2>
+      <p class="ch-sub">Bacaan lengkap untuk peserta didik dan guru — dibuka per sub-bab, dilengkapi latihan berkunci jawaban.</p>
+    </div></div>
+  </header>
+
+  <p class="lead">Kumpulan sub-bab berikut adalah bacaan inti modul. Setiap pertemuan pada bagian sebelumnya merujuk ke sub-bab terkait; tautan tersebut akan membuka sub-bab ini secara otomatis. Kerjakan latihan di tiap sub-bab, lalu buka kunci jawabannya untuk mengecek pemahaman.</p>
+
+  <details class="doc" id="m-formula" open>
+    <summary><span class="doc-num">01</span><span class="doc-title">Rumus, Fungsi, dan Alamat Sel</span><i data-lucide="chevron-right" class="chev"></i></summary>
+    <div class="doc-body">
+      <p>Pada aplikasi lembar kerja (Excel, LibreOffice Calc, Google Sheets), seluruh perhitungan dimulai dari satu kesepakatan sederhana: <strong>apa pun yang diawali tanda sama dengan (=) akan dianggap sebagai rumus, bukan teks.</strong> Setelah tanda =, kita boleh menulis angka, alamat sel, operator, atau nama fungsi.</p>
+      <pre class="code"><span class="kw">=</span>B2+C2                 <span class="cm">menjumlahkan isi sel B2 dan C2</span>
+<span class="kw">=SUM</span>(B2:B10)            <span class="cm">menjumlahkan rentang B2 sampai B10</span>
+<span class="kw">=AVERAGE</span>(B2:B10)       <span class="cm">menghitung rata-rata rentang</span></pre>
+      <h4>Alamat sel relatif dan absolut</h4>
+      <p>Alamat <strong>B2</strong> bersifat relatif: ketika rumus diisi ke bawah, ia bergeser menjadi B3, B4, dan seterusnya. Ada kalanya kita justru ingin alamat <em>tidak</em> bergeser — misalnya alamat tabel referensi. Untuk itu, alamat dikunci dengan tanda dolar ($): <strong>$G$2</strong> artinya "kolom G baris 2, tetap di situ".</p>
+      <h4>Operator perbandingan</h4>
+      <p>Operator perbandingan menghasilkan nilai logika TRUE (benar) atau FALSE (salah) — inilah bahan bakar fungsi IF pada sub-bab berikutnya.</p>
+      <div class="tbl-scroll"><table class="tbl">
+        <tr><th>Operator</th><th>Arti</th><th>Contoh</th><th>Hasil (jika B2 = 80)</th></tr>
+        <tr><td class="c-em">=</td><td>sama dengan</td><td>B2=80</td><td>TRUE</td></tr>
+        <tr><td class="c-em">&gt;</td><td>lebih besar dari</td><td>B2&gt;80</td><td>FALSE</td></tr>
+        <tr><td class="c-em">&lt;</td><td>lebih kecil dari</td><td>B2&lt;90</td><td>TRUE</td></tr>
+        <tr><td class="c-em">&gt;=</td><td>lebih besar atau sama dengan</td><td>B2&gt;=75</td><td>TRUE</td></tr>
+        <tr><td class="c-em">&lt;=</td><td>lebih kecil atau sama dengan</td><td>B2&lt;=75</td><td>FALSE</td></tr>
+        <tr><td class="c-em">&lt;&gt;</td><td>tidak sama dengan</td><td>B2&lt;&gt;80</td><td>FALSE</td></tr>
+      </table></div>
+      <p class="mut">Catatan pemisah: Excel dengan pengaturan regional Indonesia memakai titik koma (;) sebagai pemisah argumen. Jika komputermu berpengaturan regional Inggris, ganti semua ; pada modul ini menjadi , — selain itu rumusnya identik.</p>
+      <div class="exercise">
+        <div class="ex-tag">LATIHAN — KERJAKAN SENDIRI</div>
+        <p>(a) Tuliskan formula untuk menjumlahkan sel B2 sampai B15. (b) Tuliskan formula yang memeriksa apakah isi B2 lebih besar dari C2, dan jelaskan hasil apa yang akan muncul.</p>
+      </div>
+      <details class="key"><summary><i data-lucide="key-round"></i> LIHAT KUNCI JAWABAN</summary><div class="key-body">
+        <p>(a) =SUM(B2:B15). (b) =B2&gt;C2 — hasilnya TRUE bila B2 lebih besar, FALSE bila tidak; operator perbandingan tidak menghasilkan angka, melainkan nilai logika yang nanti dipakai sebagai syarat IF.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <details class="doc" id="m-if">
+    <summary><span class="doc-num">02</span><span class="doc-title">Fungsi IF — Membuat Lembar Kerja Bisa Memutuskan</span><i data-lucide="chevron-right" class="chev"></i></summary>
+    <div class="doc-body">
+      <p><strong>Fungsi IF</strong> mengambil satu keputusan dari dua kemungkinan: jika sebuah syarat bernilai benar, hasil pertama yang diambil; jika salah, hasil kedua. Logikanya sama dengan diagram alur pada sampul modul — satu pertanyaan, dua cabang.</p>
+      <div class="tbl-scroll"><table class="tbl">
+        <tr><th>Posisi</th><th>Nama Argumen</th><th>Tugas</th><th>Contoh</th></tr>
+        <tr><td class="c-em">1</td><td>logical_test</td><td>syarat yang diuji, hasilnya TRUE/FALSE</td><td>B2&gt;=75</td></tr>
+        <tr><td class="c-em">2</td><td>value_if_true</td><td>hasil bila syarat benar</td><td>"LULUS"</td></tr>
+        <tr><td class="c-em">3</td><td>value_if_false</td><td>hasil bila syarat salah</td><td>"REMEDIAL"</td></tr>
+      </table></div>
+      <pre class="code"><span class="kw">=IF</span>(B2&gt;=75; <span class="str">"LULUS"</span>; <span class="str">"REMEDIAL"</span>)</pre>
+      <p>Tiga hal yang paling sering keliru: <strong>teks hasil harus diapit tanda kutip</strong> (tanda kutip menjadikannya teks, bukan nama sel); <strong>rumus harus diawali =</strong>; dan <strong>syarat harus menghasilkan TRUE/FALSE</strong> — menulis B2+75 sebagai syarat adalah kesalahan, karena itu hasilnya angka, bukan keputusan.</p>
+      <h4>Contoh pada data nilai</h4>
+      <div class="tbl-scroll"><table class="tbl">
+        <tr><th>Sel</th><th>Isi / Rumus</th><th>Hasil</th></tr>
+        <tr><td>B2</td><td>80</td><td>80</td></tr>
+        <tr><td>B3</td><td>68</td><td>68</td></tr>
+        <tr><td class="c-em">C2</td><td>=IF(B2&gt;=75;"LULUS";"REMEDIAL")</td><td>LULUS</td></tr>
+        <tr><td class="c-em">C3</td><td>=IF(B3&gt;=75;"LULUS";"REMEDIAL")</td><td>REMEDIAL</td></tr>
+      </table></div>
+      <p class="mut">Perhatikan: nilai 75 termasuk LULUS karena operator &gt;= berarti "lebih besar <em>atau sama dengan</em>". Pilih operator sesuai aturan yang benar-benar diinginkan.</p>
+      <div class="exercise">
+        <div class="ex-tag">LATIHAN — KERJAKAN SENDIRI</div>
+        <p>Tuliskan rumus IF di sel D2 yang menampilkan "JUARA" jika nilai pada C2 minimal 90, selain itu menampilkan "LATIHAN LAGI". Kemudian tentukan hasil rumus itu ketika C2 berisi 64.</p>
+      </div>
+      <details class="key"><summary><i data-lucide="key-round"></i> LIHAT KUNCI JAWABAN</summary><div class="key-body">
+        <p>=IF(C2&gt;=90;"JUARA";"LATIHAN LAGI"). Untuk C2 = 64: syarat 64&gt;=90 bernilai FALSE, sehingga hasilnya "LATIHAN LAGI".</p>
+      </div></details>
+    </div>
+  </details>
+
+  <details class="doc" id="m-ifnest">
+    <summary><span class="doc-num">03</span><span class="doc-title">IF Bertingkat dan Kombinasi AND/OR</span><i data-lucide="chevron-right" class="chev"></i></summary>
+    <div class="doc-body">
+      <p>IF tunggal hanya menghasilkan dua kemungkinan. Ketika jawabannya ada lima (predikat A sampai E), kita <strong>menyarangkan</strong> IF baru pada bagian "hasil jika salah" — seperti pohon keputusan yang bercabang terus.</p>
+      <pre class="code"><span class="kw">=IF</span>(C2&gt;=90; <span class="str">"A"</span>;
+  <span class="kw">IF</span>(C2&gt;=80; <span class="str">"B"</span>;
+    <span class="kw">IF</span>(C2&gt;=70; <span class="str">"C"</span>;
+      <span class="kw">IF</span>(C2&gt;=60; <span class="str">"D"</span>; <span class="str">"E"</span>))))</pre>
+      <p><strong>Urutan batas harus dari tertinggi ke terendah.</strong> Jika pengujian dimulai dari C2&gt;=60, maka nilai 92 sudah "kena" cabang pertama dan berhenti di D — padahal seharusnya A. Excel menguji dari kurung paling luar dan berhenti pada syarat pertama yang terpenuhi.</p>
+      <h4>Uji hasil rumus di atas</h4>
+      <div class="tbl-scroll"><table class="tbl">
+        <tr><th>Nilai (C2)</th><th>Cabang yang diambil</th><th>Hasil</th></tr>
+        <tr><td>92</td><td>92 ≥ 90 → cabang pertama</td><td>"A"</td></tr>
+        <tr><td>85</td><td>gagal ≥ 90, lolos ≥ 80</td><td>"B"</td></tr>
+        <tr><td>78</td><td>gagal ≥ 90 dan ≥ 80, lolos ≥ 70</td><td>"C"</td></tr>
+        <tr><td>64</td><td>lolos ≥ 60</td><td>"D"</td></tr>
+        <tr><td>40</td><td>semua syarat gagal</td><td>"E"</td></tr>
+      </table></div>
+      <h4>Syarat gabungan: AND dan OR</h4>
+      <p>Kadang satu keputusan butuh lebih dari satu syarat. <strong>AND</strong> menuntut semua syarat terpenuhi; <strong>OR</strong> cukup salah satunya.</p>
+      <pre class="code"><span class="cm">lulus hanya jika teori DAN praktik keduanya minimal 75</span>
+<span class="kw">=IF</span>(<span class="kw">AND</span>(B2&gt;=75; C2&gt;=75); <span class="str">"LULUS"</span>; <span class="str">"REMEDIAL"</span>)
+
+<span class="cm">lulus jika teori ATAU praktik salah satunya minimal 75</span>
+<span class="kw">=IF</span>(<span class="kw">OR</span>(B2&gt;=75; C2&gt;=75); <span class="str">LULUS"</span>; <span class="str">"REMEDIAL"</span>)</pre>
+      <p class="mut">Dengan B2 = 80 dan C2 = 70: rumus AND menghasilkan "REMEDIAL" (karena C2 gagal), sedangkan rumus OR menghasilkan "LULUS" (karena B2 lolos). Pilih sesuai aturan yang benar-benar berlaku.</p>
+      <div class="exercise">
+        <div class="ex-tag">LATIHAN — KERJAKAN SENDIRI</div>
+        <p>Tuliskan rumus IF bertingkat di sel E2 untuk keterangan keterampilan: minimal 85 → "SANGAT BAIK"; 70 sampai 84 → "BAIK"; di bawah 70 → "PERLU BIMBINGAN". Lalu ujilah secara manual untuk nilai 85 dan 69.</p>
+      </div>
+      <details class="key"><summary><i data-lucide="key-round"></i> LIHAT KUNCI JAWABAN</summary><div class="key-body">
+        <p>=IF(E2&gt;=85;"SANGAT BAIK";IF(E2&gt;=70;"BAIK";"PERLU BIMBINGAN")) — ingat mengganti E2 dengan sel nilai yang sebenarnya. Uji: 85 → 85&gt;=85 TRUE → "SANGAT BAIK" (operator &gt;= membuat 85 masuk kategori atas). 69 → gagal kedua syarat → "PERLU BIMBINGAN".</p>
+      </div></details>
+    </div>
+  </details>
+
+  <details class="doc" id="m-vlookup">
+    <summary><span class="doc-num">04</span><span class="doc-title">VLOOKUP — Pencarian Data antartabel</span><i data-lucide="chevron-right" class="chev"></i></summary>
+    <div class="doc-body">
+      <p><strong>VLOOKUP</strong> mencari sebuah nilai pada <em>kolom pertama</em> sebuah tabel referensi, lalu mengambil isi dari kolom lain pada baris yang sama. "V" berasal dari kata <em>vertical</em>: pencarian dilakukan menurun secara vertikal.</p>
+      <div class="tbl-scroll"><table class="tbl">
+        <tr><th>Posisi</th><th>Argumen</th><th>Tugas</th><th>Contoh</th></tr>
+        <tr><td class="c-em">1</td><td>lookup_value</td><td>nilai yang dicari</td><td>C2</td></tr>
+        <tr><td class="c-em">2</td><td>table_array</td><td>tabel referensi — kolom pertamanya wajib memuat nilai acuan; kunci dengan $</td><td>$G$2:$H$6</td></tr>
+        <tr><td class="c-em">3</td><td>col_index_num</td><td>nomor kolom hasil <em>di dalam tabel referensi</em> (bukan nomor kolom lembar kerja)</td><td>2</td></tr>
+        <tr><td class="c-em">4</td><td>range_lookup</td><td>FALSE = cari kecocokan persis; TRUE = cari batas bawah terbesar</td><td>FALSE</td></tr>
+      </table></div>
+      <h4>Contoh 1 — pencarian persis (FALSE): kode barang</h4>
+      <div class="tbl-scroll"><table class="tbl">
+        <tr><th>Kode (kolom 1)</th><th>Nama Barang (kolom 2)</th></tr>
+        <tr><td class="c-em">PB01</td><td>Pensil</td></tr>
+        <tr><td class="c-em">PB02</td><td>Buku Tulis</td></tr>
+        <tr><td class="c-em">PS03</td><td>Penghapus</td></tr>
+        <tr><td class="c-em">PS04</td><td>Penggaris</td></tr>
+      </table></div>
+      <pre class="code"><span class="cm">mencari nama barang dari kode pada sel E2, tabel di $H$2:$I$5</span>
+<span class="kw">=VLOOKUP</span>(E2; $H$2:$I$5; 2; FALSE)</pre>
+      <p>Mode FALSE menuntut kecocokan persis: mencari "PS03" menemukan baris PS03 dan mengambil "Penghapus". Mencari "PS99" yang tidak ada menghasilkan galat <strong>#N/A</strong> — bukan kesalahan penulisan rumus, melainkan pesan bahwa data tidak ditemukan.</p>
+      <h4>Contoh 2 — pencarian rentang (TRUE): predikat nilai</h4>
+      <div class="tbl-scroll"><table class="tbl">
+        <tr><th>Batas Bawah</th><th>Predikat</th></tr>
+        <tr><td class="c-em">0</td><td>E</td></tr>
+        <tr><td class="c-em">60</td><td>D</td></tr>
+        <tr><td class="c-em">70</td><td>C</td></tr>
+        <tr><td class="c-em">80</td><td>B</td></tr>
+        <tr><td class="c-em">90</td><td>A</td></tr>
+      </table></div>
+      <pre class="code"><span class="kw">=VLOOKUP</span>(C2; $G$2:$H$6; 2; TRUE)</pre>
+      <p>Mode TRUE mencari <strong>batas bawah terbesar yang tidak melebihi nilai yang dicari</strong>. Nilai 78 berhenti pada baris "70" sehingga hasilnya "C". Syaratnya: kolom pertama tabel referensi harus terurut menaik.</p>
+      <figure class="figpanel" style="max-width:560px">
+        <svg class="flow" viewBox="0 0 460 260" role="img" aria-label="Anatomi cara kerja VLOOKUP">
+          <text class="blabel" x="75" y="22">NILAI SISWA (C2)</text>
+          <rect class="nrect" x="20" y="30" width="110" height="40" rx="6"/><text class="ntext" x="75" y="57" style="font-size:16px">78</text>
+          <text class="blabel" x="320" y="12">TABEL REFERENSI ($G$2:$H$6)</text>
+          <rect class="vhead" x="200" y="20" width="110" height="30"/><text class="ntext" x="255" y="40">BATAS BAWAH</text>
+          <rect class="vhead" x="310" y="20" width="130" height="30"/><text class="ntext" x="375" y="40">PREDIKAT</text>
+          <rect class="vrow" x="200" y="50" width="110" height="28"/><text class="ntext" x="255" y="69">0</text>
+          <rect class="vrow" x="310" y="50" width="130" height="28"/><text class="ntext" x="375" y="69">E</text>
+          <rect class="vrow" x="200" y="78" width="110" height="28"/><text class="ntext" x="255" y="97">60</text>
+          <rect class="vrow" x="310" y="78" width="130" height="28"/><text class="ntext" x="375" y="97">D</text>
+          <rect class="vrow hl" x="200" y="106" width="110" height="28"/><text class="ntext" x="255" y="125">70</text>
+          <rect class="vrow hl" x="310" y="106" width="130" height="28"/><text class="ntext" x="375" y="125">C</text>
+          <rect class="vrow" x="200" y="134" width="110" height="28"/><text class="ntext" x="255" y="153">80</text>
+          <rect class="vrow" x="310" y="134" width="130" height="28"/><text class="ntext" x="375" y="153">B</text>
+          <rect class="vrow" x="200" y="162" width="110" height="28"/><text class="ntext" x="255" y="181">90</text>
+          <rect class="vrow" x="310" y="162" width="130" height="28"/><text class="ntext" x="375" y="181">A</text>
+          <path class="edge" d="M132,50 C170,50 168,120 197,120"/><polygon class="arr" points="189,115 189,125 197,120"/>
+          <line class="edge" x1="312" y1="120" x2="365" y2="120"/><polygon class="arr" points="357,115 357,125 365,120"/>
+          <path class="edge" d="M375,134 C375,180 300,212 216,212"/><polygon class="arr" points="224,206 224,218 216,212"/>
+          <rect class="nend" x="20" y="194" width="192" height="36" rx="8"/><text class="ntext on-end" x="116" y="217">HASIL: "C"</text>
+        </svg>
+        <figcaption>FIG. 02 — CARA KERJA VLOOKUP MODE RENTANG (TRUE)</figcaption>
+      </figure>
+      <p class="mut">Perhatikan dua kesalahan klasik: <strong>lupa tanda $</strong> — ketika rumus diisi ke bawah, tabel referensi ikut bergeser dan hasil menjadi kacau; dan <strong>salah menghitung col_index_num</strong> — nomor dihitung dari kolom pertama tabel referensi, bukan kolom A lembar kerja.</p>
+      <div class="exercise">
+        <div class="ex-tag">LATIHAN — KERJAKAN SENDIRI</div>
+        <p>Tabel referensi kode barang di atas diletakkan pada $H$2:$I$5. Tuliskan rumus VLOOKUP di sel F2 untuk mencari nama barang dari kode pada sel E2, lalu sebutkan hasilnya ketika E2 berisi PS03.</p>
+      </div>
+      <details class="key"><summary><i data-lucide="key-round"></i> LIHAT KUNCI JAWABAN</summary><div class="key-body">
+        <p>=VLOOKUP(E2;$H$2:$I$5;2;FALSE). Untuk E2 = PS03: kode ditemukan persis di baris ketiga tabel, lalu VLOOKUP mengambil kolom ke-2 baris itu — hasilnya "Penghapus".</p>
+      </div></details>
+    </div>
+  </details>
+
+  <details class="doc" id="m-komb">
+    <summary><span class="doc-num">05</span><span class="doc-title">Kombinasi IF, VLOOKUP, dan IFERROR</span><i data-lucide="chevron-right" class="chev"></i></summary>
+    <div class="doc-body">
+      <p>Excel menghitung rumus bersarang <strong>dari kurung paling dalam ke luar</strong> — hasil fungsi terdalam menjadi bahan bagi fungsi yang membungkusnya. Tiga pola kombinasi yang dipakai pada proyek:</p>
+      <h4>Pola 1 — IF menjaga sel kosong</h4>
+      <p>Ketika lembar nilai belum terisi penuh, VLOOKUP pada sel kosong menghasilkan #N/A yang mencolok. IF bisa menjaga pintu: bila nilai belum ada, tampilkan kosong.</p>
+      <pre class="code"><span class="kw">=IF</span>(C2=<span class="str">""</span>; <span class="str">""</span>; <span class="kw">VLOOKUP</span>(C2; $G$2:$H$6; 2; TRUE))</pre>
+      <h4>Pola 2 — IFERROR menangkap segala galat</h4>
+      <p>IFERROR menampilkan teks pengganti bila rumus di dalamnya menghasilkan galat apa pun (#N/A, #DIV/0!, dan lainnya).</p>
+      <pre class="code"><span class="kw">=IFERROR</span>(
+  <span class="kw">VLOOKUP</span>(E2; $H$2:$I$5; 2; FALSE);
+  <span class="str">"KODE TIDAK DITEMUKAN"</span>
+)</pre>
+      <h4>Pola 3 — keduanya digabung</h4>
+      <p>Kolom predikat yang "aman": diam bila nilai kosong, menampilkan teks jelas bila data tidak ditemukan, dan VLOOKUP menyelesaikan sisanya.</p>
+      <pre class="code"><span class="kw">=IF</span>(C2=<span class="str">""</span>; <span class="str">""</span>;
+  <span class="kw">IFERROR</span>(<span class="kw">VLOOKUP</span>(C2; $G$2:$H$6; 2; TRUE); <span class="str">"CEK DATA"</span>))</pre>
+      <p class="mut">Membaca rumus bersarang selalu dimulai dari kurung terdalam: cari bagian yang paling dalam, tanyakan hasilnya, lalu naik satu tingkat. Latih kebiasaan ini — hampir semua kesalahan kombinasi tersembunyi di satu tingkat yang terlewat dibaca.</p>
+      <div class="exercise">
+        <div class="ex-tag">LATIHAN — KERJAKAN SENDIRI</div>
+        <p>Bungkus rumus VLOOKUP dari latihan sub-bab sebelumnya agar menampilkan "KODE TIDAK VALID" bila kode tidak ditemukan. Kemudian jelaskan dengan kalimat sendiri mengapa IFERROR dipilih, bukan IF biasa.</p>
+      </div>
+      <details class="key"><summary><i data-lucide="key-round"></i> LIHAT KUNCI JAWABAN</summary><div class="key-body">
+        <p>=IFERROR(VLOOKUP(E2;$H$2:$I$5;2;FALSE);"KODE TIDAK VALID"). IF dipilih bila kita bisa menguji syaratnya secara langsung (misalnya sel kosong); tetapi untuk mengetahui "data tidak ditemukan", kita tidak punya syarat yang bisa diuji sebelum VLOOKUP dijalankan — justru hasil galatnya yang memberi tahu. IFERROR menunggu hasil itu lalu menggantinya, sehingga lebih tepat.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <details class="doc" id="m-proy">
+    <summary><span class="doc-num">06</span><span class="doc-title">Merancang Lembar Nilai Otomatis</span><i data-lucide="chevron-right" class="chev"></i></summary>
+    <div class="doc-body">
+      <p>Proyek mini modul ini adalah satu lembar kerja utuh yang mengolah nilai kelas. Kunci keberhasilannya bukan rumus yang rumit, melainkan <strong>struktur yang dipikirkan lebih dulu</strong>. Bagi lembar menjadi tiga area:</p>
+      <ul>
+        <li><strong>Area input</strong> — No, Nama, dan Nilai. Hanya area ini yang diisi manual; semester berikutnya cukup diganti isinya.</li>
+        <li><strong>Area tabel referensi</strong> — batas predikat dengan alamat absolut ($), diletakkan agak terpisah agar tidak tertimpa pengisian data.</li>
+        <li><strong>Area hasil</strong> — kolom keterangan (IF), kolom predikat (VLOOKUP dibungkus IFERROR), dan baris ringkasan. Seluruhnya otomatis.</li>
+      </ul>
+      <h4>Empat langkah membangun</h4>
+      <ol>
+        <li>Rapikan area input: beri judul kolom, isi 10–15 baris data, pastikan tidak ada sel nilai yang berisi teks.</li>
+        <li>Bangun tabel referensi predikat (0/E sampai 90/A) dan kuncinya dengan tanda $.</li>
+        <li>Tulis kolom hasil: keterangan <code>=IF(C2&gt;=75;"LULUS";"REMEDIAL")</code> dan predikat <code>=IF(C2="";"";IFERROR(VLOOKUP(C2;$G$2:$H$6;2;TRUE);"CEK DATA"))</code>, lalu isi ke bawah.</li>
+        <li>Tambahkan ringkasan — misalnya menghitung jumlah siswa lulus dengan fungsi COUNTIF.</li>
+      </ol>
+      <pre class="code"><span class="cm">menghitung banyak sel pada D2:D21 yang berisi teks "LULUS"</span>
+<span class="kw">=COUNTIF</span>(D2:D21; <span class="str">"LULUS"</span>)</pre>
+      <p class="mut">Pengujian adalah bagian dari pembangunan, bukan tahap akhir: ubah satu nilai, kosongkan satu sel, ketik satu data tak dikenal — dan pastikan lembar tetap tenang, tanpa satu pun galat mencolok.</p>
+    </div>
+  </details>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-p5"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="materi"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-asesmen">Bagian Asesmen <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 09 ASESMEN ============ -->
+<section class="chapter" id="s-asesmen" data-key="asesmen" data-toclabel="Asesmen">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="clipboard-check"></i> KOMPONEN INTI · ASESMEN</div>
+    <div class="ch-title"><span class="ch-num">09</span><div>
+      <h2>Asesmen</h2>
+      <p class="ch-sub">Diagnostik, formatif, dan sumatif — dilengkapi kuis interaktif untuk uji pemahaman mandiri.</p>
+    </div></div>
+  </header>
+
+  <p class="lead">Asesmen dalam modul ini dirancang berjenjang: diagnostik memetakan titik berangkat, formatif memotong langkah di tiap pertemuan, dan sumatif menutup modul lewat proyek lembar nilai otomatis serta kuis tertulis singkat.</p>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="info"></i><span>Asesmen Diagnostik — Awal Modul</span></div>
+    <p>Dilakukan lisan pada awal Pertemuan 1 untuk memetakan pengetahuan awal, tidak dinilai. Contoh pertanyaan: (1) "Siapa yang pernah membuka Excel? Untuk apa?" (2) "Apa yang terjadi jika kita menulis 2+3 pada sel tanpa tanda =?" (3) "Pernahkah kalian melihat tanda #N/A atau galat lain di Excel? Kapan?"</p>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="list-checks"></i><span>Asesmen Formatif — Kisi-kisi</span></div>
+    <div class="tbl-scroll"><table class="tbl">
+      <tr><th>Indikator</th><th>Teknik</th><th>Bentuk Instrumen</th><th>Waktu</th></tr>
+      <tr><td>Pemahaman formula dasar dan rumus IF tunggal</td><td>Observasi praktik + tes tertulis</td><td>Lembar observasi, LKPD 1, exit ticket</td><td>Pertemuan 1</td></tr>
+      <tr><td>Kemampuan menyusun IF bertingkat dan AND/OR</td><td>Observasi + penilaian produk</td><td>LKPD 2, pohon keputusan kelompok</td><td>Pertemuan 2</td></tr>
+      <tr><td>Kemampuan membangun tabel referensi dan rumus VLOOKUP</td><td>Penilaian praktik</td><td>LKPD 3, tabel referensi individual</td><td>Pertemuan 3</td></tr>
+      <tr><td>Kemampuan menggabungkan fungsi dan menangani galat</td><td>Penilaian karya + observasi</td><td>LKPD 4, lembar uji tiga skenario</td><td>Pertemuan 4</td></tr>
+      <tr><td>Integrasi seluruh fungsi dalam satu produk</td><td>Observasi + penilaian sejawat</td><td>Lembar proyek dan presentasi</td><td>Pertemuan 5</td></tr>
+    </table></div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="sparkles"></i><span>Uji Pemahaman — Kuis Interaktif</span></div>
+    <p>Kuis 5 soal pilihan ganda berikut dapat dikerjakan peserta didik (atau Anda uji coba sendiri) sebagai gladi formatif mandiri sebelum asesmen sumatif. Jawaban langsung diperiksa beserta pembahasannya.</p>
+    <div class="quiz-box no-print">
+      <div class="quiz-head"><i data-lucide="sparkles"></i> UJI PEMAHAMAN</div>
+      <div id="quizWrap"></div>
+    </div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="award"></i><span>Asesmen Sumatif — Proyek Lembar Nilai</span></div>
+    <p>Peserta didik (berkelompok 2–4, satu komputer per kelompok) membangun lembar nilai kelas utuh: area input 10–15 baris data, tabel referensi predikat terkunci ($), kolom keterangan IF, kolom predikat VLOOKUP yang dibungkus IFERROR, dan satu baris ringkasan (misalnya COUNTIF) — lalu mendemonstrasikan ketahanannya terhadap uji ubah-data, sel-kosong, dan data-tak-dikenal.</p>
+    <div class="tbl-scroll"><table class="tbl" style="min-width:860px">
+      <tr><th style="width:170px">Kriteria</th><th>1 · Perlu Bimbingan</th><th>2 · Cukup</th><th>3 · Baik</th><th>4 · Sangat Baik</th></tr>
+      <tr><td class="c-em">Struktur lembar kerja</td><td>Data, referensi, dan hasil tercampur tanpa label.</td><td>Area mulai terpisah; sebagian kolom belum berjudul.</td><td>Input, referensi, dan hasil terpisah rapi dan berlabel.</td><td>Struktur rapi, berlabel, dan dirancang agar mudah dipakai ulang semester berikutnya.</td></tr>
+      <tr><td class="c-em">Rumus IF</td><td>Rumus IF salah atau tidak berjalan.</td><td>IF tunggal benar; hasil pada beberapa baris keliru.</td><td>IF benar pada seluruh baris, operator sesuai aturan.</td><td>IF benar, operator tepat, dan mampu menjelaskan mengapa hasil berubah saat data diubah.</td></tr>
+      <tr><td class="c-em">Rumus VLOOKUP</td><td>Rumus salah atau tabel referensi tidak layak.</td><td>VLOOKUP berjalan namun tabel tidak dikunci ($) atau mode salah.</td><td>VLOOKUP benar: tabel terkunci $, mode FALSE/TRUE sesuai kasus.</td><td>VLOOKUP benar pada kedua mode, mampu menjelaskan keempat argumen dan penyebab #N/A.</td></tr>
+      <tr><td class="c-em">Penanganan galat</td><td>Galat #N/A tampil di banyak sel.</td><td>Sebagian sel terlindungi; beberapa galat masih lolos.</td><td>IFERROR/IF menjaga seluruh skenario uji (ubah, kosong, tak dikenal).</td><td>Galat tertangani dengan teks informatif; kelompok menjelaskan alasan memilih IFERROR.</td></tr>
+      <tr><td class="c-em">Penyajian &amp; kolaborasi</td><td>Lembar sulit dibaca; kerja kelompok timpang.</td><td>Lembar cukup jelas; pembagian peran belum merata.</td><td>Lembar rapi dan ringkasan berfungsi; semua anggota berkontribusi.</td><td>Penyajian meyakinkan, demonstrasi uji berjalan mulus; kolaborasi terlihat dari isi maupun penampilan.</td></tr>
+    </table></div>
+    <div class="formula">Nilai akhir = <span class="fx">(jumlah skor perolehan ÷ 20) × 100</span> &nbsp;·&nbsp; Ambang batas ketuntatan = 70</div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="pen-line"></i><span>Remedial &amp; Pengayaan</span></div>
+    <p><strong>Remedial</strong> — bagi peserta didik di bawah ambang batas: pendampingan bertahap mulai dari formula sederhana dengan kasus dekat keseharian (diskon warung, stok minuman), menulis ulang satu IF tunggal hingga benar, lalu naik ke VLOOKUP dengan tabel kecil dua baris; penilaian ulang memakai kasus berbeda dengan rubrik yang sama.</p>
+    <p><strong>Pengayaan</strong> — bagi peserta didik yang melampaui ketuntatan: menerapkan HLOOKUP (pencarian horizontal) dan XLOOKUP bila tersedia, menggantikan IF bertingkat dengan fungsi IFS, menambahkan COUNTIF/SUMIF untuk statistik lembar, serta memformat tabel dengan conditional formatting agar kategori nilai berwarna otomatis.</p>
+  </div>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-materi"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="asesmen"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+      <button class="btn solid nav-btn" data-goto="s-refleksi">Bagian Refleksi <i data-lucide="arrow-right"></i></button>
+    </div>
+  </footer>
+</section>
+
+<!-- ============ 10 REFLEKSI ============ -->
+<section class="chapter" id="s-refleksi" data-key="refleksi" data-toclabel="Refleksi Guru &amp; Peserta Didik">
+  <header>
+    <div class="ch-eyebrow"><i data-lucide="notebook-pen"></i> KOMPONEN INTI · REFLEKSI GURU &amp; PESERTA DIDIK</div>
+    <div class="ch-title"><span class="ch-num">10</span><div>
+      <h2>Refleksi Guru &amp; Peserta Didik</h2>
+      <p class="ch-sub">Dua lembar refleksi yang dapat diisi langsung di halaman ini — isian tersimpan otomatis di perangkat.</p>
+    </div></div>
+  </header>
+
+  <p class="lead">Refleksi adalah bagian dari asesmen <em>as learning</em>. Isian di bawah hanya tersimpan di peramban perangkat ini; gunakan tombol cetak atau unduh DOCX untuk mengeluarkannya bersama seluruh modul bila diperlukan arsip tertulis.</p>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="pen-line"></i><span>Refleksi Guru</span></div>
+    <div class="form-block">
+      <label class="f-label">1 · Apa yang sudah berjalan baik dalam pembelajaran modul ini?</label>
+      <textarea class="ta" id="rg1" placeholder="Tuliskan momen, kegiatan, atau strategi yang terbukti efektif…"></textarea>
+      <label class="f-label">2 · Bagian mana yang perlu diperbaiki atau didekati dengan cara berbeda?</label>
+      <textarea class="ta" id="rg2" placeholder="Tuliskan bagian yang tersendat, pertanyaan siswa yang belum terjawab, hambatan perangkat atau alokasi waktu…"></textarea>
+      <label class="f-label">3 · Rencana tindak lanjut untuk pertemuan / materi berikutnya</label>
+      <textarea class="ta" id="rg3" placeholder="Tuliskan langkah perbaikan yang konkret dan terukur…"></textarea>
+      <div class="save-row no-print">
+        <button class="btn solid" id="saveGuru"><i data-lucide="check"></i> Simpan Refleksi Guru</button>
+        <span class="saved-at" id="savedG"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="comp">
+    <div class="comp-label"><i data-lucide="users"></i><span>Refleksi Peserta Didik</span></div>
+    <div class="form-block">
+      <p class="likert-legend">Pilih salah satu: STS = Sangat Tidak Setuju · TS = Tidak Setuju · S = Setuju · SS = Sangat Setuju</p>
+      <div class="likert-row">
+        <p class="likert-q">1. Saya memahami cara kerja rumus IF dan VLOOKUP dengan baik.</p>
+        <div class="likert-opts">
+          <label><input type="radio" name="lk1" value="STS"><span>STS</span></label>
+          <label><input type="radio" name="lk1" value="TS"><span>TS</span></label>
+          <label><input type="radio" name="lk1" value="S"><span>S</span></label>
+          <label><input type="radio" name="lk1" value="SS"><span>SS</span></label>
+        </div>
+      </div>
+      <div class="likert-row">
+        <p class="likert-q">2. Saya dapat menyusun rumus IF, VLOOKUP, dan kombinasinya untuk mengolah data.</p>
+        <div class="likert-opts">
+          <label><input type="radio" name="lk2" value="STS"><span>STS</span></label>
+          <label><input type="radio" name="lk2" value="TS"><span>TS</span></label>
+          <label><input type="radio" name="lk2" value="S"><span>S</span></label>
+          <label><input type="radio" name="lk2" value="SS"><span>SS</span></label>
+        </div>
+      </div>
+      <div class="likert-row">
+        <p class="likert-q">3. Kegiatan praktik di laboratorium menarik dan melibatkan saya secara aktif.</p>
+        <div class="likert-opts">
+          <label><input type="radio" name="lk3" value="STS"><span>STS</span></label>
+          <label><input type="radio" name="lk3" value="TS"><span>TS</span></label>
+          <label><input type="radio" name="lk3" value="S"><span>S</span></label>
+          <label><input type="radio" name="lk3" value="SS"><span>SS</span></label>
+        </div>
+      </div>
+      <div class="likert-row">
+        <p class="likert-q">4. Saya merasa lebih percaya diri mengolah data dengan aplikasi lembar kerja.</p>
+        <div class="likert-opts">
+          <label><input type="radio" name="lk4" value="STS"><span>STS</span></label>
+          <label><input type="radio" name="lk4" value="TS"><span>TS</span></label>
+          <label><input type="radio" name="lk4" value="S"><span>S</span></label>
+          <label><input type="radio" name="lk4" value="SS"><span>SS</span></label>
+        </div>
+      </div>
+      <label class="f-label">Bagian mana yang masih membingungkan? Tuliskan pertanyaan yang masih tersisa di benakmu.</label>
+      <textarea class="ta" id="sw1" placeholder="Tuliskan bagian atau pertanyaan yang belum jelas…"></textarea>
+      <div class="save-row no-print">
+        <button class="btn solid" id="saveSiswa"><i data-lucide="check"></i> Simpan Refleksi Siswa</button>
+        <span class="saved-at" id="savedS"></span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ch-foot">
+    <button class="btn ghost nav-btn" data-goto="s-asesmen"><i data-lucide="arrow-left"></i> Sebelumnya</button>
+    <div class="fr">
+      <button class="btn ghost mark-btn" data-key="refleksi"><i data-lucide="check"></i><span>Tandai Selesai</span></button>
+    </div>
+  </footer>
+</section>
+
+</main>
+
+<!-- modal konfirmasi generik -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal">
+    <h3 id="mTitle"></h3>
+    <p id="mMsg"></p>
+    <div class="m-actions" id="mActions"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- penangkap galat skrip: dipasang paling awal agar galat pada skrip utama tetap terlihat -->
+<script>
+window.addEventListener('error', function(ev){
+  try{
+    var b=document.getElementById('jsErrBanner');
+    if(!b){
+      b=document.createElement('div');
+      b.id='jsErrBanner';
+      b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#A83E28;color:#FFF7EC;font:600 12px/1.6 Consolas,monospace;padding:9px 16px;z-index:99999';
+      document.body.appendChild(b);
+    }
+    b.textContent='Terjadi galat skrip: '+(ev.message||'(tidak diketahui)')+' — buka Console (F12) untuk rincian; pastikan kode tersalin utuh.';
+  }catch(e){}
+});
+</script>
+<script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/lucide@0.462.0/dist/umd/lucide.min.js';"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.3.1/html-docx.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js';"></script>
+<script>
+/* ============ UTILITAS ============ */
+var $  = function(s){ return document.querySelector(s); };
+var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+var esc = function(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); };
+var L = function(j){ return String.fromCharCode(65+j); };
+var LS_PROG='bk-modul-prog', LS_EDITS='bk-modul-edits';
+/* penyimpanan aman: tidak melempar galat walau localStorage diblokir browser */
+var store={
+  get:function(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } },
+  set:function(k,v){ try{ window.localStorage.setItem(k,v); return true; }catch(e){ return false; } },
+  remove:function(k){ try{ window.localStorage.removeItem(k); }catch(e){} }
+};
+function icons(){ try{ if(window.lucide && window.lucide.createIcons) window.lucide.createIcons(); }catch(e){} }
+function toast(msg,ic){
+  ic=ic||'check';
+  var wrap=$('#toastWrap'); if(!wrap) return;
+  var t=document.createElement('div');
+  t.className='toast';
+  t.innerHTML='<i data-lucide="'+esc(ic)+'"></i><span>'+esc(msg)+'</span>';
+  wrap.appendChild(t); icons();
+  setTimeout(function(){ t.style.transition='.3s'; t.style.opacity='0'; t.style.transform='translateY(10px)'; },2600);
+  setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); },3000);
+}
+
+/* ============ STATE ============ */
+var editing=false, dirty=false, globalAddCh=null;
+var QUIZ_BASE=[
+  { q:'Rumus =IF(B2>=75;"LULUS";"REMEDIAL") ditulis pada sel C2. Jika B2 berisi angka 75, hasil yang muncul di C2 adalah…',
+    o:['"REMEDIAL"','"LULUS"','75','galat #VALUE!'], a:1,
+    w:'Operator >= berarti "lebih besar ATAU SAMA DENGAN", sehingga 75 memenuhi syarat. IF mengambil value_if_true, yaitu "LULUS".' },
+  { q:'Argumen pertama (logical_test) pada fungsi IF bertugas untuk…',
+    o:['menentukan hasil jika syarat salah','menguji syarat yang hasilnya TRUE atau FALSE','menentukan alamat tabel referensi','menghitung rata-rata data'], a:1,
+    w:'IF memiliki tiga argumen: logical_test, value_if_true, dan value_if_false. Argumen pertama harus menghasilkan nilai logika TRUE/FALSE agar keputusan bisa diambil.' },
+  { q:'Rumus =VLOOKUP(C2;$G$2:$H$6;2;TRUE) dipakai dengan tabel referensi berisi pasangan (0;"E"), (60;"D"), (70;"C"), (80;"B"), (90;"A"). Jika C2 berisi 78, hasil rumus adalah…',
+    o:['"B"','"D"','#N/A','"C"'], a:3,
+    w:'Mode TRUE mencari batas bawah terbesar yang tidak melebihi nilai yang dicari. Untuk 78, batas itu adalah 70, lalu VLOOKUP mengambil isi kolom ke-2 baris tersebut: "C".' },
+  { q:'Galat #N/A pada VLOOKUP dengan range_lookup FALSE paling sering muncul karena…',
+    o:['rumus terlalu panjang','nilai yang dicari tidak ada di kolom pertama tabel referensi','nomor kolom melebihi jumlah kolom tabel','tabel referensi tidak diberi tanda $'], a:1,
+    w:'Mode FALSE menuntut kecocokan persis. Jika lookup_value tidak ditemukan di kolom pertama tabel referensi, Excel menampilkan #N/A — yang dapat ditangani misalnya dengan IFERROR.' },
+  { q:'Untuk menampilkan teks "NISN TIDAK ADA" bila data yang dicari tidak ditemukan, rumus yang paling tepat adalah…',
+    o:['=IF(VLOOKUP(A2;$B$2:$E$50;4;FALSE);"NISN TIDAK ADA")','=IFERROR(VLOOKUP(A2;$B$2:$E$50;4;FALSE);"NISN TIDAK ADA")','=VLOOKUP(A2;$B$2:$E$50;4;"NISN TIDAK ADA")','=IFERROR(A2;"NISN TIDAK ADA")'], a:1,
+    w:'IFERROR(rumus; nilai_jika_galat) menangkap galat apa pun termasuk #N/A lalu menampilkan teks pengganti. Argumen ketiga VLOOKUP harus berupa nomor kolom, bukan teks.' }
+];
+var QUIZ=JSON.parse(JSON.stringify(QUIZ_BASE));
+var PRISTINE=null;
+
+/* ============ NAVIGASI BAB ============ */
+function getOrder(){ return $$('.chapter').map(function(c){ return c.id; }); }
+function goTo(id,anchor){
+  if(getOrder().indexOf(id)<0) return;
+  $$('.chapter').forEach(function(c){ c.classList.remove('active'); });
+  var sec=document.getElementById(id);
+  if(sec) sec.classList.add('active');
+  $$('.toc-item').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-goto')===id); });
+  closeDrawer();
+  if(anchor){
+    var el=document.getElementById(anchor);
+    if(el && el.tagName==='DETAILS') el.open=true;
+    setTimeout(function(){ if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'start'}); },120);
+  } else { window.scrollTo(0,0); }
+}
+document.addEventListener('click', function(e){
+  var tgt=e.target; if(!tgt || typeof tgt.closest!=='function') return;
+  var nav=tgt.closest('.nav-btn'); if(nav){ goTo(nav.getAttribute('data-goto')); return; }
+  var jump=tgt.closest('.jump-link'); if(jump){ goTo('s-materi', jump.getAttribute('data-anchor')); return; }
+  var toc=tgt.closest('.toc-item'); if(toc){ goTo(toc.getAttribute('data-goto')); return; }
+  if(tgt.closest('.print-btn')){ window.print(); return; }
+  var dl=tgt.closest('.dl-btn'); if(dl){ exportDOCX(); return; }
+  var mk=tgt.closest('.mark-btn'); if(mk){ toggleDone(mk); return; }
+  if(tgt.closest('#saveGuru')){ saveReflection('bk-ref-guru',{r1:$('#rg1').value,r2:$('#rg2').value,r3:$('#rg3').value},'#savedG'); return; }
+  if(tgt.closest('#saveSiswa')){
+    var lk=['lk1','lk2','lk3','lk4'].map(function(n){ var el=document.querySelector('input[name="'+n+'"]:checked'); return el?el.value:''; });
+    saveReflection('bk-ref-siswa',{lk:lk,w1:$('#sw1').value},'#savedS'); return;
+  }
+});
+
+/* ============ PROGRES BACA ============ */
+function getProg(){ try{ return JSON.parse(store.get(LS_PROG))||{}; }catch(e){ return {}; } }
+function toggleDone(btn){
+  var key=btn.getAttribute('data-key'); var p=getProg();
+  var chs=$$('.chapter');
+  var ch=null; for(var i=0;i<chs.length;i++){ if(chs[i].getAttribute('data-key')===key){ ch=chs[i]; break; } }
+  var label=ch?(ch.getAttribute('data-toclabel')||'Bagian'):'Bagian';
+  var nowDone=!p[key];
+  if(nowDone) p[key]=true; else delete p[key];
+  store.set(LS_PROG,JSON.stringify(p)); refreshProgress();
+  if(nowDone){
+    toast(label+' ditandai selesai');
+    var allDone=chs.length>0 && chs.every(function(c){ return getProg()[c.getAttribute('data-key')]; });
+    if(allDone) setTimeout(function(){ toast('Seluruh modul selesai dibaca — kerja yang bagus!','award'); },500);
+  } else toast('Tanda selesai pada '+label+' dibatalkan','rotate-ccw');
+}
+function refreshProgress(){
+  var p=getProg(); var chs=$$('.chapter');
+  var n=0; chs.forEach(function(c){ if(p[c.getAttribute('data-key')]) n++; });
+  var pt=$('#progText'), pf=$('#progFill');
+  if(pt) pt.textContent=n+'/'+chs.length;
+  if(pf) pf.style.width=(chs.length?n/chs.length*100:0)+'%';
+  $$('.toc-item').forEach(function(t){
+    var c=document.getElementById(t.getAttribute('data-goto'));
+    t.classList.toggle('done',!!(c&&p[c.getAttribute('data-key')]));
+  });
+  $$('.mark-btn').forEach(function(b){
+    var done=!!p[b.getAttribute('data-key')];
+    b.classList.toggle('is-done',done);
+    var sp=b.querySelector('span'); if(sp) sp.textContent=done?'Sudah Selesai':'Tandai Selesai';
+  });
+}
+
+/* ============ DAFTAR ISI & NAVIGASI DINAMIS ============
+   Daftar isi default sudah tertanam statis di HTML;
+   fungsi ini hanya membangun ulang (mis. setelah pertemuan ditambah/dihapus),
+   dan dibangun ke fragment agar daftar statis tidak pernah "kosong" bila terjadi galat. */
+function rebuildTOC(){
+  var toc=$('#toc'); if(!toc) return;
+  var frag=document.createDocumentFragment();
+  $$('.chapter').forEach(function(c,i){
+    var label=c.getAttribute('data-toclabel');
+    if(!label){ var h2=c.querySelector('h2'); label=(h2&&h2.textContent)||'Bagian'; }
+    label=String(label).trim();
+    var a=document.createElement('a');
+    a.className='toc-item';
+    a.setAttribute('data-goto',c.id);
+    a.innerHTML='<span class="toc-num">'+String(i+1).padStart(2,'0')+'</span><span class="toc-title">'+esc(label)+'</span><i data-lucide="check" class="toc-check"></i>';
+    frag.appendChild(a);
+    var cn=c.querySelector('.ch-num'); if(cn) cn.textContent=String(i+1).padStart(2,'0');
+  });
+  toc.innerHTML='';
+  toc.appendChild(frag);
+  var act=$('.chapter.active');
+  $$('.toc-item').forEach(function(t){ t.classList.toggle('active',!!act&&t.getAttribute('data-goto')===act.id); });
+  icons();
+}
+function refreshNav(){
+  var order=getOrder();
+  $$('.chapter').forEach(function(c,i){
+    var prev=c.querySelector('.ch-foot .btn.ghost.nav-btn');
+    var next=c.querySelector('.ch-foot .btn.solid.nav-btn');
+    if(prev){ if(i===0) prev.style.display='none'; else { prev.style.display=''; prev.setAttribute('data-goto',order[i-1]); } }
+    if(next){ if(i===order.length-1) next.style.display='none'; else { next.style.display=''; next.setAttribute('data-goto',order[i+1]); } }
+  });
+}
+function normalizeActive(){
+  if(!$('.chapter.active')){ var f=getOrder()[0]; if(f){ var el=document.getElementById(f); if(el) el.classList.add('active'); } }
+}
+
+/* ============ TEMA & DRAWER ============ */
+ $('#themeBtn').addEventListener('click',function(){
+  var next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  store.set('bk-modul-theme',next);
+});
+function closeDrawer(){ $('#sidebar').classList.remove('open'); $('#scrim').classList.remove('show'); }
+ $('#menuBtn').addEventListener('click',function(){ $('#sidebar').classList.add('open'); $('#scrim').classList.add('show'); });
+ $('#scrim').addEventListener('click',closeDrawer);
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeDrawer(); closeModal(); } });
+
+/* ============ MODAL KONFIRMASI GENERIK ============ */
+function closeModal(){ $('#modalConfirm').classList.remove('show'); }
+function confirmDialog(opts){
+  $('#mTitle').textContent=opts.title||'';
+  $('#mMsg').innerHTML=opts.msg||'';
+  var box=$('#mActions'); box.innerHTML='';
+  (opts.actions||[]).forEach(function(a){
+    var b=document.createElement('button');
+    b.className='btn '+(a.cls||'ghost'); b.textContent=a.label;
+    b.onclick=function(){ closeModal(); if(a.fn) a.fn(); };
+    box.appendChild(b);
+  });
+  $('#modalConfirm').classList.add('show');
+}
+ $('#modalConfirm').addEventListener('click',function(e){ if(e.target.id==='modalConfirm') closeModal(); });
+ $('#resetBtn').addEventListener('click',function(){
+  confirmDialog({
+    title:'Reset progres baca?',
+    msg:'Semua tanda "selesai" akan dihapus. Suntingan isi modul dan refleksi tidak terpengaruh.',
+    actions:[{label:'Batal'},{label:'Ya, Reset',cls:'danger',fn:function(){ store.remove(LS_PROG); refreshProgress(); toast('Progres baca direset','rotate-ccw'); }}]
+  });
+});
+
+/* ============ KUIS ============ */
+var qState={answered:0,correct:0};
+function buildQuiz(){
+  qState={answered:0,correct:0};
+  var wrap=$('#quizWrap'); if(!wrap) return;
+  wrap.innerHTML='';
+  QUIZ.forEach(function(item,i){
+    var card=document.createElement('div');
+    card.className='q-card';
+    card.setAttribute('data-qi',String(i));
+    card.setAttribute('data-ans',String(item.a));
+    var opts=item.o.map(function(t,j){
+      return '<button type="button" class="opt" data-q="'+i+'" data-j="'+j+'"><span class="otag">'+L(j)+'</span><span class="otext">'+esc(t)+'</span></button>';
+    }).join('');
+    card.innerHTML='<div class="q-num">SOAL '+String(i+1).padStart(2,'0')+' / '+String(QUIZ.length).padStart(2,'0')+'</div><div class="q-text">'+esc(item.q)+'</div><div class="q-opts">'+opts+'</div><div class="why" hidden></div>';
+    wrap.appendChild(card);
+  });
+  if(editing) applyQuizEditUI();
+  icons();
+}
+ $('#quizWrap').addEventListener('click',function(e){
+  var btn=e.target.closest?e.target.closest('.opt'):null;
+  if(!btn||btn.disabled) return;
+  if(editing) return;
+  var qi=parseInt(btn.getAttribute('data-q'),10), ji=parseInt(btn.getAttribute('data-j'),10);
+  var item=QUIZ[qi]; if(!item) return;
+  var card=btn.closest('.q-card'); var all=card.querySelectorAll('.opt');
+  all.forEach(function(b){ b.disabled=true; });
+  if(ji===item.a){ btn.classList.add('ok'); qState.correct++; }
+  else { btn.classList.add('bad'); all[item.a].classList.add('ok'); }
+  var why=card.querySelector('.why');
+  why.hidden=false;
+  why.innerHTML='<b>Pembahasan:</b> '+esc(item.w);
+  qState.answered++;
+  if(qState.answered===QUIZ.length) setTimeout(showResult,350);
+});
+function showResult(){
+  var c=qState.correct, total=QUIZ.length;
+  var msg=c===total?'Sempurna — kamu siap menjadi penyihir rumus Excel kelas dunia.'
+    :c>=total-1?'Hebat — tinggal satu langkah menuju sempurna. Baca ulang bagian yang keliru.'
+    :c>=Math.ceil(total/2)?'Cukup baik — buka kembali sub-bab materi yang bersangkutan, lalu coba lagi.'
+    :'Jangan menyerah — buka kembali bacaan materinya pelan-pelan, lalu uji lagi pemahamanmu.';
+  var panel=document.createElement('div');
+  panel.className='q-result';
+  panel.innerHTML='<div class="score-num">'+c+'/'+total+'</div><div class="score-msg">'+esc(msg)+'</div><button class="btn solid" id="quizRetry"><i data-lucide="rotate-ccw"></i> Uji Lagi</button>';
+  $('#quizWrap').appendChild(panel); icons();
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  var rt=$('#quizRetry'); if(rt) rt.addEventListener('click',function(){ buildQuiz(); toast('Kuis diulang — semangat!','rotate-ccw'); });
+}
+function harvestQuiz(){
+  var out=[];
+  $$('#quizWrap .q-card').forEach(function(card){
+    var qEl=card.querySelector('.q-text'); if(!qEl) return;
+    var i0=out.length;
+    var o=[]; card.querySelectorAll('.otext').forEach(function(s){ o.push(s.textContent.trim()); });
+    var whyEl=card.querySelector('.why');
+    var w=whyEl?String(whyEl.textContent||''):'';
+    w=w.replace(/^Pembahasan:\s*/,'').trim();
+    if(!w) w=(QUIZ[i0]&&QUIZ[i0].w)||'';
+    var a=parseInt(card.getAttribute('data-ans'),10);
+    if(isNaN(a)||a<0||a>=o.length) a=0;
+    out.push({q:qEl.textContent.trim(),o:o,a:a,w:w});
+  });
+  if(out.length) QUIZ=out;
+}
+function applyQuizEditUI(){
+  $$('#quizWrap .q-card').forEach(function(card,i){
+    var q=QUIZ[i]; if(!q) return;
+    card.setAttribute('data-qi',String(i));
+    card.setAttribute('data-ans',String(q.a));
+    var qt=card.querySelector('.q-text');
+    qt.setAttribute('contenteditable','true'); qt.classList.add('ed-field');
+    var why=card.querySelector('.why');
+    why.hidden=false;
+    if(!why.textContent.trim()) why.innerHTML='<b>Pembahasan:</b> '+esc(q.w||'');
+    why.setAttribute('contenteditable','true'); why.classList.add('ed-field');
+    card.querySelectorAll('.opt').forEach(function(opt){
+      var j=parseInt(opt.getAttribute('data-j'),10);
+      var txt=opt.querySelector('.otext'); if(!txt) return;
+      var div=document.createElement('div');
+      Array.prototype.forEach.call(opt.attributes,function(a){ div.setAttribute(a.name,a.value); });
+      div.innerHTML=opt.innerHTML;
+      var row=document.createElement('div'); row.className='opt-row edit-only';
+      opt.parentNode.replaceChild(row,opt); row.appendChild(div);
+      var t2=div.querySelector('.otext');
+      t2.setAttribute('contenteditable','true'); t2.classList.add('ed-field');
+      var kb=document.createElement('button'); kb.type='button';
+      kb.className='edit-only qk-btn'+(j===q.a?' on':''); kb.textContent='KUNCI'; kb.title='Tandai sebagai jawaban benar';
+      kb.onclick=function(){
+        QUIZ[i].a=j; card.setAttribute('data-ans',String(j));
+        Array.prototype.forEach.call(card.querySelectorAll('.opt-row'),function(r,k){
+          var b=r.querySelector('.qk-btn'); if(b) b.classList.toggle('on',k===j);
+        });
+        markDirty();
+      };
+      row.appendChild(kb);
+      var db=document.createElement('button'); db.type='button';
+      db.className='edit-only qk-btn del'; db.textContent='×'; db.title='Hapus pilihan';
+      db.onclick=function(){
+        if(QUIZ[i].o.length<=2){ toast('Pilihan minimal dua','info'); return; }
+        harvestQuiz(); var jj=parseInt(div.getAttribute('data-j'),10);
+        QUIZ[i].o.splice(jj,1);
+        if(QUIZ[i].a===jj) QUIZ[i].a=0; else if(QUIZ[i].a>jj) QUIZ[i].a--;
+        buildQuiz(); markDirty();
+      };
+      row.appendChild(db);
+    });
+    var ob=mkAddBtn('+ Tambah pilihan');
+    ob.onclick=function(){ harvestQuiz(); QUIZ[i].o.push('Pilihan baru'); buildQuiz(); markDirty(); };
+    card.querySelector('.q-opts').appendChild(ob);
+    var rb=mkRmBtn(); rb.title='Hapus soal';
+    rb.onclick=function(){ harvestQuiz(); QUIZ.splice(i,1); buildQuiz(); markDirty(); };
+    card.appendChild(rb);
+  });
+  var aq=mkAddBtn('+ Tambah Soal');
+  aq.onclick=function(){ harvestQuiz(); QUIZ.push({q:'Pertanyaan baru…',o:['Pilihan A','Pilihan B','Pilihan C','Pilihan D'],a:0,w:'Tuliskan pembahasan…'}); buildQuiz(); markDirty(); };
+  $('#quizWrap').appendChild(aq);
+}
+
+/* ============ REFLEKSI ============ */
+function fmtTS(iso){ try{ return new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short'}).format(new Date(iso)); }catch(e){ return ''; } }
+function saveReflection(key,payload,noteId){
+  payload.savedAt=new Date().toISOString();
+  if(!store.set(key,JSON.stringify(payload))){ toast('Penyimpanan perangkat diblokir — refleksi tidak tersimpan','info'); return; }
+  var n=$(noteId); if(n) n.textContent='Tersimpan: '+fmtTS(payload.savedAt);
+  toast('Refleksi berhasil disimpan');
+}
+function loadReflections(){
+  try{
+    var g=JSON.parse(store.get('bk-ref-guru'));
+    if(g){ $('#rg1').value=g.r1||''; $('#rg2').value=g.r2||''; $('#rg3').value=g.r3||'';
+      if(g.savedAt) $('#savedG').textContent='Tersimpan: '+fmtTS(g.savedAt); }
+    var s=JSON.parse(store.get('bk-ref-siswa'));
+    if(s){ (s.lk||[]).forEach(function(v,i){
+        if(v){ var el=document.querySelector('input[name="lk'+(i+1)+'"][value="'+v+'"]'); if(el) el.checked=true; }
+      });
+      $('#sw1').value=s.w1||'';
+      if(s.savedAt) $('#savedS').textContent='Tersimpan: '+fmtTS(s.savedAt); }
+  }catch(e){}
+}
+
+/* ============ CETAK ============ */
+var printSnapshot=[];
+window.addEventListener('beforeprint',function(){ printSnapshot=$$('details').map(function(d){ return d.open; }); $$('details').forEach(function(d){ d.open=true; }); });
+window.addEventListener('afterprint',function(){ $$('details').forEach(function(d,i){ d.open=printSnapshot[i]; }); });
+
+/* ============ MODE EDIT — TOMBOL & INJEKSI ============ */
+function mkRmBtn(){
+  var b=document.createElement('button');
+  b.type='button'; b.className='edit-only rm-btn'; b.textContent='×'; b.title='Hapus';
+  b.setAttribute('contenteditable','false');
+  return b;
+}
+function mkAddBtn(label){
+  var b=document.createElement('button');
+  b.type='button'; b.className='edit-only add-btn'; b.textContent=label;
+  b.setAttribute('contenteditable','false');
+  return b;
+}
+function addAfter(anchor,label,fn){ var b=mkAddBtn(label); b.onclick=fn; anchor.insertAdjacentElement('afterend',b); return b; }
+var ED_TEXT=[
+  '.hero-eyebrow','.hero h2.big','.hero-sub','.chip',
+  '.ch-eyebrow','.ch-title h2','.ch-sub',
+  '.chapter > p','.comp > p','.lead',
+  '.comp-label span','.spark-head',
+  '.cp-quote p','.cp-quote footer',
+  '.id-row dt','.id-row dd',
+  '.tp-list li','.mb-list li','.sum-list li','.spark li',
+  '.ph-name','.ph-time','.st-time','.st-body',
+  '.tbl th','.tbl td',
+  '.doc-num','.doc-title','.doc-body',
+  '.exercise .ex-tag','.exercise p','.key .key-body',
+  '.formula','.as-mini','.mut',
+  '.quiz-head','.q-text','.otext','.why',
+  '.f-label','.likert-q','.likert-legend'
+].join(',');
+function newStep(){
+  var d=document.createElement('div'); d.className='tl-step';
+  d.innerHTML="<span class=\"st-time\">10'</span><div class=\"st-body\"><h4>Langkah baru</h4><p>Tuliskan deskripsi kegiatan di sini…</p></div>";
+  var b=mkRmBtn(); b.onclick=function(){ d.parentNode.removeChild(d); markDirty(); }; d.appendChild(b);
+  Array.prototype.forEach.call(d.querySelectorAll('.st-time,.st-body'),function(x){ x.setAttribute('contenteditable','true'); x.classList.add('ed-field'); });
+  return d;
+}
+function injectChapter(ch){
+  Array.prototype.forEach.call(ch.querySelectorAll(ED_TEXT),function(el){ el.setAttribute('contenteditable','true'); el.classList.add('ed-field'); });
+  Array.prototype.forEach.call(ch.querySelectorAll('[contenteditable="true"] svg'),function(n){ n.setAttribute('contenteditable','false'); });
+  /* daftar: tambah/hapus butir */
+  Array.prototype.forEach.call(ch.querySelectorAll('.tp-list,.mb-list,.sum-list,.spark ul'),function(list){
+    Array.prototype.forEach.call(list.children,function(li){
+      var b=mkRmBtn(); b.onclick=function(){ li.parentNode.removeChild(li); markDirty(); }; li.appendChild(b);
+    });
+    addAfter(list,'+ Tambah butir',function(){
+      var li=document.createElement('li'); li.innerHTML='Butir baru — tuliskan isinya di sini.';
+      var b=mkRmBtn(); b.onclick=function(){ li.parentNode.removeChild(li); markDirty(); }; li.appendChild(b);
+      li.setAttribute('contenteditable','true'); li.classList.add('ed-field');
+      list.appendChild(li); markDirty();
+    });
+  });
+  /* tabel: tambah/hapus baris */
+  Array.prototype.forEach.call(ch.querySelectorAll('table.tbl'),function(tbl){
+    Array.prototype.slice.call(tbl.querySelectorAll('tr'),1).forEach(function(tr){
+      var td=tr.querySelector('td'); if(!td) return;
+      var b=mkRmBtn(); b.onclick=function(){ tr.parentNode.removeChild(tr); markDirty(); }; td.insertBefore(b,td.firstChild);
+    });
+    addAfter(tbl.closest('.tbl-scroll')||tbl,'+ Tambah baris',function(){
+      var last=tbl.querySelector('tr:last-child'); if(!last) return;
+      var nr=last.cloneNode(true);
+      Array.prototype.forEach.call(nr.querySelectorAll('.edit-only'),function(n){ n.parentNode.removeChild(n); });
+      Array.prototype.forEach.call(nr.querySelectorAll('[contenteditable]'),function(n){ n.removeAttribute('contenteditable'); });
+      Array.prototype.forEach.call(nr.querySelectorAll('.ed-field'),function(n){ n.classList.remove('ed-field'); });
+      tbl.appendChild(nr);
+      var td=nr.querySelector('td');
+      if(td){ var b=mkRmBtn(); b.onclick=function(){ nr.parentNode.removeChild(nr); markDirty(); }; td.insertBefore(b,td.firstChild); }
+      markDirty();
+    });
+  });
+  /* identitas */
+  var idt=ch.querySelector('.id-table');
+  if(idt){
+    Array.prototype.forEach.call(idt.querySelectorAll('.id-row'),function(r){
+      var b=mkRmBtn(); b.onclick=function(){ r.parentNode.removeChild(r); markDirty(); }; r.appendChild(b);
+    });
+    addAfter(idt,'+ Tambah baris identitas',function(){
+      var n=document.createElement('div'); n.className='id-row';
+      n.innerHTML='<dt>Label baru</dt><dd>Isi informasi…</dd>';
+      var b=mkRmBtn(); b.onclick=function(){ n.parentNode.removeChild(n); markDirty(); }; n.appendChild(b);
+      Array.prototype.forEach.call(n.querySelectorAll('dt,dd'),function(x){ x.setAttribute('contenteditable','true'); x.classList.add('ed-field'); });
+      idt.appendChild(n); markDirty();
+    });
+  }
+  /* timeline kegiatan */
+  var tl=ch.querySelector('.tl');
+  if(tl){
+    Array.prototype.forEach.call(tl.querySelectorAll('.tl-phase'),function(ph){
+      var pb=mkRmBtn(); pb.title='Hapus fase';
+      pb.onclick=function(){ confirmDialog({title:'Hapus fase ini?',msg:'Semua langkah dalam fase akan ikut terhapus.',actions:[{label:'Batal'},{label:'Hapus',cls:'danger',fn:function(){ ph.parentNode.removeChild(ph); markDirty(); }}]}); };
+      ph.querySelector('.ph-head').appendChild(pb);
+      Array.prototype.forEach.call(ph.querySelectorAll('.tl-step'),function(st){
+        var b=mkRmBtn(); b.onclick=function(){ st.parentNode.removeChild(st); markDirty(); }; st.appendChild(b);
+      });
+      var ab=mkAddBtn('+ Tambah langkah'); ab.onclick=function(){ ph.appendChild(newStep()); markDirty(); }; ph.appendChild(ab);
+    });
+    var pab=mkAddBtn('+ Tambah fase');
+    pab.onclick=function(){
+      var ph=document.createElement('div'); ph.className='tl-phase';
+      ph.innerHTML='<div class="ph-head"><span class="ph-name">FASE BARU</span><span class="ph-time">0 menit</span></div>';
+      var pb=mkRmBtn(); pb.onclick=function(){ ph.parentNode.removeChild(ph); markDirty(); }; ph.querySelector('.ph-head').appendChild(pb);
+      var ab=mkAddBtn('+ Tambah langkah'); ab.onclick=function(){ ph.appendChild(newStep()); markDirty(); }; ph.appendChild(ab);
+      Array.prototype.forEach.call(ph.querySelectorAll('.ph-name,.ph-time'),function(x){ x.setAttribute('contenteditable','true'); x.classList.add('ed-field'); });
+      tl.appendChild(ph); markDirty();
+    };
+    tl.appendChild(pab);
+  }
+  /* sub-bab materi */
+  Array.prototype.forEach.call(ch.querySelectorAll('details.doc'),function(doc){
+    var b=mkRmBtn(); b.title='Hapus sub-bab';
+    b.onclick=function(){ confirmDialog({title:'Hapus sub-bab ini?',msg:'Seluruh isi sub-bab akan dihapus.',actions:[{label:'Batal'},{label:'Hapus',cls:'danger',fn:function(){ doc.parentNode.removeChild(doc); markDirty(); }}]}); };
+    doc.querySelector('summary').appendChild(b);
+  });
+  if(ch.id==='s-materi'){
+    var ab=mkAddBtn('+ Tambah sub-bab materi');
+    ab.onclick=function(){
+      var d=document.createElement('details'); d.className='doc'; d.open=true;
+      var n=String($$('.doc').length+1).padStart(2,'0');
+      d.innerHTML='<summary><span class="doc-num">'+n+'</span><span class="doc-title">Sub-bab baru</span><i data-lucide="chevron-right" class="chev"></i></summary><div class="doc-body"><p>Tuliskan isi materi pembelajaran di sini…</p></div>';
+      var foot=ch.querySelector('.ch-foot');
+      if(foot) ch.insertBefore(d,foot); else ch.appendChild(d);
+      var b=mkRmBtn(); b.onclick=function(){ d.parentNode.removeChild(d); markDirty(); }; d.querySelector('summary').appendChild(b);
+      Array.prototype.forEach.call(d.querySelectorAll('.doc-num,.doc-title,.doc-body'),function(x){ x.setAttribute('contenteditable','true'); x.classList.add('ed-field'); });
+      icons(); markDirty();
+    };
+    var foot=ch.querySelector('.ch-foot');
+    if(foot) ch.insertBefore(ab,foot); else ch.appendChild(ab);
+  }
+  /* hapus bagian */
+  var eb=ch.querySelector('.ch-eyebrow');
+  if(eb){
+    var cb=mkRmBtn(); cb.title='Hapus bagian ini';
+    cb.onclick=function(){
+      var h2=ch.querySelector('h2');
+      var name=h2?h2.textContent.trim():'bagian ini';
+      var wasActive=ch.classList.contains('active');
+      confirmDialog({title:'Hapus "'+name+'"?',msg:'Bagian ini akan dihapus dari modul (berlaku setelah perubahan disimpan).',actions:[
+        {label:'Batal'},
+        {label:'Hapus',cls:'danger',fn:function(){
+          ch.parentNode.removeChild(ch); rebuildTOC(); refreshProgress(); refreshNav();
+          if(wasActive){ var f=getOrder()[0]; if(f) goTo(f); }
+          markDirty();
+        }}
+      ]});
+    };
+    eb.appendChild(cb);
+  }
+}
+function injectControls(){ $$('.chapter').forEach(injectChapter); }
+
+/* ============ MODE EDIT — AKTIVASI ============ */
+function markDirty(){ if(!dirty){ dirty=true; updateEditUI(); } }
+function updateEditUI(){
+  var d=$('#ebDirty'); if(!d) return;
+  d.textContent=dirty?'• belum tersimpan':'tersimpan';
+  d.classList.toggle('is-dirty',dirty);
+}
+function setEdit(on){
+  if(on===editing) return;
+  if(!on&&dirty){
+    confirmDialog({title:'Simpan perubahan?',msg:'Ada perubahan yang belum disimpan ke perangkat.',actions:[
+      {label:'Batal'},
+      {label:'Buang Perubahan',cls:'danger',fn:function(){ dirty=false; setEdit(false); }},
+      {label:'Simpan',cls:'amber',fn:function(){ saveEdits(); setEdit(false); }}
+    ]});
+    return;
+  }
+  editing=on;
+  document.body.classList.toggle('editing',on);
+  if(on){
+    buildQuiz();
+    injectControls();
+    globalAddCh=mkAddBtn('+ Tambah Pertemuan Baru');
+    globalAddCh.classList.add('add-chapter');
+    globalAddCh.onclick=addChapter;
+    $('#appMain').appendChild(globalAddCh);
+    icons(); updateEditUI();
+    toast('Mode edit aktif — klik teks mana pun untuk menyunting','pencil');
+  } else {
+    harvestQuiz();
+    if(globalAddCh){ globalAddCh.parentNode.removeChild(globalAddCh); globalAddCh=null; }
+    stripEditUI($('#appMain'));
+    dirty=false;
+    buildQuiz();
+    icons(); updateEditUI();
+    toast('Mode edit dimatikan','pencil-off');
+  }
+}
+function stripEditUI(root){
+  Array.prototype.forEach.call(root.querySelectorAll('.opt-row'),function(row){
+    var o=row.querySelector('.opt');
+    if(o) row.parentNode.replaceChild(o,row); else row.parentNode.removeChild(row);
+  });
+  Array.prototype.forEach.call(root.querySelectorAll('.edit-only'),function(n){ n.parentNode.removeChild(n); });
+  Array.prototype.forEach.call(root.querySelectorAll('[contenteditable]'),function(n){ n.removeAttribute('contenteditable'); });
+  Array.prototype.forEach.call(root.querySelectorAll('.ed-field'),function(n){ n.classList.remove('ed-field'); });
+  return root;
+}
+
+/* ============ SIMPAN / KEMBALIKAN SUNTINAN ============ */
+function saveEdits(){
+  harvestQuiz();
+  $$('.chapter').forEach(function(c){
+    var old=c.getAttribute('data-toclabel')||'';
+    if(/^Pertemuan\s+\d+/.test(old)){
+      var h2=c.querySelector('h2');
+      var h2t=h2?h2.textContent.trim():'';
+      var pref=old.split('—')[0].trim();
+      c.setAttribute('data-toclabel',pref+(h2t?' — '+h2t:''));
+    }
+  });
+  var clone=stripEditUI($('#appMain').cloneNode(true));
+  var data={html:clone.innerHTML,quiz:QUIZ,savedAt:new Date().toISOString()};
+  if(!store.set(LS_EDITS,JSON.stringify(data))){ toast('Penyimpanan perangkat penuh/diblokir — gagal menyimpan','info'); return; }
+  dirty=false; updateEditUI(); rebuildTOC();
+  toast('Semua perubahan disimpan di perangkat ini','save');
+}
+function restoreOriginal(){
+  if(!PRISTINE){ toast('Isi asli belum tersimpan di memori','info'); return; }
+  confirmDialog({title:'Kembalikan ke isi asli?',msg:'Semua suntingan yang tersimpan akan dihapus; modul kembali ke isi bawaan. Progres baca dan refleksi tidak terpengaruh.',actions:[
+    {label:'Batal'},
+    {label:'Kembalikan',cls:'danger',fn:function(){
+      store.remove(LS_EDITS);
+      editing=false; dirty=false; document.body.classList.remove('editing');
+      if(globalAddCh){ globalAddCh.parentNode.removeChild(globalAddCh); globalAddCh=null; }
+      $('#appMain').innerHTML=PRISTINE.html;
+      QUIZ=JSON.parse(JSON.stringify(PRISTINE.quiz));
+      normalizeActive(); rebuildTOC(); refreshProgress(); refreshNav(); buildQuiz(); loadReflections();
+      icons(); updateEditUI();
+      var f=getOrder()[0]; if(f) goTo(f);
+      toast('Modul dikembalikan ke isi asli','rotate-ccw');
+    }}
+  ]});
+}
+function addChapter(){
+  var pertemuan=$$('.chapter').filter(function(c){ return /^s-p\d+$/.test(c.id); });
+  var tpl=pertemuan[pertemuan.length-1];
+  if(!tpl){ toast('Template pertemuan tidak ditemukan','info'); return; }
+  var clone=stripEditUI(tpl.cloneNode(true));
+  var n=Math.max.apply(null,[0].concat(pertemuan.map(function(c){ return parseInt(c.id.slice(3),10); })))+1;
+  clone.id='s-p'+n; clone.setAttribute('data-key','p'+n);
+  clone.setAttribute('data-toclabel','Pertemuan '+n+' — Pertemuan Baru');
+  clone.classList.remove('active');
+  var eb=clone.querySelector('.ch-eyebrow');
+  eb.innerHTML='<i data-lucide="calendar-days"></i> PERTEMUAN '+String(n).padStart(2,'0')+' · 90 MENIT (2 JP)';
+  var h2=clone.querySelector('.ch-title h2'); if(h2) h2.textContent='Judul Pertemuan Baru';
+  var sub=clone.querySelector('.ch-sub'); if(sub) sub.textContent='Tuliskan ringkasan pertemuan…';
+  Array.prototype.forEach.call(clone.querySelectorAll('.tp-list'),function(l){ l.setAttribute('data-prefix',n+'.'); });
+  Array.prototype.forEach.call(clone.querySelectorAll('.mark-btn'),function(b){
+    b.setAttribute('data-key','p'+n); b.classList.remove('is-done');
+    var sp=b.querySelector('span'); if(sp) sp.textContent='Tandai Selesai';
+  });
+  var main=$('#appMain');
+  var anchor=document.getElementById('s-materi')||globalAddCh||null;
+  if(anchor) main.insertBefore(clone,anchor); else main.appendChild(clone);
+  injectChapter(clone);
+  rebuildTOC(); refreshProgress(); refreshNav();
+  icons(); markDirty();
+  toast('Pertemuan baru ditambahkan — silakan sunting isinya','plus');
+  goTo('s-p'+n);
+}
+ $('#editToggleBtn').addEventListener('click',function(){ setEdit(!editing); });
+ $('#ebSave').addEventListener('click',saveEdits);
+ $('#ebRestore').addEventListener('click',restoreOriginal);
+ $('#ebDone').addEventListener('click',function(){ setEdit(false); });
+
+/* input = kotor; paste selalu teks polos */
+document.addEventListener('input',function(e){
+  if(editing && e.target && e.target.closest && e.target.closest('.ed-field')) markDirty();
+});
+document.addEventListener('paste',function(e){
+  if(!editing) return;
+  if(!e.target || !e.target.closest || !e.target.closest('[contenteditable="true"]')) return;
+  e.preventDefault();
+  var cd=e.clipboardData||window.clipboardData;
+  var txt=cd?cd.getData('text/plain'):''; txt=txt||'';
+  if(txt) document.execCommand('insertText',false,txt);
+});
+window.addEventListener('beforeunload',function(e){ if(dirty){ e.preventDefault(); e.returnValue=''; } });
+
+/* ============ EKSPOR DOCX ============ */
+var EXP_CSS=
+'body{font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:10.5pt;color:#22271F;line-height:1.45;margin:0}'+
+'h1{font-family:Cambria,Georgia,serif;font-size:24pt;color:#1F5C44;margin:0 0 6pt}'+
+'h2{font-family:Cambria,Georgia,serif;font-size:16pt;color:#1D2B24;margin:0 0 3pt;line-height:1.15}'+
+'h3{font-family:Cambria,Georgia,serif;font-size:12.5pt;color:#1F5C44;margin:14pt 0 5pt}'+
+'h4{font-size:11pt;margin:9pt 0 4pt}'+
+'p{margin:0 0 7pt}'+
+'.x-doc-head{border-bottom:2.5pt solid #1F5C44;padding-bottom:8pt;margin-bottom:4pt}'+
+'.x-brand{font-size:8.5pt;letter-spacing:2pt;color:#A26E12;font-weight:bold;margin:0 0 5pt}'+
+'.x-meta{font-size:9pt;color:#5B6757;margin:0 0 2pt}'+
+'.ch-eyebrow{font-size:8.5pt;letter-spacing:1.5pt;color:#1F5C44;font-weight:bold;border-bottom:.75pt solid #C9BC9E;padding-bottom:4pt;margin:0 0 10pt}'+
+'.ch-title{margin:0 0 10pt}'+
+'.ch-sub{font-size:10pt;color:#5B6757;font-style:italic;margin:2pt 0 0}'+
+'.hero{display:block}'+
+'.hero-eyebrow{font-size:8.5pt;letter-spacing:2pt;color:#1F5C44;font-weight:bold;margin:0 0 6pt}'+
+'.hero-sub{font-size:11pt;color:#44503F;margin:0 0 8pt}'+
+'.hero-meta{margin:0 0 10pt}'+
+'.chip{font-size:8.5pt;border:.75pt solid #A79C82;padding:2pt 6pt;margin:0 3pt 3pt 0;background:#F6F1E6}'+
+'.lead{font-size:11pt}'+
+'.comp{margin:13pt 0}'+
+'.comp-label{font-size:9pt;letter-spacing:1.5pt;font-weight:bold;color:#1D2B24;border-bottom:1pt solid #C9BC9E;padding-bottom:2pt;margin:0 0 8pt}'+
+'.cp-quote{border:1pt solid #C9BC9E;border-left:4pt solid #1F5C44;background:#F6F1E6;padding:8pt 10pt;margin:0 0 8pt}'+
+'.cp-quote p{font-family:Cambria,Georgia,serif;font-size:11pt;margin:0}'+
+'.cp-quote footer{font-size:8.5pt;color:#5B6757;margin:4pt 0 0}'+
+'table{border-collapse:collapse;width:100%;margin:2pt 0 10pt}'+
+'td,th{border:.75pt solid #B9AE93;padding:4pt 7pt;font-size:9.5pt;vertical-align:top;text-align:left}'+
+'th{background:#EFE7D4;font-weight:bold}'+
+'.x-k{width:27%;font-weight:bold;color:#5B6757;background:#F6F1E6}'+
+'.c-em{color:#1F5C44;font-weight:bold}'+
+'ul,ol{margin:0 0 8pt 18pt}'+
+'li{margin:0 0 3pt}'+
+'.tp-list,.mb-list,.spark ul{list-style:none;margin-left:0;padding-left:0}'+
+'.sum-list{list-style:disc;margin-left:14pt}'+
+'.mb-list li{font-family:Cambria,Georgia,serif;font-style:italic;font-size:11.5pt}'+
+'.spark{background:#F4EAD0;border-left:4pt solid #A26E12;padding:8pt 10pt;margin:0 0 8pt}'+
+'.spark-head{font-size:9pt;font-weight:bold;letter-spacing:1.5pt;color:#A26E12;margin:0 0 6pt}'+
+'.spark li{padding:0;margin:0 0 5pt}'+
+'.x-phase{font-weight:bold;font-size:10.5pt;margin:9pt 0 3pt}'+
+'.x-phase strong{color:#1F5C44}'+
+'.x-step{margin:0 0 4pt 16pt}'+
+'.x-doc{color:#1F5C44}'+
+'pre{font-family:Consolas,"Courier New",monospace;font-size:9.5pt;background:#F1EFE6;border:.75pt solid #C9BC9E;padding:8pt;margin:0 0 8pt;white-space:pre-wrap}'+
+'pre .kw{color:#1F5C44;font-weight:bold}'+
+'pre .str{color:#A26E12}'+
+'pre .cm{color:#77806F;font-style:italic}'+
+'.exercise{border:1pt solid #C9BC9E;border-left:4pt solid #1F5C44;background:#F6F1E6;padding:8pt 10pt;margin:0 0 8pt}'+
+'.ex-tag{font-size:8.5pt;font-weight:bold;letter-spacing:1.5pt;color:#1F5C44;margin:0 0 3pt}'+
+'.x-key{font-size:9.5pt;background:#F4EAD0;padding:6pt 9pt;margin:0 0 8pt;border:1pt solid #E0CFA4}'+
+'.formula{border:1pt dashed #B9AE93;text-align:center;padding:6pt;font-family:Cambria,Georgia,serif;font-size:10.5pt;margin:0 0 8pt}'+
+'.fx{color:#1F5C44;font-weight:bold}'+
+'.figpanel{border:1pt solid #C9BC9E;background:#F6F1E6;padding:6pt;text-align:center;margin:0 0 8pt}'+
+'.figpanel img{max-width:100%}'+
+'figcaption{font-size:8.5pt;color:#5B6757;text-align:center;margin:3pt 0 0}'+
+'.x-quiz h3{margin-top:12pt}'+
+'.x-qlist{margin-left:18pt}'+
+'.x-q{font-weight:bold;margin:0 0 3pt}'+
+'.x-opts{list-style:none;margin:0 0 6pt 20pt}'+
+'.x-keylist{margin-left:18pt}'+
+'.x-fl{font-weight:bold;margin:8pt 0 2pt}'+
+'.x-ans{background:#F6F1E6;border:.75pt solid #C9BC9E;padding:5pt 8pt;margin:0 0 6pt}'+
+'.x-lik{margin:0 0 6pt;color:#5B6757}'+
+'.x-note{font-size:8.5pt;color:#5B6757;margin:0 0 6pt}'+
+'.mut{color:#5B6757}'+
+'.as-mini{font-size:10pt}';
+function svgToPng(svg){
+  return new Promise(function(resolve){
+    try{
+      var vbStr=(svg.getAttribute('viewBox')||'').trim();
+      var vb=vbStr?vbStr.split(/[\s,]+/).map(Number):[];
+      var w=vb.length===4?vb[2]:(parseFloat(svg.getAttribute('width'))||svg.clientWidth||320);
+      var h=vb.length===4?vb[3]:(parseFloat(svg.getAttribute('height'))||svg.clientHeight||200);
+      var clone=svg.cloneNode(true);
+      var src=svg.querySelectorAll('*'), dst=clone.querySelectorAll('*');
+      var props=['fill','stroke','stroke-width','stroke-dasharray','stroke-linecap','stroke-linejoin','font-size','font-weight','font-style','text-anchor','fill-opacity','stroke-opacity'];
+      src.forEach(function(el,i){
+        var t=dst[i]; if(!t) return;
+        var cs=getComputedStyle(el);
+        props.forEach(function(p){ var v=cs.getPropertyValue(p); if(v) t.setAttribute(p,v); });
+        var ff=cs.getPropertyValue('font-family')||'';
+        t.setAttribute('font-family',/mono/i.test(ff)?'Consolas,monospace':'Calibri,sans-serif');
+        t.removeAttribute('class'); t.removeAttribute('style');
+      });
+      clone.removeAttribute('class');
+      clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+      clone.setAttribute('width',w); clone.setAttribute('height',h);
+      var xml=new XMLSerializer().serializeToString(clone);
+      var img=new Image();
+      img.onload=function(){
+        try{
+          var scale=2;
+          var cv=document.createElement('canvas');
+          cv.width=Math.max(1,Math.round(w*scale)); cv.height=Math.max(1,Math.round(h*scale));
+          var ctx=cv.getContext('2d');
+          ctx.fillStyle='#F6F1E6'; ctx.fillRect(0,0,cv.width,cv.height);
+          ctx.drawImage(img,0,0,cv.width,cv.height);
+          resolve(cv.toDataURL('image/png'));
+        }catch(e){ resolve(null); }
+      };
+      img.onerror=function(){ resolve(null); };
+      img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
+    }catch(e){ resolve(null); }
+  });
+}
+function exportQuizNode(){
+  var d=document.createElement('div'); d.className='x-quiz';
+  var h='<h3>Uji Pemahaman</h3><ol class="x-qlist">';
+  QUIZ.forEach(function(item){
+    h+='<li><p class="x-q">'+esc(item.q)+'</p><ul class="x-opts">';
+    item.o.forEach(function(o,j){ h+='<li>'+L(j)+'. '+esc(o)+'</li>'; });
+    h+='</ul></li>';
+  });
+  h+='</ol><h4>Kunci Jawaban &amp; Pembahasan</h4><ol class="x-keylist">';
+  QUIZ.forEach(function(item){ h+='<li><strong>'+L(item.a)+'</strong> — '+esc(item.w||'')+'</li>'; });
+  h+='</ol>';
+  d.innerHTML=h; return d;
+}
+function exportReflection(fb){
+  var h='';
+  Array.prototype.forEach.call(fb.children,function(node){
+    if(node.classList.contains('f-label')){
+      h+='<p class="x-fl"><strong>'+esc(node.textContent.trim())+'</strong></p>';
+    }else if(node.classList.contains('ta')){
+      var live=document.getElementById(node.id);
+      var val=(live&&live.value)?live.value:'— belum diisi —';
+      h+='<p class="x-ans">'+esc(val)+'</p>';
+    }else if(node.classList.contains('likert-row')){
+      var qEl=node.querySelector('.likert-q');
+      var q=qEl?qEl.textContent.trim():'';
+      var checked=node.querySelector('input:checked');
+      h+='<p class="x-fl"><strong>'+esc(q)+'</strong>'+(checked?(' <em>(dipilih: '+checked.value+')</em>'):'')+'</p><p class="x-lik">STS / TS / S / SS</p>';
+    }else if(node.classList.contains('likert-legend')){
+      h+='<p class="x-note">'+esc(node.textContent.trim())+'</p>';
+    }
+  });
+  var d=document.createElement('div'); d.className='x-form'; d.innerHTML=h;
+  fb.parentNode.replaceChild(d,fb);
+}
+async function exportChapter(ch,breakBefore){
+  var c=stripEditUI(ch.cloneNode(true));
+  Array.prototype.forEach.call(c.querySelectorAll('.ch-foot,.hero-actions,.jump-link,.q-result,.save-row,.saved-at,.reset-link,.editbar,[data-lucide],.chev'),function(n){ n.parentNode.removeChild(n); });
+  var qb=c.querySelector('.quiz-box'); if(qb) qb.parentNode.replaceChild(qb,exportQuizNode());
+  Array.prototype.forEach.call(c.querySelectorAll('.form-block'),exportReflection);
+  var idt=c.querySelector('.id-table');
+  if(idt){
+    var t=document.createElement('table');
+    Array.prototype.forEach.call(idt.querySelectorAll('.id-row'),function(r){
+      var dt=r.querySelector('dt'), dd=r.querySelector('dd');
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td class="x-k">'+esc(dt?dt.textContent.trim():'')+'</td><td>'+esc(dd?dd.textContent.trim():'')+'</td>';
+      t.appendChild(tr);
+    });
+    idt.parentNode.replaceChild(t,idt);
+  }
+  Array.prototype.forEach.call(c.querySelectorAll('.tp-list'),function(list){
+    var pref=list.getAttribute('data-prefix')||'';
+    Array.prototype.forEach.call(list.children,function(li,i){
+      var s=document.createElement('strong'); s.textContent='TP '+pref+(i+1)+'. ';
+      li.insertBefore(s,li.firstChild);
+    });
+  });
+  Array.prototype.forEach.call(c.querySelectorAll('.spark li .qn'),function(qn){
+    var s=document.createElement('strong'); s.textContent=qn.textContent.trim()+' — ';
+    qn.parentNode.replaceChild(s,qn);
+  });
+  Array.prototype.forEach.call(c.querySelectorAll('.tl'),function(tl){
+    var out=document.createElement('div');
+    Array.prototype.forEach.call(tl.querySelectorAll('.tl-phase'),function(ph){
+      var nEl=ph.querySelector('.ph-name'), tEl=ph.querySelector('.ph-time');
+      var name=nEl?nEl.textContent.trim():'', time=tEl?tEl.textContent.trim():'';
+      var hp=document.createElement('p'); hp.className='x-phase';
+      hp.innerHTML='<strong>'+esc(name)+'</strong> <em>('+esc(time)+')</em>';
+      out.appendChild(hp);
+      Array.prototype.forEach.call(ph.querySelectorAll('.tl-step'),function(st){
+        var tE=st.querySelector('.st-time'), h4=st.querySelector('.st-body h4'), p=st.querySelector('.st-body p');
+        var tt=tE?tE.textContent.trim():'', hh=h4?h4.textContent.trim():'', pp=p?p.textContent.trim():'';
+        var sp=document.createElement('p'); sp.className='x-step';
+        sp.innerHTML='<strong>['+esc(tt)+'] '+esc(hh)+'</strong> — '+esc(pp);
+        out.appendChild(sp);
+      });
+    });
+    tl.parentNode.replaceChild(out,tl);
+  });
+  Array.prototype.forEach.call(c.querySelectorAll('details.doc'),function(d){
+    var nEl=d.querySelector('.doc-num'), tEl=d.querySelector('.doc-title');
+    var num=nEl?nEl.textContent.trim():'', ti=tEl?tEl.textContent.trim():'';
+    var h=document.createElement('h3'); h.className='x-doc'; h.textContent=(num?num+' · ':'')+ti;
+    var body=d.querySelector('.doc-body');
+    var parent=d.parentNode, next=d.nextSibling;
+    parent.insertBefore(h,next);
+    if(body) parent.insertBefore(body,h.nextSibling);
+    parent.removeChild(d);
+  });
+  Array.prototype.forEach.call(c.querySelectorAll('details.key'),function(k){
+    var bEl=k.querySelector('.key-body');
+    var p=document.createElement('p'); p.className='x-key';
+    p.innerHTML='<em>Kunci jawaban:</em> '+esc(bEl?bEl.textContent.trim():'');
+    k.parentNode.replaceChild(p,k);
+  });
+  var figs=Array.prototype.slice.call(c.querySelectorAll('.figpanel svg'));
+  for(var i=0;i<figs.length;i++){
+    var svg=figs[i];
+    var data=await svgToPng(svg);
+    if(data){
+      var img=document.createElement('img'); img.src=data;
+      var vbStr=(svg.getAttribute('viewBox')||'').trim();
+      var vb=vbStr?vbStr.split(/[\s,]+/).map(Number):[];
+      img.width=vb.length===4?vb[2]:(parseFloat(svg.getAttribute('width'))||320);
+      svg.parentNode.replaceChild(img,svg);
+    } else svg.parentNode.removeChild(svg);
+  }
+  var syms=Array.prototype.slice.call(c.querySelectorAll('svg.sym'));
+  for(var j=0;j<syms.length;j++){
+    var svg2=syms[j];
+    var data2=await svgToPng(svg2);
+    if(data2){
+      var img2=document.createElement('img'); img2.src=data2;
+      img2.width=parseFloat(svg2.getAttribute('width'))||60;
+      svg2.parentNode.replaceChild(img2,svg2);
+    } else svg2.parentNode.removeChild(svg2);
+  }
+  return '<div class="x-ch"'+(breakBefore?' style="page-break-before:always"':'')+'>'+c.innerHTML+'</div>';
+}
+function wrapExportDoc(chaptersHtml){
+  var tEl=$('#s-cover h2.big');
+  var title=tEl?tEl.textContent.trim():'Modul Ajar';
+  var rows=$$('#s-cover .id-row').map(function(r){
+    var dt=r.querySelector('dt'), dd=r.querySelector('dd');
+    return (dt?dt.textContent.trim():'')+': '+(dd?dd.textContent.trim():'');
+  });
+  var meta=rows.join('  ·  ');
+  var date='';
+  try{ date=new Intl.DateTimeFormat('id-ID',{dateStyle:'long'}).format(new Date()); }catch(e){}
+  return '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>'+esc(title)+'</title><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]--><style>'+EXP_CSS+'</style></head><body><div class="x-doc-head"><p class="x-brand">MODUL AJAR · INFORMATIKA · KURIKULUM MERDEKA</p><h1>'+esc(title)+'</h1><p class="x-meta">'+esc(meta)+'</p><p class="x-meta">Diekspor dari aplikasi Modul Ajar — '+esc(date)+'</p></div>'+chaptersHtml+'</body></html>';
+}
+async function buildExportHtml(){
+  var prev=document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme','light');
+  var out='';
+  var chapters=$$('.chapter');
+  for(var i=0;i<chapters.length;i++) out+=await exportChapter(chapters[i],i>0);
+  document.documentElement.setAttribute('data-theme',prev||'light');
+  return wrapExportDoc(out);
+}
+function saveBlob(blob,name){
+  var u=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=u; a.download=name;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(u); },4000);
+}
+var exporting=false;
+async function exportDOCX(){
+  if(exporting) return; exporting=true;
+  try{
+    toast('Menyusun dokumen Word…','file-down');
+    if(editing) harvestQuiz();
+    var html=await buildExportHtml();
+    var tEl=$('#s-cover h2.big');
+    var title=(tEl?tEl.textContent.trim():'Modul Ajar').replace(/[\\/:*?"<>|—&]/g,'-');
+    var base='Modul Ajar Informatika - '+title;
+    if(window.htmlDocx && window.htmlDocx.asBlob){
+      var blob=htmlDocx.asBlob(html,{orientation:'portrait',margins:{top:1134,right:1134,bottom:1134,left:1134}});
+      saveBlob(blob,base+'.docx');
+      toast('Dokumen Word (.docx) berhasil diunduh','file-down');
+    }else{
+      saveBlob(new Blob(['\ufeff'+html],{type:'application/msword'}),base+'.doc');
+      toast('Pustaka DOCX tidak termuat — diunduh sebagai .doc (tetap terbuka di Word)','info');
+    }
+  }catch(err){
+    toast('Gagal menyusun dokumen: '+((err&&err.message)||err),'info');
+  }finally{ exporting=false; }
+}
+
+/* ============ INISIALISASI (per-tahap, tahan galat) ============ */
+(function init(){
+  function step(nama,fn){
+    try{ fn(); }
+    catch(e){ if(window.console) console.error('Inisialisasi "'+nama+'" gagal:',e); }
+  }
+  step('tema',function(){ document.documentElement.setAttribute('data-theme',store.get('bk-modul-theme')||'light'); });
+  step('isi-asli',function(){ PRISTINE={html:$('#appMain').innerHTML,quiz:JSON.parse(JSON.stringify(QUIZ_BASE))}; });
+  step('muat-suntingan',function(){
+    var raw=store.get(LS_EDITS); if(!raw) return;
+    var saved=JSON.parse(raw);
+    if(saved&&saved.html){
+      $('#appMain').innerHTML=saved.html;
+      if(Array.isArray(saved.quiz)&&saved.quiz.length) QUIZ=saved.quiz;
+    }
+  });
+  step('bab-aktif',normalizeActive);
+  step('daftar-isi',rebuildTOC);
+  step('navigasi-bawah',refreshNav);
+  step('progres',refreshProgress);
+  step('kuis',buildQuiz);
+  step('refleksi',loadReflections);
+  step('ikon',icons);
+  step('status-edit',updateEditUI);
+})();
+</script>
+</body>
+</html>
