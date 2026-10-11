@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Dafnil · Buku Nilai Guru</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors:{ paper:'#F4EFE4', card:'#FFFEFA', ink:'#26231B', ink2:'#5F5849', mut:'#8A8170',
+      line:'#E6DECB', line2:'#D6CBB2', pine:'#2E5E46', pined:'#23503A', pinebg:'#E7EEE2',
+      brick:'#B0432A', gold:'#C08A1E' },
+    fontFamily:{ sans:['"IBM Plex Sans"','ui-sans-serif','sans-serif'],
+      serif:['Fraunces','Georgia','serif'], mono:['"IBM Plex Mono"','ui-monospace','monospace'] },
+    boxShadow:{ panel:'0 1px 0 rgba(38,35,27,.05), 0 10px 30px -18px rgba(38,35,27,.28)' }
+  } }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+<style type="text/tailwindcss">
+.inp   { @apply h-10 w-full px-3 rounded-lg border border-line2 bg-paper text-base sm:text-sm outline-none transition focus:border-pine focus:ring-2 focus:ring-pine/15; }
+.lbl   { @apply block text-[11px] font-semibold uppercase tracking-[0.12em] text-ink2 mb-1.5; }
+.btnp  { @apply h-9 px-4 rounded-lg bg-pine hover:bg-pined active:translate-y-px text-white text-[13px] font-semibold inline-flex items-center gap-1.5 shadow-sm transition; }
+.btng  { @apply h-9 px-4 rounded-lg border border-line hover:bg-paper text-[13px] font-medium inline-flex items-center gap-1.5 text-ink2 transition; }
+.chip  { @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-card pl-2 pr-2.5 py-[5px] text-[11px] font-medium hover:border-line2 transition; }
+.dttl  { @apply text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink2 mb-2.5; }
+.pttl  { @apply font-serif text-[19px] leading-none; }
+.mitem { @apply w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium hover:bg-paper text-left transition; }
+</style>
+
+<style>
+[v-cloak]{display:none}
+body{background:#F4EFE4;color:#26231B;-webkit-tap-highlight-color:transparent}
+body::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+::selection{background:#CDE0C6}
+.tnum{font-variant-numeric:tabular-nums}
+.ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;display:inline-block}
+
+tbody td{background:#FFFEFA}
+.row-alt td{background:#F8F3E7}
+td.g-hi{background:#DDE9D6} td.g-mid{background:#F1E2B9} td.g-lo{background:#F3DACF}
+td.ab-H{background:#DDE9D6} td.ab-S{background:#F1E2B9} td.ab-I{background:#E8E2D2} td.ab-A{background:#F3DACF}
+.tx-hi{color:#25603F} .tx-mid{color:#8A6410} .tx-lo{color:#A03A24}
+.selv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;
+ font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:12.5px}
+.selv:hover{box-shadow:inset 0 0 0 2px rgba(46,94,70,.55)}
+.selv.on{box-shadow:inset 0 0 0 2px #2E5E46}
+.ab-x .selv{color:#CFC5AE;font-weight:500}
+@keyframes selfl{0%{box-shadow:inset 0 0 0 3px #2E5E46;filter:saturate(1.6)}100%{box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}}
+td.fl{animation:selfl .7s ease-out}
+.vtext{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.02em}
+
+.absbtn-H{background:#DDE9D6;color:#1F5B3C}
+.absbtn-S{background:#F1E2B9;color:#7A580E}
+.absbtn-I{background:#E8E2D2;color:#5F5849}
+.absbtn-A{background:#F3DACF;color:#9C3520}
+.gb-hi{background:#DDE9D6;color:#1F5B3C}
+.gb-mid{background:#F1E2B9;color:#7A580E}
+.gb-lo{background:#F3DACF;color:#9C3520}
+.abson,.gb-on{box-shadow:inset 0 0 0 2px #2E5E46}
+
+.thj{background:#F1EBDD} .thj-on{background:#EBE2CC}
+td.tdj{background:#F1EBDD} td.tdb{background:#F7F2E6} td.tdh-on{background:#F2ECDB}
+@keyframes livep{0%,100%{box-shadow:inset 0 0 0 2px #2E5E46}50%{box-shadow:inset 0 0 0 2px rgba(46,94,70,.25)}}
+.sesi-live{animation:livep 2.4s ease-in-out infinite}
+
+.scrollbox::-webkit-scrollbar{width:10px;height:10px}
+.scrollbox::-webkit-scrollbar-track{background:#F1ECDF}
+.scrollbox::-webkit-scrollbar-thumb{background:#CFC4A9;border-radius:8px;border:2px solid #F1ECDF}
+.scrollbox::-webkit-scrollbar-thumb:hover{background:#B9AC8C}
+.scrollbox{scrollbar-width:thin;scrollbar-color:#CFC4A9 #F1ECDF}
+
+.pop-enter-active{transition:opacity .16s ease,transform .16s ease}
+.pop-enter-from{opacity:0;transform:translateY(-5px) scale(.98)}
+.pop-leave-active{transition:opacity .1s ease}
+.pop-leave-to{opacity:0}
+.fade-enter-active,.fade-leave-active{transition:opacity .3s}
+.fade-enter-from,.fade-leave-to{opacity:0}
+@keyframes mpop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+.md-enter-active{transition:opacity .2s} .md-enter-from{opacity:0}
+.md-leave-active{transition:opacity .15s} .md-leave-to{opacity:0}
+.md-enter-active .mbody{animation:mpop .22s cubic-bezier(.2,.8,.3,1) backwards}
+.dw-enter-active,.dw-leave-active{transition:opacity .25s ease}
+.dw-enter-from,.dw-leave-to{opacity:0}
+.dw-enter-active .dw-panel,.dw-leave-active .dw-panel{transition:transform .3s cubic-bezier(.2,.75,.25,1)}
+.dw-enter-from .dw-panel,.dw-leave-to .dw-panel{transform:translateX(100%)}
+.toast-enter-active{transition:all .25s ease}
+.toast-enter-from{opacity:0;transform:translateY(10px)}
+.toast-leave-active{transition:all .18s ease}
+.toast-leave-to{opacity:0;transform:translateX(12px)}
+
+/* ====== LOGIN SCREEN ====== */
+.login-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(46,94,70,.08), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(192,138,30,.08), transparent 50%),
+    #F4EFE4;
+}
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #FFFEFA;
+  border: 1px solid #E6DECB;
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 20px 60px -20px rgba(38,35,27,.25);
+}
+.login-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 1rem;
+  background: #2E5E46;
+  color: #F4EFE4;
+  display: grid;
+  place-items: center;
+  font-family: Fraunces, serif;
+  font-style: italic;
+  font-size: 38px;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 8px 20px -6px rgba(46,94,70,.4);
+}
+.login-btn {
+  width: 100%;
+  height: 48px;
+  background: #2E5E46;
+  color: white;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.login-btn:hover:not(:disabled) { background: #23503A; }
+.login-btn:disabled { opacity: .6; cursor: not-allowed; }
+.sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.sync-saved { background: #E7EEE2; color: #2E5E46; }
+.sync-saving { background: #F1E2B9; color: #8A6410; }
+.sync-error { background: #F3DACF; color: #A03A24; }
+.sync-idle { background: #FFFEFA; color: #5F5849; border: 1px solid #E6DECB; }
+.sync-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+}
+.sync-saving .sync-dot { animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.85); }
+}
+.user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  background: #FFFEFA;
+  border: 1px solid #E6DECB;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.user-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: #2E5E46;
+  color: #F4EFE4;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 600;
+}
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-chev-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-chev-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8M3 3v5h5"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M23 6l-9.5 9.5-5-5L1 18M17 6h6v6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M23 18l-9.5-9.5-5 5L1 6M17 18h6v-6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-checkc" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4 12 14.01l-3-3"/></symbol>
+  <symbol id="i-xcirc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></symbol>
+  <symbol id="i-alertc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+  <symbol id="i-userplus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61M2 2l20 20"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></symbol>
+</svg>
+
+<div id="app" v-cloak class="min-h-screen font-sans text-ink">
+
+  <!-- ============ LOGIN SCREEN ============ -->
+  <div v-if="!auth.isLoggedIn" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">D</div>
+      <h1 class="text-center font-serif text-[26px] leading-tight mb-1">Selamat Datang di Dafnil</h1>
+      <p class="text-center text-[13px] text-mut mb-6">Buku Nilai Digital untuk Guru</p>
+      
+      <form @submit.prevent="handleLogin" class="space-y-4">
+        <div>
+          <label class="lbl">Username</label>
+          <input 
+            v-model="auth.username" 
+            type="text" 
+            class="inp" 
+            placeholder="Masukkan username"
+            autocomplete="username"
+            required>
+        </div>
+        
+        <div>
+          <label class="lbl">Password</label>
+          <div class="relative">
+            <input 
+              v-model="auth.password" 
+              :type="auth.showPass ? 'text' : 'password'" 
+              class="inp pr-10" 
+              placeholder="Masukkan password"
+              autocomplete="current-password"
+              required>
+            <button 
+              type="button"
+              @click="auth.showPass = !auth.showPass"
+              class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 grid place-items-center text-mut hover:text-ink">
+              <ic :n="auth.showPass ? 'eye-off' : 'eye'" s="w-4 h-4"></ic>
+            </button>
+          </div>
+        </div>
+        
+        <div v-if="auth.error" class="flex items-start gap-2 p-3 bg-[#F7E9E2] border border-[#F3DACF] rounded-lg text-[12px] text-brick">
+          <ic n="alertc" s="w-4 h-4 flex-none mt-0.5"></ic>
+          <span>{{auth.error}}</span>
+        </div>
+        
+        <button 
+          type="submit" 
+          class="login-btn"
+          :disabled="auth.loading">
+          <span v-if="auth.loading" class="spinner"></span>
+          <span v-else>Masuk</span>
+        </button>
+      </form>
+      
+      <div class="mt-6 pt-5 border-t border-line text-center">
+        <p class="text-[11px] text-mut leading-relaxed">
+          Data tersimpan aman di Google Sheets<br>
+          <button @click="showSetup = !showSetup" class="text-pine font-semibold hover:underline">
+            {{showSetup ? 'Sembunyikan' : 'Cara setup awal'}}
+          </button>
+        </p>
+        <div v-if="showSetup" class="mt-3 p-3 bg-paper rounded-lg text-[11px] text-left text-ink2 leading-relaxed">
+          <p class="font-semibold mb-1">Setup pertama kali:</p>
+          <ol class="list-decimal list-inside space-y-0.5">
+            <li>Buka Google Apps Script Anda</li>
+            <li>Jalankan fungsi <code class="font-mono bg-card px-1 rounded">setupInitialUser</code></li>
+            <li>Deploy sebagai Web App</li>
+            <li>Paste URL ke kode HTML ini</li>
+            <li>Login dengan: <b>admin / admin123</b></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN APP (setelah login) ============ -->
+  <template v-else>
+
+    <header class="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-line">
+      <div class="h-[3px] bg-pine"></div>
+      <div class="max-w-[1440px] mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-3 sm:gap-5">
+        <div class="flex items-center gap-2.5 flex-none">
+          <div class="w-9 h-9 rounded-lg bg-pine text-paper grid place-items-center font-serif italic text-[21px] leading-none pb-0.5">D</div>
+          <div class="leading-tight hidden sm:block">
+            <div class="font-serif font-semibold text-[17px]">Dafnil</div>
+            <div class="text-[10px] uppercase tracking-[0.16em] text-mut">Buku Nilai Guru</div>
+          </div>
+        </div>
+        <div class="h-6 w-px bg-line hidden sm:block"></div>
+
+        <div class="relative min-w-0">
+          <button @click.stop="kelasOpen=!kelasOpen" class="h-9 pl-3 pr-2.5 rounded-md border border-line bg-paper hover:border-line2 flex items-center gap-2 text-sm font-medium min-w-0">
+            <span class="w-2.5 h-2.5 rounded-full flex-none" :style="{background:kelas.warna}"></span>
+            <span class="truncate max-w-[120px] sm:max-w-[240px]">{{kelas.nama}}</span>
+            <ic n="chev-down" s="w-4 h-4 text-mut"></ic>
+          </button>
+          <transition name="pop">
+            <div v-if="kelasOpen" @click.stop class="absolute left-0 top-full mt-1.5 w-72 max-w-[calc(100vw-2rem)] bg-card border border-line rounded-xl shadow-xl p-1.5 z-50">
+              <div class="px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] text-mut font-semibold">Pilih Kelas</div>
+              <button v-for="k in kelasList" :key="k.id" @click="gantiKelas(k.id)" class="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg hover:bg-paper text-left">
+                <span class="w-2.5 h-2.5 rounded-full flex-none" :style="{background:k.warna}"></span>
+                <span class="flex-1 min-w-0">
+                  <span class="block text-sm font-medium truncate">{{k.nama}}</span>
+                  <span class="block text-[11px] text-mut tnum">{{k.siswa.length}} siswa · rata {{fmt1(rataKelasOf(k))}}</span>
+                </span>
+                <ic v-if="k.id===kelasAktif" n="check" s="w-4 h-4 text-pine"></ic>
+              </button>
+            </div>
+          </transition>
+        </div>
+
+        <div class="flex-1"></div>
+        <div class="hidden md:block text-[13px] text-mut">{{hariIniLabel}}</div>
+        
+        <!-- Sync indicator -->
+        <div class="sync-indicator" :class="'sync-' + syncStatus">
+          <span class="sync-dot"></span>
+          <span v-if="syncStatus==='saved'">Tersimpan</span>
+          <span v-else-if="syncStatus==='saving'">Menyimpan...</span>
+          <span v-else-if="syncStatus==='error'">Gagal sync</span>
+          <span v-else>Siap</span>
+        </div>
+        
+        <transition name="fade">
+          <div v-if="saveT==='saved'" class="h-9 px-2.5 rounded-md bg-pinebg text-pine text-[11px] font-medium flex items-center gap-1.5">
+            <ic n="check" s="w-3.5 h-3.5"></ic>Local
+          </div>
+        </transition>
+        <button @click="unduhCSV" class="h-9 px-3 rounded-md border border-line hover:border-line2 hover:bg-paper flex items-center gap-1.5 text-sm" title="Unduh CSV kelas ini">
+          <ic n="download" s="w-4 h-4 text-mut"></ic><span class="hidden lg:inline">CSV</span>
+        </button>
+        <button @click="askReset" class="h-9 w-9 rounded-md border border-line hover:border-line2 hover:bg-paper grid place-items-center" title="Muat ulang data contoh">
+          <ic n="rotate" s="w-4 h-4 text-mut"></ic>
+        </button>
+        
+        <!-- User menu -->
+        <div class="relative" @click.stop>
+          <button @click="userMenuOpen = !userMenuOpen" class="user-pill">
+            <span class="user-avatar">{{auth.user && auth.user.nama ? auth.user.nama.charAt(0).toUpperCase() : 'U'}}</span>
+            <span class="hidden sm:inline">{{(auth.user && auth.user.nama) || (auth.user && auth.user.username) || 'User'}}</span>
+            <ic n="chev-down" s="w-3.5 h-3.5 text-mut"></ic>
+          </button>
+          <transition name="pop">
+            <div v-if="userMenuOpen" class="absolute right-0 top-full mt-1.5 w-56 bg-card border border-line rounded-xl shadow-xl p-1.5 z-50">
+              <div class="px-3 py-2 border-b border-line mb-1">
+                <div class="text-[13px] font-semibold">{{(auth.user && auth.user.nama) || 'User'}}</div>
+                <div class="text-[11px] text-mut">@{{(auth.user && auth.user.username) || 'user'}}</div>
+              </div>
+              <button @click="manualSync" class="mitem">
+                <ic n="cloud" s="w-4 h-4 text-mut"></ic>
+                <span>Sync manual</span>
+              </button>
+              <button @click="handleLogout" class="mitem text-brick hover:bg-[#F7E9E2]">
+                <ic n="x" s="w-4 h-4"></ic>
+                <span>Keluar</span>
+              </button>
+            </div>
+          </transition>
+        </div>
+      </div>
+
+      <div class="max-w-[1440px] mx-auto px-2 sm:px-6 flex items-end gap-0.5 sm:gap-1.5 overflow-x-auto border-t border-line/70">
+        <button v-for="t in tabs" :key="t.id" @click="view=t.id"
+          class="relative h-11 px-3 sm:px-3.5 flex items-center gap-2 text-sm font-medium whitespace-nowrap transition-colors"
+          :class="view===t.id ? 'text-pine' : 'text-mut hover:text-ink'">
+          <ic :n="t.ic" s="w-[18px] h-[18px]"></ic><span class="hidden sm:inline">{{t.label}}</span>
+          <span class="absolute left-1.5 right-1.5 bottom-0 h-[3px] rounded-t-sm" :class="view===t.id ? 'bg-pine' : 'bg-transparent'"></span>
+        </button>
+        <div class="flex-1"></div>
+        <div class="flex items-center gap-2 pb-2 pl-1 sm:pl-2">
+          <div v-if="view==='nilai'||view==='siswa'" class="relative hidden sm:block">
+            <ic n="search" s="w-4 h-4 text-mut absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></ic>
+            <input v-model="search" placeholder="Cari siswa…" class="h-9 w-44 lg:w-56 pl-8 pr-3 rounded-md border border-line bg-paper text-base sm:text-sm outline-none focus:border-pine/60 focus:bg-card transition">
+          </div>
+          <button v-if="view==='nilai'" @click="bukaPenBaru" class="btnp"><ic n="plus" s="w-4 h-4"></ic><span class="hidden sm:inline">Penilaian</span></button>
+          <button v-if="view==='absensi'" @click="tambahPertemuan" class="btnp"><ic n="plus" s="w-4 h-4"></ic><span class="hidden sm:inline">Pertemuan</span></button>
+          <button v-if="view==='jadwal'" @click="bukaSesiBaru()" class="btnp"><ic n="plus" s="w-4 h-4"></ic><span class="hidden sm:inline">Sesi</span></button>
+          <button v-if="view==='siswa'" @click="bukaSisBaru" class="btnp"><ic n="userplus" s="w-4 h-4"></ic><span class="hidden sm:inline">Siswa</span></button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-[1440px] mx-auto px-4 sm:px-6 py-6">
+
+      <!-- ===================== VIEW: BUKU NILAI ===================== -->
+      <section v-if="view==='nilai'">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+          <div>
+            <h1 class="font-serif text-[24px] sm:text-[27px] leading-tight">Buku Nilai</h1>
+            <p class="text-[12.5px] text-mut mt-1 tnum">{{kelas.siswa.length}} siswa · {{kelas.penilaian.length}} penilaian · rata kelas {{fmt1(rataKelas())}}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="relative flex flex-wrap items-center gap-1.5" @click.stop>
+              <button v-for="kt in kats" :key="kt.id" @click="bobotOpen=!bobotOpen" class="chip">
+                <span class="w-2 h-2 rounded-full" :style="{background:kt.warna}"></span>{{kt.label}} <b class="tnum font-semibold">{{kt.bobot}}%</b>
+              </button>
+              <transition name="pop">
+                <div v-if="bobotOpen" class="absolute right-0 top-full mt-2 w-64 max-w-[calc(100vw-2.5rem)] bg-card border border-line rounded-xl shadow-xl p-3 z-30">
+                  <div class="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink2 mb-2.5">
+                    <ic n="sliders" s="w-3.5 h-3.5 text-mut"></ic>Bobot Kategori
+                  </div>
+                  <div class="space-y-2">
+                    <div v-for="kt in kats" :key="'b'+kt.id" class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full flex-none" :style="{background:kt.warna}"></span>
+                      <span class="text-[12.5px] flex-1">{{kt.label}}</span>
+                      <input type="number" min="0" max="100" v-model.number="kt.bobot" class="w-14 h-8 text-right px-2 border border-line rounded-md bg-paper text-[16px] sm:text-[12.5px] font-mono tnum outline-none focus:border-pine">
+                      <span class="text-[11px] text-mut">%</span>
+                    </div>
+                  </div>
+                  <p class="text-[10px] text-mut mt-2.5 leading-snug">Bobot relatif — kategori tanpa nilai tidak ikut dihitung. Perubahan langsung memengaruhi rata-rata.</p>
+                </div>
+              </transition>
+            </div>
+          </div>
+        </div>
+        <div class="relative sm:hidden mb-3">
+          <ic n="search" s="w-4 h-4 text-mut absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></ic>
+          <input v-model="search" placeholder="Cari siswa…" class="inp h-10 pl-8">
+        </div>
+
+        <div class="bg-card border border-line rounded-xl shadow-panel overflow-hidden">
+          <div class="overflow-auto scrollbox max-h-[68vh] min-h-[340px]" @scroll="scrollTutup">
+            <table class="w-max min-w-full border-separate border-spacing-0 text-sm">
+              <thead>
+                <tr>
+                  <th class="sticky top-0 left-0 z-30 bg-[#F1EBDD] border-b border-r border-line w-[190px] sm:w-[232px] min-w-[190px] sm:min-w-[232px] px-3 text-left align-bottom">
+                    <div class="h-[136px] flex items-end justify-between pb-2.5">
+                      <span class="text-[10px] font-semibold uppercase tracking-[0.14em] text-mut">Siswa</span>
+                      <span class="text-[10px] text-mut tnum">{{kelas.siswa.length}}</span>
+                    </div>
+                  </th>
+                  <th v-for="p in kelas.penilaian" :key="p.id" class="sticky top-0 z-20 bg-[#F1EBDD] border-b border-l border-line w-[68px] min-w-[68px] align-bottom" :title="p.judul+' · '+kat(p.kategori).label+' · '+(p.skala==='huruf'?'huruf A+ – E':'angka 0–100')+' · '+tglID(p.tgl)">
+                    <div class="h-[136px] flex flex-col items-center pt-2.5 gap-1.5">
+                      <span class="w-7 h-1 rounded-full flex-none" :style="{background:katWarna(p.kategori)}"></span>
+                      <button @click.stop="bukaMenuKol(p,$event)" class="flex-1 min-h-0 w-full vtext text-[12px] font-medium hover:text-pine transition-colors max-h-[92px]">{{p.judul}}</button>
+                      <span class="pb-2 text-center leading-tight">
+                        <span class="block text-[9px] text-mut tnum">{{tglID(p.tgl)}}</span>
+                        <span class="block text-[8.5px] font-semibold" :class="p.skala==='huruf' ? 'text-gold' : 'text-mut/80'">{{p.skala==='huruf' ? 'A+' : '0–100'}}</span>
+                      </span>
+                    </div>
+                  </th>
+                  <th class="sticky top-0 right-0 z-30 bg-[#F1EBDD] border-b border-l border-line w-[118px] sm:w-[128px] min-w-[118px] sm:min-w-[128px] px-3 text-right align-bottom">
+                    <div class="h-[136px] flex flex-col items-end justify-end gap-0.5 pb-2.5">
+                      <span class="text-[10px] font-semibold uppercase tracking-[0.14em] text-mut">Rata-rata</span>
+                      <span class="text-[10px] text-mut font-normal normal-case tracking-normal">berbobot kategori</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row,i) in rowsNilai" :key="row.s.id" :class="i%2===1 ? 'row-alt' : ''">
+                  <td class="sticky left-0 z-10 border-b border-r border-line px-2 py-1">
+                    <button @click="bukaDrawer(row.s)" class="w-full flex items-center gap-2.5 px-1.5 py-1.5 rounded-lg hover:bg-[#EFE9DB] text-left group transition-colors">
+                      <span class="w-8 h-8 rounded-full bg-[#EAE3D2] grid place-items-center text-[11px] font-bold text-ink2 tracking-wide flex-none">{{inisial(row.s)}}</span>
+                      <span class="min-w-0 text-left">
+                        <span class="block font-medium text-[13.5px] truncate w-[112px] sm:w-[150px] group-hover:text-pine transition-colors">{{row.s.nama}}</span>
+                        <span class="block text-[10.5px] text-mut tnum text-left">{{row.s.nis}}</span>
+                      </span>
+                    </button>
+                  </td>
+                  <td v-for="p in kelas.penilaian" :key="p.id" class="border-b border-l border-line relative w-[68px] min-w-[68px] h-10"
+                    :class="[gcls(nget(row.s,p)), flashKey===gkey(row.s,p) ? 'fl' : '']">
+                    <button class="selv" :data-cell="row.s.id+'|'+p.id"
+                      :class="edit && edit.sid===row.s.id && edit.pid===p.id ? 'on' : ''"
+                      @click.stop="bukaSel(row.s,p,$event)">{{gtxt(nget(row.s,p))}}</button>
+                  </td>
+                  <td class="sticky right-0 z-10 border-b border-l border-line w-[118px] sm:w-[128px] min-w-[118px] sm:min-w-[128px] px-3">
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex-1 h-[6px] rounded-full bg-[#EAE3D2] overflow-hidden">
+                        <div class="h-full rounded-full transition-all" :style="barStyle(row.r)"></div>
+                      </div>
+                      <span class="font-mono text-[13px] font-semibold tnum w-11 text-right" :class="gtxcls(row.r)">{{fmt1(row.r)}}</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="!rowsNilai.length">
+                  <td :colspan="kelas.penilaian.length+2" class="p-8 text-center text-mut text-sm border-b border-line bg-card">Tidak ada siswa yang cocok dengan pencarian.</td>
+                </tr>
+                <tr v-if="!kelas.penilaian.length">
+                  <td :colspan="2" class="p-8 text-center text-mut text-sm border-b border-line bg-card">Belum ada penilaian — <button class="text-pine font-semibold hover:underline" @click="bukaPenBaru">tambahkan penilaian pertama</button></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td class="sticky left-0 bottom-0 z-20 bg-[#F1EBDD] border-t-2 border-line2 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink2">Rata Kelas</td>
+                  <td v-for="p in kelas.penilaian" :key="'f'+p.id" class="sticky bottom-0 z-10 bg-[#F1EBDD] border-t-2 border-l border-line2 text-center font-mono text-[11px] text-ink2 tnum py-2">{{fmt1(rataP(p))}}</td>
+                  <td class="sticky right-0 bottom-0 z-20 bg-[#F1EBDD] border-t-2 border-l border-line2 px-3 py-2 text-right">
+                    <span class="font-mono text-[15px] font-semibold tnum text-pine">{{fmt1(rataKelas())}}</span>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <p class="text-[11px] text-mut mt-2.5 flex flex-wrap gap-x-5 gap-y-1">
+          <span class="inline-flex items-center gap-1.5"><ic n="info" s="w-3.5 h-3.5"></ic>Klik sel untuk mengisi nilai — Enter menyimpan &amp; lanjut ke siswa berikutnya</span>
+          <span class="hidden sm:inline">Kolom huruf (A+) diisi lewat kisi A+ – E</span>
+          <span class="hidden md:inline">Klik nama siswa untuk membuka rapor ringkas</span>
+        </p>
+      </section>
+
+      <!-- ===================== VIEW: ABSENSI ===================== -->
+      <section v-if="view==='absensi'">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+          <div>
+            <h1 class="font-serif text-[24px] sm:text-[27px] leading-tight">Absensi</h1>
+            <p class="text-[12.5px] text-mut mt-1 tnum">{{absenStat.n}} pertemuan · {{absenStat.kosong}} belum diabsen · {{absenStat.hadir==null?'—':absenStat.hadir+'%'}} hadir</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-1 text-[11px] text-ink2"><span class="w-3 h-3 rounded bg-[#DDE9D6]"></span>Hadir</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-1 text-[11px] text-ink2"><span class="w-3 h-3 rounded bg-[#F1E2B9]"></span>Sakit</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-1 text-[11px] text-ink2"><span class="w-3 h-3 rounded bg-[#E8E2D2]"></span>Izin</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-1 text-[11px] text-ink2"><span class="w-3 h-3 rounded bg-[#F3DACF]"></span>Alpa</span>
+            <span class="text-[11px] text-mut hidden lg:inline">klik sel untuk mengisi — Enter lanjut ke siswa berikutnya</span>
+          </div>
+        </div>
+        <div class="relative sm:hidden mb-3">
+          <ic n="search" s="w-4 h-4 text-mut absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></ic>
+          <input v-model="search" placeholder="Cari siswa…" class="inp h-10 pl-8">
+        </div>
+
+        <div class="bg-card border border-line rounded-xl shadow-panel overflow-hidden">
+          <div class="overflow-auto scrollbox max-h-[68vh] min-h-[340px]" @scroll="scrollTutup">
+            <table class="w-max min-w-full border-separate border-spacing-0 text-sm">
+              <thead>
+                <tr>
+                  <th class="sticky top-0 left-0 z-30 bg-[#F1EBDD] border-b border-r border-line w-[190px] sm:w-[232px] min-w-[190px] sm:min-w-[232px] px-3 text-left align-bottom">
+                    <div class="h-[76px] flex flex-col justify-end pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-mut">Siswa</div>
+                  </th>
+                  <th v-for="t in kelas.pertemuan" :key="t" class="sticky top-0 z-20 bg-[#F1EBDD] border-b border-l border-line w-[52px] min-w-[52px]">
+                    <div class="h-[76px] flex flex-col items-center justify-end gap-1 pb-1.5">
+                      <span class="text-[9px] text-mut">{{hariID(t)}}</span>
+                      <span class="text-[10.5px] font-mono tnum font-medium leading-none">{{tglID(t)}}</span>
+                      <button @click.stop="semuaHadir(t)" class="w-6 h-5 rounded text-mut/50 hover:text-pine hover:bg-[#DDE9D6] grid place-items-center" :title="'Tandai semua hadir · '+tglID(t)">
+                        <ic n="checkc" s="w-3.5 h-3.5"></ic>
+                      </button>
+                    </div>
+                  </th>
+                  <th class="sticky top-0 right-0 z-30 bg-[#F1EBDD] border-b border-l border-line w-[112px] sm:w-[118px] min-w-[112px] sm:min-w-[118px] px-3 text-left align-bottom">
+                    <div class="h-[76px] flex flex-col justify-end pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-mut">Kehadiran</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row,i) in rowsAbsen" :key="row.s.id" :class="[i%2===1 ? 'row-alt' : '']">
+                  <td class="sticky left-0 z-10 border-b border-r border-line px-2 py-1">
+                    <button @click="bukaDrawer(row.s)" class="w-full flex items-center gap-2.5 px-1.5 py-1.5 rounded-lg hover:bg-[#EFE9DB] text-left group transition-colors">
+                      <span class="w-8 h-8 rounded-full bg-[#EAE3D2] grid place-items-center text-[11px] font-bold text-ink2 tracking-wide flex-none">{{inisial(row.s)}}</span>
+                      <span class="min-w-0">
+                        <span class="block font-medium text-[13.5px] truncate w-[112px] sm:w-[150px] group-hover:text-pine transition-colors">{{row.s.nama}}</span>
+                        <span class="block text-[10.5px] text-mut tnum text-left">{{row.s.nis}}</span>
+                      </span>
+                    </button>
+                  </td>
+                  <td v-for="t in kelas.pertemuan" :key="t" class="border-b border-l border-line relative w-[52px] min-w-[52px] h-10"
+                    :class="[absenGet(row.s,t) ? 'ab-'+absenGet(row.s,t) : 'ab-x', flashKey===row.s.id+':'+t ? 'fl' : '']">
+                    <button class="selv" :data-abs="row.s.id+'|'+t"
+                      :class="editAbs && editAbs.sid===row.s.id && editAbs.t===t ? 'on' : ''"
+                      @click.stop="bukaAbsen(row.s,t,$event)">{{absenGet(row.s,t)||'·'}}</button>
+                  </td>
+                  <td class="sticky right-0 z-10 border-b border-l border-line px-2.5 sm:px-3 w-[112px] sm:w-[118px] min-w-[112px] sm:min-w-[118px]">
+                    <div class="flex items-center justify-between gap-1 sm:gap-2 h-10" :title="absTip(row.s)">
+                      <span class="text-[9.5px] text-mut tnum whitespace-nowrap">H{{row.a.h}}·A{{row.a.a}}</span>
+                      <span class="font-mono tnum font-semibold text-[13px]" :class="pctCls(row.a.pct)">{{row.a.pct==null?'—':row.a.pct+'%'}}</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="!rowsAbsen.length">
+                  <td :colspan="kelas.pertemuan.length+2" class="p-8 text-center text-mut text-sm border-b border-line bg-card">Tidak ada siswa yang cocok dengan pencarian.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== VIEW: JADWAL ===================== -->
+      <section v-if="view==='jadwal'">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+          <div>
+            <h1 class="font-serif text-[24px] sm:text-[27px] leading-tight">Jadwal Mengajar</h1>
+            <p class="text-[12.5px] text-mut mt-1 tnum">{{jadwal.length}} sesi · {{beban.jam}} jam pelajaran per pekan · pekan {{labelPekan}}</p>
+          </div>
+          <div class="flex items-center gap-1 bg-card border border-line rounded-lg p-1 shadow-sm">
+            <button @click="jdMode='mingguan'" class="px-3 h-7 rounded-md text-[12px] font-medium transition" :class="jdMode==='mingguan' ? 'bg-pine text-white' : 'text-mut hover:text-ink'">Mingguan</button>
+            <button @click="jdMode='harian'" class="px-3 h-7 rounded-md text-[12px] font-medium transition" :class="jdMode==='harian' ? 'bg-pine text-white' : 'text-mut hover:text-ink'">Harian</button>
+          </div>
+        </div>
+
+        <div class="bg-card border border-line rounded-xl shadow-panel p-4 sm:p-5 mb-5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="font-serif text-[19px]">Hari Ini · {{labelHariIni}}</h3>
+            <span v-if="sesiHariIni.length" class="text-[11px] text-mut tnum">{{sesiHariIni.length}} sesi · {{jamHariIni}} jam</span>
+          </div>
+          <div v-if="sesiHariIni.length" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-2 mt-4">
+            <div v-for="s in sesiHariIni" :key="s.id" class="flex items-stretch gap-3 rounded-lg border bg-paper p-3 transition"
+              :class="statusSesi(s)==='live' ? 'border-pine/60 ring-1 ring-pine/40' : 'border-line'">
+              <div class="w-[52px] flex-none text-center border-r border-line pr-2 flex flex-col justify-center">
+                <div class="font-serif text-[19px] leading-none">{{s.jamMulai}}</div>
+                <div class="text-[9.5px] text-mut tnum mt-0.5">{{jamWaktuSingkat(s)}}</div>
+              </div>
+              <div class="flex-1 min-w-0 self-center">
+                <div class="text-[13px] font-semibold leading-tight truncate">{{kelasOf(s.kelasId).nama}}</div>
+                <div class="text-[11px] text-mut truncate mt-0.5">{{s.ruang}}<span v-if="s.ket"> · {{s.ket}}</span></div>
+              </div>
+              <div class="self-center flex-none">
+                <span v-if="statusSesi(s)==='done'" class="text-[10.5px] text-mut">Selesai</span>
+                <span v-else-if="statusSesi(s)==='live'" class="inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-pine">
+                  <span class="w-1.5 h-1.5 rounded-full bg-pine animate-pulse"></span>Berlangsung
+                </span>
+                <span v-else class="text-[10.5px] text-ink2">Akan datang</span>
+              </div>
+            </div>
+          </div>
+          <p v-else class="text-sm text-mut mt-3">Tidak ada sesi mengajar hari ini — waktu yang baik untuk menilai tugas.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-[1fr_290px] gap-5 items-start">
+          <div v-if="jdMode==='mingguan'" class="bg-card border border-line rounded-xl shadow-panel overflow-hidden">
+            <div v-if="!jadwal.length" class="p-8 text-center text-mut text-sm border-b border-line">Belum ada sesi — tambahkan lewat tombol <b>+ Sesi</b>.</div>
+            <div class="overflow-auto scrollbox max-h-[72vh]" @scroll="scrollTutup">
+              <table class="w-max min-w-full border-separate border-spacing-0">
+                <thead>
+                  <tr>
+                    <th class="thj sticky top-0 left-0 z-30 border-b border-r border-line w-[84px] min-w-[84px]"></th>
+                    <th v-for="h in HARIJ" :key="h.n" class="sticky top-0 z-20 border-b border-l border-line w-[170px] min-w-[152px] px-3 py-2.5 text-left"
+                      :class="h.n===dSekarang ? 'thj-on' : 'thj'">
+                      <div class="text-[12px] font-semibold">{{h.label}}</div>
+                      <div class="text-[10px] text-mut tnum mt-0.5">{{tglHariPekan(h.n)}}<span v-if="h.n===dSekarang" class="text-pine font-semibold"> · hari ini</span></div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template v-for="jk in 10" :key="'rr'+jk">
+                    <tr>
+                      <td class="tdj sticky left-0 z-10 border-b border-r border-line px-1.5 py-1.5 text-center">
+                        <div class="text-[9px] uppercase tracking-[0.12em] text-mut">Jam</div>
+                        <div class="font-serif text-[17px] leading-none mt-0.5">{{jk}}</div>
+                        <div class="text-[9px] text-mut tnum mt-0.5">{{JAMKE[jk-1].m}}</div>
+                      </td>
+                      <template v-for="h in HARIJ">
+                        <td v-if="cellFor(h.n,jk)" :key="'t'+h.n+'-'+jk"
+                          class="border-b border-l border-line p-[3px] align-top w-[170px] min-w-[152px] h-[52px]"
+                          :class="h.n===dSekarang ? 'tdh-on' : ''">
+                          <button v-if="cellFor(h.n,jk).sesi" :rowspan="cellFor(h.n,jk).sesi.durJam"
+                            @click.stop="bukaMenuSesi(cellFor(h.n,jk).sesi,$event)"
+                            class="w-full h-full rounded-lg text-left px-2.5 py-1.5 border-l-[3px] hover:shadow-[0_6px_16px_-8px_rgba(38,35,27,.5)] transition relative"
+                            :class="sesiAktifId===cellFor(h.n,jk).sesi.id ? 'sesi-live' : ''"
+                            :style="{background:kelasOf(cellFor(h.n,jk).sesi.kelasId).warna+'14', borderColor:kelasOf(cellFor(h.n,jk).sesi.kelasId).warna}"
+                            :title="kelasOf(cellFor(h.n,jk).sesi.kelasId).nama+' · '+cellFor(h.n,jk).sesi.ruang">
+                            <div class="flex items-baseline gap-1">
+                              <span class="text-[9px] font-bold uppercase tracking-[0.08em]" :style="{color:kelasOf(cellFor(h.n,jk).sesi.kelasId).warna}">{{kelasSplit(cellFor(h.n,jk).sesi.kelasId).mapel}}</span>
+                              <span class="text-[9px] text-mut">{{kelasSplit(cellFor(h.n,jk).sesi.kelasId).kode}}</span>
+                            </div>
+                            <div class="text-[10px] text-ink2 tnum mt-0.5">jam {{cellFor(h.n,jk).sesi.jamMulai}}–{{cellFor(h.n,jk).sesi.jamMulai+cellFor(h.n,jk).sesi.durJam-1}} · {{jamWaktuSingkat(cellFor(h.n,jk).sesi)}}</div>
+                            <div class="text-[10px] text-mut truncate mt-0.5">{{cellFor(h.n,jk).sesi.ruang}}<span v-if="cellFor(h.n,jk).sesi.ket"> · {{cellFor(h.n,jk).sesi.ket}}</span></div>
+                            <span v-if="sesiAktifId===cellFor(h.n,jk).sesi.id" class="absolute top-1.5 right-1.5 flex items-center gap-1 text-[8.5px] font-bold text-pine">
+                              <span class="w-1.5 h-1.5 rounded-full bg-pine animate-pulse"></span>kini
+                            </span>
+                          </button>
+                        </td>
+                      </template>
+                    </tr>
+                    <tr v-if="jk===3||jk===6||jk===8" :key="'br'+jk">
+                      <td class="tdb sticky left-0 z-10 border-r border-b border-line"></td>
+                      <td :colspan="5" class="tdb border-b border-l border-line text-center text-[9px] italic text-mut py-[3px]">{{labelIst(jk)}}</td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div v-else>
+            <div class="flex gap-1 mb-3 overflow-x-auto scrollbox pb-0.5 -mx-1 px-1">
+              <button v-for="h in HARIJ" :key="'hd'+h.n" @click="jdHari=h.n"
+                class="relative h-9 px-3.5 rounded-lg border text-[12.5px] font-medium flex items-center gap-1.5 whitespace-nowrap transition flex-none"
+                :class="jdHari===h.n ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line bg-card hover:border-line2 text-ink2'">
+                {{h.label}}
+                <span v-if="h.n===dSekarang" class="w-1.5 h-1.5 rounded-full bg-pine"></span>
+              </button>
+            </div>
+            <div class="bg-card border border-line rounded-xl shadow-panel overflow-hidden">
+              <div v-if="!jadwal.length" class="p-8 text-center text-mut text-sm border-b border-line">Belum ada sesi — ketuk slot kosong untuk menambah.</div>
+              <template v-for="jk in 10">
+                <div :key="'hr'+jk" class="flex items-stretch">
+                  <div class="w-[60px] sm:w-[76px] flex-none bg-[#F1EBDD] border-b border-r border-line px-1.5 py-2 text-center flex flex-col justify-center">
+                    <div class="text-[9px] uppercase tracking-[0.12em] text-mut">Jam</div>
+                    <div class="font-serif text-[18px] leading-none mt-0.5">{{jk}}</div>
+                    <div class="text-[9px] text-mut tnum mt-1">{{JAMKE[jk-1].m}}</div>
+                  </div>
+                  <div class="flex-1 p-1.5 border-b border-line min-h-[54px] flex" :class="jdHari===dSekarang ? 'bg-[#F2ECDB]' : ''">
+                    <button v-if="sesiDi(jdHari,jk) && jk===sesiDi(jdHari,jk).jamMulai"
+                      @click.stop="bukaMenuSesi(sesiDi(jdHari,jk),$event)"
+                      class="w-full rounded-lg text-left px-3 py-2 border-l-[3px] hover:shadow-[0_6px_16px_-8px_rgba(38,35,27,.5)] transition relative"
+                      :class="sesiAktifId===sesiDi(jdHari,jk).id ? 'sesi-live' : ''"
+                      :style="{background:kelasOf(sesiDi(jdHari,jk).kelasId).warna+'14', borderColor:kelasOf(sesiDi(jdHari,jk).kelasId).warna}"
+                      :title="kelasOf(sesiDi(jdHari,jk).kelasId).nama+' · '+sesiDi(jdHari,jk).ruang">
+                      <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                        <span class="text-[10px] font-bold uppercase tracking-[0.08em]" :style="{color:kelasOf(sesiDi(jdHari,jk).kelasId).warna}">{{kelasSplit(sesiDi(jdHari,jk).kelasId).mapel}}</span>
+                        <span class="text-[10px] text-mut">{{kelasSplit(sesiDi(jdHari,jk).kelasId).kode}}</span>
+                        <span class="text-[10px] text-ink2 tnum ml-auto">jam {{sesiDi(jdHari,jk).jamMulai}}–{{sesiDi(jdHari,jk).jamMulai+sesiDi(jdHari,jk).durJam-1}} · {{jamWaktuSingkat(sesiDi(jdHari,jk))}}</span>
+                      </div>
+                      <div class="text-[12px] text-ink2 mt-1 truncate">{{sesiDi(jdHari,jk).ruang}}<span v-if="sesiDi(jdHari,jk).ket"> · {{sesiDi(jdHari,jk).ket}}</span></div>
+                      <span v-if="sesiAktifId===sesiDi(jdHari,jk).id" class="absolute top-2 right-2.5 flex items-center gap-1 text-[9px] font-bold text-pine">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pine animate-pulse"></span>kini
+                      </span>
+                    </button>
+                    <button v-else-if="sesiDi(jdHari,jk)"
+                      @click.stop="bukaMenuSesi(sesiDi(jdHari,jk),$event)"
+                      class="w-full rounded-lg px-3 py-1.5 border-l-[3px] flex items-center gap-2 transition"
+                      :style="{background:kelasOf(sesiDi(jdHari,jk).kelasId).warna+'0A', borderColor:kelasOf(sesiDi(jdHari,jk).kelasId).warna+'70'}">
+                      <ic n="chev-right" s="w-3.5 h-3.5 text-mut"></ic>
+                      <span class="text-[11px] text-mut italic">lanjutan sesi · hingga {{sampaiJam(sesiDi(jdHari,jk))}}</span>
+                    </button>
+                    <button v-else @click.stop="bukaSesiBaru(jdHari,jk)"
+                      class="w-full rounded-lg border border-dashed border-line2/70 text-mut/60 text-[11px] hover:border-pine hover:text-pine transition"
+                      :class="jamBentrokSlot(jk) ? 'opacity-40 cursor-not-allowed' : ''">
+                      + sesi jam {{jk}}
+                    </button>
+                  </div>
+                </div>
+                <div v-if="jk===3||jk===6||jk===8" :key="'hi'+jk" class="flex items-stretch">
+                  <div class="w-[60px] sm:w-[76px] flex-none bg-[#F7F2E6] border-r border-b border-line"></div>
+                  <div class="flex-1 bg-[#F7F2E6] border-b border-line py-[3px] px-3 text-[9.5px] italic text-mut">{{labelIst(jk)}}</div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <div class="bg-card border border-line rounded-xl shadow-panel p-5">
+            <h3 class="pttl">Beban Mengajar</h3>
+            <div class="mt-4 flex items-baseline gap-2">
+              <span class="font-serif text-[34px] sm:text-[40px] leading-none text-pine">{{beban.jam}}</span>
+              <span class="text-[12px] text-mut">jam pelajaran / pekan</span>
+            </div>
+            <div class="mt-5 space-y-3.5">
+              <div v-for="b in beban.perKelas" :key="b.k.id">
+                <div class="flex justify-between items-baseline text-[12.5px] mb-1">
+                  <span class="flex items-center gap-2 font-medium">
+                    <span class="w-2 h-2 rounded-full" :style="{background:b.k.warna}"></span>{{kelasSplit(b.k.id).kode}}
+                  </span>
+                  <span class="font-mono tnum text-mut">{{b.jam}} jam</span>
+                </div>
+                <div class="h-1.5 bg-[#EFE9DA] rounded-full overflow-hidden">
+                  <div class="h-full rounded-full transition-all" :style="{width:(beban.jam? b.jam/beban.jam*100 : 0)+'%', background:b.k.warna}"></div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 pt-4 border-t border-line space-y-1.5">
+              <div v-for="d in beban.perHari" :key="'ph'+d.h" class="flex justify-between text-[11.5px]">
+                <span class="text-ink2">{{HARIJ[d.h-1].label}}</span>
+                <span class="tnum text-mut">{{d.jam}} jam</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== VIEW: SISWA ===================== -->
+      <section v-if="view==='siswa'">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+          <div>
+            <h1 class="font-serif text-[24px] sm:text-[27px] leading-tight">Daftar Siswa</h1>
+            <p class="text-[12.5px] text-mut mt-1 tnum">{{kelas.siswa.length}} siswa · {{kelas.nama}}</p>
+          </div>
+          <button @click="bukaSisBaru" class="btnp sm:hidden"><ic n="userplus" s="w-4 h-4"></ic>Siswa</button>
+        </div>
+        <div class="relative sm:hidden mb-3">
+          <ic n="search" s="w-4 h-4 text-mut absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></ic>
+          <input v-model="search" placeholder="Cari siswa…" class="inp h-10 pl-8">
+        </div>
+
+        <div class="bg-card border border-line rounded-xl shadow-panel overflow-hidden">
+          <div class="overflow-x-auto scrollbox">
+            <table class="w-full min-w-[560px] text-sm">
+              <thead>
+                <tr class="text-left text-[10px] uppercase tracking-[0.14em] text-mut border-b border-line">
+                  <th class="py-2.5 pl-4 pr-2 w-10 font-semibold">#</th>
+                  <th class="py-2.5 px-2 font-semibold">Nama</th>
+                  <th class="py-2.5 px-2 font-semibold hidden md:table-cell">NIS</th>
+                  <th class="py-2.5 px-2 w-[210px] font-semibold">Rata-rata</th>
+                  <th class="py-2.5 px-2 font-semibold hidden sm:table-cell">Kehadiran</th>
+                  <th class="py-2.5 px-2 font-semibold hidden md:table-cell">Catatan</th>
+                  <th class="w-10"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row,i) in rowsSiswa" :key="row.s.id" @click="bukaDrawer(row.s)"
+                  class="border-b border-line last:border-0 hover:bg-[#F8F3E7] cursor-pointer group">
+                  <td class="py-2.5 pl-4 pr-2 text-mut tnum text-xs">{{i+1}}</td>
+                  <td class="px-2 py-2">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-8 h-8 rounded-full bg-[#EAE3D2] grid place-items-center text-[11px] font-bold text-ink2 flex-none">{{inisial(row.s)}}</span>
+                      <span>
+                        <span class="block font-medium text-[13.5px] group-hover:text-pine transition-colors">{{row.s.nama}}</span>
+                        <span class="block text-[10.5px] text-mut">{{row.s.gender==='P'?'Perempuan':'Laki-laki'}}</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-2 py-2 text-mut tnum text-[12px] hidden md:table-cell">{{row.s.nis}}</td>
+                  <td class="px-2 py-2">
+                    <div class="flex items-center gap-2">
+                      <div class="flex-1 h-[6px] rounded-full bg-[#EAE3D2] overflow-hidden">
+                        <div class="h-full rounded-full transition-all" :style="barStyle(row.r)"></div>
+                      </div>
+                      <span class="font-mono text-[12.5px] font-semibold tnum w-10 text-right" :class="gtxcls(row.r)">{{fmt1(row.r)}}</span>
+                    </div>
+                  </td>
+                  <td class="px-2 py-2 hidden sm:table-cell" :title="absTip(row.s)">
+                    <span class="font-mono tnum text-[12.5px] font-semibold" :class="pctCls(row.a.pct)">{{row.a.pct==null?'—':row.a.pct+'%'}}</span>
+                  </td>
+                  <td class="px-2 py-2 hidden md:table-cell">
+                    <span v-if="row.cb||row.cw" class="inline-flex items-center gap-2 text-[11.5px] tnum">
+                      <span v-if="row.cb" class="inline-flex items-center gap-1 text-pine"><ic n="star" s="w-3.5 h-3.5"></ic>{{row.cb}}</span>
+                      <span v-if="row.cw" class="inline-flex items-center gap-1 text-brick"><ic n="flag" s="w-3.5 h-3.5"></ic>{{row.cw}}</span>
+                    </span>
+                    <span v-else class="text-mut text-[12px]">—</span>
+                  </td>
+                  <td class="pr-3"><ic n="chev-right" s="w-4 h-4 text-mut group-hover:text-pine transition-colors"></ic></td>
+                </tr>
+                <tr v-if="!rowsSiswa.length">
+                  <td colspan="7" class="p-8 text-center text-mut text-sm">Tidak ada siswa yang cocok dengan pencarian.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== VIEW: STATISTIK ===================== -->
+      <section v-if="view==='statistik'">
+        <div class="mb-4">
+          <h1 class="font-serif text-[24px] sm:text-[27px] leading-tight">Statistik · {{kelas.nama}}</h1>
+          <p class="text-[12.5px] text-mut mt-1">Ringkasan nilai berbobot kategori, distribusi, dan peringkat kelas. Nilai huruf dikonversi ke skala 100.</p>
+        </div>
+
+        <div class="space-y-5">
+          <div class="bg-card border border-line rounded-xl shadow-panel px-4 sm:px-6 py-5 flex flex-wrap divide-y sm:divide-y-0 sm:divide-x divide-line">
+            <div class="flex-1 min-w-[44%] sm:min-w-[170px] py-2 sm:py-1.5 sm:pr-8">
+              <div class="text-[10px] uppercase tracking-[0.14em] text-mut mb-1">Rata-rata kelas</div>
+              <div class="font-serif text-[34px] sm:text-[42px] leading-none" :class="gtxcls(st.rata)">{{fmt1(st.rata)}}</div>
+              <div class="text-[11px] text-mut mt-2 tnum">{{st.ratas.length}} siswa dinilai · {{st.terisi}}/{{st.total}} nilai terisi</div>
+            </div>
+            <div class="flex-1 min-w-[44%] sm:min-w-[150px] py-2 sm:py-1.5 sm:px-8">
+              <div class="text-[10px] uppercase tracking-[0.14em] text-mut mb-1">Nilai tertinggi</div>
+              <div class="font-serif text-[34px] sm:text-[42px] leading-none tx-hi">{{st.max? fmt(st.max.v):'—'}}</div>
+              <div class="text-[11px] text-mut mt-2 truncate">{{st.max? st.max.s.nama:'—'}}</div>
+            </div>
+            <div class="flex-1 min-w-[44%] sm:min-w-[150px] py-2 sm:py-1.5 sm:px-8">
+              <div class="text-[10px] uppercase tracking-[0.14em] text-mut mb-1">Nilai terendah</div>
+              <div class="font-serif text-[34px] sm:text-[42px] leading-none tx-lo">{{st.min? fmt(st.min.v):'—'}}</div>
+              <div class="text-[11px] text-mut mt-2 truncate">{{st.min? st.min.s.nama:'—'}}</div>
+            </div>
+            <div class="flex-1 min-w-[44%] sm:min-w-[150px] py-2 sm:py-1.5 sm:pl-8">
+              <div class="text-[10px] uppercase tracking-[0.14em] text-mut mb-1">Kehadiran</div>
+              <div class="font-serif text-[34px] sm:text-[42px] leading-none text-ink">{{st.hadir==null?'—':st.hadir+'%'}}</div>
+              <div class="text-[11px] text-mut mt-2">dari pertemuan yang sudah diabsen</div>
+            </div>
+          </div>
+
+          <div class="grid lg:grid-cols-5 gap-5">
+            <div class="lg:col-span-3 bg-card border border-line rounded-xl shadow-panel p-5">
+              <h3 class="pttl">Distribusi Nilai Akhir</h3>
+              <div class="flex items-end gap-2 sm:gap-4 h-44 mt-5">
+                <div v-for="b in st.hist" :key="b.label" class="flex-1 flex flex-col items-center justify-end h-full" :title="b.label+' → '+b.count+' siswa'">
+                  <span class="text-[12px] font-mono tnum font-semibold mb-1.5" :class="b.count ? 'text-ink' : 'text-mut/60'">{{b.count}}</span>
+                  <div class="w-full rounded-t-md transition-all duration-300" :style="{height:(b.count ? Math.max(8, b.count/st.hmax*100) : 2)+'%', background:b.warna}"></div>
+                </div>
+              </div>
+              <div class="flex gap-2 sm:gap-4 mt-2 text-[10px] sm:text-[10.5px] text-mut tnum">
+                <div v-for="b in st.hist" :key="'l'+b.label" class="flex-1 text-center">{{b.label}}</div>
+              </div>
+            </div>
+            <div class="lg:col-span-2 bg-card border border-line rounded-xl shadow-panel p-5">
+              <h3 class="pttl">Rata-rata per Kategori</h3>
+              <div class="mt-5 space-y-4">
+                <div v-for="k in st.katM" :key="k.kt.id">
+                  <div class="flex justify-between items-baseline mb-1.5 text-[12.5px]">
+                    <span class="flex items-center gap-2 font-medium">
+                      <span class="w-2 h-2 rounded-full" :style="{background:k.kt.warna}"></span>{{k.kt.label}}
+                      <span class="text-[10.5px] text-mut">bobot {{k.kt.bobot}}%</span>
+                    </span>
+                    <span class="font-mono tnum font-semibold" :class="gtxcls(k.mean)">{{fmt1(k.mean)}}</span>
+                  </div>
+                  <div class="h-2 rounded-full bg-[#EFE9DA] overflow-hidden">
+                    <div class="h-full rounded-full transition-all" :style="{width:(k.mean||0)+'%', background:k.kt.warna}"></div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-[10.5px] text-mut mt-4 leading-snug">Rata akhir = Σ(rata kategori × bobot) / Σ(bobot kategori terisi).</p>
+            </div>
+          </div>
+
+          <div class="grid lg:grid-cols-2 gap-5">
+            <div class="bg-card border border-line rounded-xl shadow-panel p-5">
+              <h3 class="pttl">Rata-rata per Penilaian</h3>
+              <div class="mt-5 space-y-3.5">
+                <div v-for="r in st.perPen" :key="r.p.id">
+                  <div class="flex justify-between items-baseline mb-1.5 gap-2">
+                    <span class="text-[12.5px] font-medium flex items-center gap-1.5 min-w-0">
+                      <span class="w-2 h-2 rounded-full flex-none" :style="{background:katWarna(r.p.kategori)}"></span>
+                      <span class="truncate">{{r.p.judul}}</span>
+                      <span class="text-[10px] flex-none" :class="r.p.skala==='huruf' ? 'text-gold font-semibold' : 'text-mut'">{{r.p.skala==='huruf' ? 'A+' : tglID(r.p.tgl)}}</span>
+                    </span>
+                    <span class="font-mono text-[12.5px] font-semibold tnum flex-none" :class="gtxcls(r.mean)">{{fmt1(r.mean)}}</span>
+                  </div>
+                  <div class="h-2 bg-[#EFE9DA] rounded-full overflow-hidden">
+                    <div class="h-full rounded-full transition-all" :style="{width:(r.mean||0)+'%', background:katWarna(r.p.kategori)}"></div>
+                  </div>
+                  <div class="text-[10px] text-mut mt-1 tnum">{{r.n}}/{{kelas.siswa.length}} terisi</div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-card border border-line rounded-xl shadow-panel p-5">
+              <h3 class="pttl">Peringkat Kelas</h3>
+              <ol v-if="st.ranking.length" class="mt-3 divide-y divide-line">
+                <li v-for="(r,i) in st.ranking" :key="r.s.id" class="flex items-center gap-2 sm:gap-3 py-2">
+                  <span class="w-6 sm:w-7 text-center font-serif text-[16px] sm:text-[17px]" :class="i===0?'text-pine':i===1?'text-pine/80':i===2?'text-gold':'text-mut'">{{i+1}}</span>
+                  <span class="flex-1 min-w-0 text-[13px] sm:text-[13.5px] font-medium truncate cursor-pointer hover:text-pine" @click="bukaDrawerId(r.s.id)">{{r.s.nama}}</span>
+                  <div class="w-20 sm:w-32 h-1.5 bg-[#EFE9DA] rounded-full overflow-hidden flex-none">
+                    <div class="h-full rounded-full" :style="barStyle(r.rata)"></div>
+                  </div>
+                  <span class="w-11 sm:w-12 text-right font-mono tnum font-semibold text-[13px] sm:text-[13.5px] flex-none" :class="gtxcls(r.rata)">{{fmt1(r.rata)}}</span>
+                  <span class="w-12 sm:w-14 text-right text-[10.5px] sm:text-[11px] tnum flex items-center justify-end gap-0.5 flex-none" :class="r.delta>0.05?'text-pine':r.delta<-0.05?'text-brick':'text-mut'">
+                    <ic :n="deltaIc(r.delta)" s="w-3 h-3"></ic>{{fdelta(r.delta)}}
+                  </span>
+                </li>
+              </ol>
+              <p v-else class="text-sm text-mut text-center py-8">Belum ada nilai untuk diperingkatkan.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="max-w-[1440px] mx-auto px-4 sm:px-6 py-6 mt-2 text-[11.5px] text-mut flex flex-wrap items-center justify-between gap-2 border-t border-line">
+      <span>Dafnil · buku nilai untuk guru — data tersimpan di Google Sheets &amp; lokal.</span>
+      <span class="tnum">{{kelasList.length}} kelas · {{totalSiswa}} siswa · {{beban.jam}} jam mengajar / pekan</span>
+    </footer>
+
+    <!-- ===================== DRAWER: RAPOR SISWA ===================== -->
+    <transition name="dw">
+      <div v-if="drawerS" class="fixed inset-0 z-[70]">
+        <div class="absolute inset-0 bg-ink/35" @click="drawerId=null"></div>
+        <aside class="dw-panel absolute right-0 top-0 bottom-0 w-[400px] max-w-[94vw] bg-card border-l border-line shadow-2xl flex flex-col">
+          <div class="px-4 sm:px-5 pt-5 pb-4 border-b border-line bg-[#F1EBDD]">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-pine text-paper grid place-items-center font-serif text-[18px] sm:text-[20px] flex-none">{{inisial(drawerS)}}</div>
+                <div class="min-w-0">
+                  <h3 class="font-serif text-[18px] sm:text-[20px] leading-tight truncate">{{drawerS.nama}}</h3>
+                  <p class="text-xs text-mut mt-0.5 truncate">{{kelas.nama}} · NIS {{drawerS.nis}}</p>
+                </div>
+              </div>
+              <button @click="drawerId=null" class="w-9 h-9 grid place-items-center rounded-lg text-mut hover:bg-[#E9E2D0] flex-none" aria-label="Tutup">
+                <ic n="x" s="w-4 h-4"></ic>
+              </button>
+            </div>
+            <div class="grid grid-cols-3 divide-x divide-line mt-4 bg-card rounded-xl border border-line py-2.5">
+              <div class="text-center">
+                <div class="font-serif text-[24px] sm:text-[26px] leading-none" :class="gtxcls(rataS(drawerS))">{{fmt1(rataS(drawerS))}}</div>
+                <div class="text-[9.5px] sm:text-[10px] uppercase tracking-widest text-mut mt-1">Rata-rata</div>
+              </div>
+              <div class="text-center">
+                <div class="font-serif text-[24px] sm:text-[26px] leading-none text-ink">{{predikat(rataS(drawerS))[0]}}</div>
+                <div class="text-[9.5px] sm:text-[10px] uppercase tracking-widest text-mut mt-1">{{predikat(rataS(drawerS))[1]}}</div>
+              </div>
+              <div class="text-center">
+                <div class="font-serif text-[24px] sm:text-[26px] leading-none text-ink">{{absenS(drawerS).pct==null?'—':absenS(drawerS).pct+'%'}}</div>
+                <div class="text-[9.5px] sm:text-[10px] uppercase tracking-widest text-mut mt-1">Kehadiran</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1 overflow-y-auto scrollbox px-4 sm:px-5 py-4 space-y-6">
+            <section>
+              <h4 class="dttl">Perkembangan Nilai</h4>
+              <svg v-if="spark(drawerS).n>1" viewBox="0 0 320 100" class="w-full h-auto block">
+                <line x1="10" x2="310" y1="50" y2="50" stroke="#EAE2CE" stroke-width="1" stroke-dasharray="4 5"/>
+                <line x1="10" x2="310" y1="30" y2="30" stroke="#EAE2CE" stroke-width="1" stroke-dasharray="4 5"/>
+                <text x="308" y="48" text-anchor="end" font-size="8" fill="#A79D86" font-family="IBM Plex Mono">50</text>
+                <text x="308" y="28" text-anchor="end" font-size="8" fill="#A79D86" font-family="IBM Plex Mono">75</text>
+                <polyline :points="spark(drawerS).line" fill="none" stroke="#2E5E46" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle v-for="(d,di) in spark(drawerS).dots" :key="di" :cx="d.x" :cy="d.y" r="3.5" :fill="ghex(d.v)" stroke="#FFFEFA" stroke-width="1.5">
+                  <title>{{d.label}}</title>
+                </circle>
+              </svg>
+              <div v-else class="text-sm text-mut py-5 text-center border border-dashed border-line rounded-lg">Belum cukup nilai untuk grafik.</div>
+              <p class="text-[10.5px] text-mut mt-1.5 tnum">{{spark(drawerS).n}} nilai terisi · terendah {{spark(drawerS).lo}} · tertinggi {{spark(drawerS).hi}}</p>
+            </section>
+
+            <section>
+              <h4 class="dttl">Nilai per Kategori</h4>
+              <div v-for="kt in kats" :key="'d'+kt.id" class="py-2 border-b border-line last:border-0">
+                <div class="flex justify-between items-baseline mb-1.5 text-[12.5px]">
+                  <span class="flex items-center gap-2 font-medium">
+                    <span class="w-2 h-2 rounded-full" :style="{background:kt.warna}"></span>{{kt.label}}
+                    <span class="text-[10.5px] text-mut">bobot {{kt.bobot}}%</span>
+                  </span>
+                  <span class="font-mono tnum font-semibold" :class="gtxcls(katMean(drawerS,kt.id))">{{fmt1(katMean(drawerS,kt.id))}}</span>
+                </div>
+                <div class="h-2 rounded-full bg-[#EFE9DA] overflow-hidden">
+                  <div class="h-full rounded-full transition-all" :style="{width:(katMean(drawerS,kt.id)||0)+'%', background:kt.warna}"></div>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h4 class="dttl">Catatan Perilaku <span class="font-normal normal-case tracking-normal text-mut">({{catatanS(drawerS).length}})</span></h4>
+              <ul class="space-y-2">
+                <li v-for="c in catatanS(drawerS)" :key="c.id" class="flex gap-2.5 items-start p-2.5 rounded-lg" :class="c.tipe==='baik' ? 'bg-[#EDF2E4]' : 'bg-[#F7E9E2]'">
+                  <ic :n="c.tipe==='baik' ? 'star' : 'flag'" s="w-4 h-4 mt-0.5" :class="c.tipe==='baik' ? 'text-pine' : 'text-brick'"></ic>
+                  <div class="flex-1 text-[13px] leading-snug">
+                    {{c.teks}}
+                    <div class="text-[10.5px] text-mut mt-0.5 tnum">{{tglID(c.tgl)}}</div>
+                  </div>
+                </li>
+                <li v-if="!catatanS(drawerS).length" class="text-[13px] text-mut text-center py-3">Belum ada catatan.</li>
+              </ul>
+              <form @submit.prevent="tambahCatatan" class="mt-3 flex gap-2">
+                <button type="button" @click="ctipe = ctipe==='baik' ? 'perhatian' : 'baik'"
+                  class="w-9 h-10 rounded-lg border grid place-items-center flex-none transition-colors"
+                  :class="ctipe==='baik' ? 'border-pine text-pine bg-[#EDF2E4]' : 'border-brick text-brick bg-[#F7E9E2]'"
+                  :title="ctipe==='baik' ? 'Catatan apresiasi' : 'Catatan perlu perhatian'">
+                  <ic :n="ctipe==='baik' ? 'star' : 'flag'" s="w-4 h-4"></ic>
+                </button>
+                <input v-model="cteks" class="inp h-10 flex-1 min-w-0" :placeholder="ctipe==='baik' ? 'Catatan apresiasi…' : 'Catatan perlu perhatian…'">
+                <button class="btnp px-3"><ic n="plus" s="w-4 h-4"></ic></button>
+              </form>
+            </section>
+          </div>
+
+          <div class="px-4 sm:px-5 py-3 border-t border-line flex items-center justify-between">
+            <button @click="askHapusSiswa" class="text-[12px] text-brick hover:underline">Keluarkan dari kelas…</button>
+            <span class="text-[10.5px] text-mut">Tersimpan otomatis ke cloud</span>
+          </div>
+        </aside>
+      </div>
+    </transition>
+
+    <!-- ===================== MODAL ===================== -->
+    <transition name="md">
+      <div v-if="modalPen || modalSesi || modalSis || confirmBox" class="fixed inset-0 z-[80] grid place-items-center p-4">
+        <div class="absolute inset-0 bg-ink/35 backdrop-blur-[2px]" @click="tutupModal"></div>
+        <div class="mbody relative w-full max-w-md bg-card border border-line rounded-2xl shadow-2xl p-5 max-h-[calc(100dvh-2.5rem)] overflow-y-auto scrollbox">
+
+          <form v-if="modalPen" @submit.prevent="simpanPenilaian">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-serif text-[19px]">{{modalPen.id ? 'Ubah' : 'Tambah'}} Penilaian</h3>
+              <button type="button" @click="modalPen=null" class="w-8 h-8 grid place-items-center rounded-lg text-mut hover:bg-paper" aria-label="Tutup"><ic n="x" s="w-4 h-4"></ic></button>
+            </div>
+            <label class="lbl">Judul</label>
+            <input v-model="modalPen.judul" v-focus class="inp" placeholder="mis. Ulangan 2 · Aljabar">
+            <p v-if="penErr" class="text-brick text-xs mt-1.5">{{penErr}}</p>
+            <label class="lbl mt-4">Kategori</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" v-for="kt in kats" :key="'mp'+kt.id" @click="modalPen.kategori=kt.id"
+                class="h-10 rounded-lg border flex items-center justify-center gap-2 text-[13px] font-medium transition"
+                :class="modalPen.kategori===kt.id ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line hover:border-line2'">
+                <span class="w-2.5 h-2.5 rounded-full" :style="{background:kt.warna}"></span>{{kt.label}}
+              </button>
+            </div>
+            <label class="lbl mt-4">Skala penilaian</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" @click="modalPen.skala='angka'"
+                class="h-10 rounded-lg border text-[13px] font-medium transition"
+                :class="(modalPen.skala||'angka')==='angka' ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line hover:border-line2 text-ink2'">
+                Angka · 0–100
+              </button>
+              <button type="button" @click="modalPen.skala='huruf'"
+                class="h-10 rounded-lg border text-[13px] font-medium transition"
+                :class="modalPen.skala==='huruf' ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line hover:border-line2 text-ink2'">
+                Huruf · A+ – E
+              </button>
+            </div>
+            <p v-if="modalPen.id && (modalPen.skala||'angka')!==skalaAwalPen" class="text-[11px] text-gold leading-snug mt-2 flex gap-1.5">
+              <ic n="info" s="w-3.5 h-3.5 flex-none"></ic>Skala diubah — nilai yang sudah terisi akan dikonversi otomatis (A+ = 97–100, A = 93–96, dst.).
+            </p>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label class="lbl">Tanggal</label>
+                <input type="date" v-model="modalPen.tgl" class="inp">
+              </div>
+              <div class="flex items-end">
+                <p class="text-[11px] text-mut leading-snug pb-1">Kategori ini berbobot <b class="text-ink2">{{kat(modalPen.kategori).bobot}}%</b> dari nilai akhir.</p>
+              </div>
+            </div>
+            <label class="lbl mt-4">Keterangan <span class="font-normal normal-case tracking-normal text-mut">(opsional)</span></label>
+            <input v-model="modalPen.ket" class="inp" placeholder="materi, catatan…">
+            <div class="flex justify-end gap-2 mt-6">
+              <button type="button" class="btng" @click="modalPen=null">Batal</button>
+              <button class="btnp"><ic n="check" s="w-4 h-4"></ic>Simpan</button>
+            </div>
+          </form>
+
+          <form v-else-if="modalSesi" @submit.prevent="simpanSesiM">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-serif text-[19px]">{{modalSesi.id ? 'Ubah' : 'Tambah'}} Sesi Mengajar</h3>
+              <button type="button" @click="modalSesi=null" class="w-8 h-8 grid place-items-center rounded-lg text-mut hover:bg-paper" aria-label="Tutup"><ic n="x" s="w-4 h-4"></ic></button>
+            </div>
+            <label class="lbl">Hari</label>
+            <div class="grid grid-cols-5 gap-1.5">
+              <button type="button" v-for="h in HARIJ" :key="'mh'+h.n" @click="modalSesi.hari=h.n"
+                class="h-10 rounded-lg border text-[12px] font-medium transition"
+                :class="modalSesi.hari===h.n ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line hover:border-line2 text-ink2'">
+                {{h.label.slice(0,3)}}
+              </button>
+            </div>
+            <label class="lbl mt-4">Jam ke — mulai</label>
+            <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+              <button type="button" v-for="jk in 10" :key="'mj'+jk" @click="modalSesi.mulai=jk"
+                :disabled="jamBentrok(jk)" :title="jamBentrok(jk) ? 'Bentrok / tidak tersedia' : JAMKE[jk-1].m+'–'+JAMKE[jk-1].s"
+                class="h-10 rounded-lg border font-mono tnum text-[14px] transition disabled:cursor-not-allowed"
+                :class="jamBentrok(jk) ? 'border-brick/30 text-brick/40 line-through' : (modalSesi.mulai===jk ? 'border-pine ring-1 ring-pine text-pine bg-pinebg font-semibold' : 'border-line hover:border-line2 text-ink2')">
+                {{jk}}
+              </button>
+            </div>
+            <label class="lbl mt-4">Durasi</label>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button type="button" v-for="d in [1,2,3]" :key="'md'+d" @click="modalSesi.dur=d"
+                class="h-10 rounded-lg border text-[12.5px] font-medium transition"
+                :class="modalSesi.dur===d ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line hover:border-line2 text-ink2'">
+                {{d}} jam
+              </button>
+            </div>
+            <label class="lbl mt-4">Kelas</label>
+            <div class="space-y-1.5">
+              <button type="button" v-for="k in kelasList" :key="'mk'+k.id" @click="modalSesi.kelasId=k.id"
+                class="w-full h-10 rounded-lg border flex items-center gap-2.5 px-3 text-[13px] font-medium transition"
+                :class="modalSesi.kelasId===k.id ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line hover:border-line2 text-ink2'">
+                <span class="w-2.5 h-2.5 rounded-full flex-none" :style="{background:k.warna}"></span>{{k.nama}}
+              </button>
+            </div>
+            <div class="mt-4">
+              <label class="lbl">Ruang</label>
+              <input v-model="modalSesi.ruang" v-focus class="inp" placeholder="mis. R. 12 / Lab IPA">
+            </div>
+            <label class="lbl mt-4">Materi <span class="font-normal normal-case tracking-normal text-mut">(opsional)</span></label>
+            <input v-model="modalSesi.ket" class="inp" placeholder="mis. Aljabar — persamaan linier">
+            <p class="mt-3 text-[11.5px] text-ink2 bg-paper border border-line rounded-lg px-3 py-2 flex items-center gap-2 tnum">
+              <ic n="clock" s="w-3.5 h-3.5 text-mut flex-none"></ic>
+              <span class="truncate">{{HARIJ[modalSesi.hari-1].label}}, jam {{modalSesi.mulai}}–{{modalSesi.mulai+modalSesi.dur-1}} · {{jke(modalSesi.mulai).m}}–{{jke(modalSesi.mulai+modalSesi.dur-1).s}}</span>
+            </p>
+            <p v-if="sesErr" class="text-brick text-xs mt-2">{{sesErr}}</p>
+            <div class="flex justify-end gap-2 mt-5">
+              <button type="button" class="btng" @click="modalSesi=null">Batal</button>
+              <button class="btnp"><ic n="check" s="w-4 h-4"></ic>Simpan</button>
+            </div>
+          </form>
+
+          <form v-else-if="modalSis" @submit.prevent="simpanSiswa">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-serif text-[19px]">Tambah Siswa</h3>
+              <button type="button" @click="modalSis=null" class="w-8 h-8 grid place-items-center rounded-lg text-mut hover:bg-paper" aria-label="Tutup"><ic n="x" s="w-4 h-4"></ic></button>
+            </div>
+            <label class="lbl">Nama lengkap</label>
+            <input v-model="modalSis.nama" v-focus class="inp" placeholder="mis. Rani Kusuma">
+            <p v-if="sisErr" class="text-brick text-xs mt-1.5">{{sisErr}}</p>
+            <label class="lbl mt-4">NIS <span class="font-normal normal-case tracking-normal text-mut">(opsional)</span></label>
+            <input v-model="modalSis.nis" class="inp tnum" placeholder="otomatis '—' bila kosong">
+            <label class="lbl mt-4">Jenis kelamin</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" @click="modalSis.gender='L'" class="h-10 rounded-lg border text-[13px] font-medium transition" :class="modalSis.gender==='L' ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line hover:border-line2'">Laki-laki</button>
+              <button type="button" @click="modalSis.gender='P'" class="h-10 rounded-lg border text-[13px] font-medium transition" :class="modalSis.gender==='P' ? 'border-pine ring-1 ring-pine text-pine bg-pinebg' : 'border-line hover:border-line2'">Perempuan</button>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+              <button type="button" class="btng" @click="modalSis=null">Batal</button>
+              <button class="btnp"><ic n="userplus" s="w-4 h-4"></ic>Tambahkan</button>
+            </div>
+          </form>
+
+          <div v-else-if="confirmBox">
+            <h3 class="font-serif text-[19px] mb-2">{{confirmBox.judul}}</h3>
+            <p class="text-sm text-mut leading-relaxed">{{confirmBox.teks}}</p>
+            <div class="flex justify-end gap-2 mt-6">
+              <button class="btng" @click="confirmBox=null">Batal</button>
+              <button class="btnp bg-brick hover:bg-[#8F3521]" @click="jalankanKonfirm">{{confirmBox.btn}}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <transition name="pop">
+      <div v-if="edit" class="fixed z-[60] w-[216px] max-w-[calc(100vw-1rem)] bg-card border border-line rounded-xl shadow-[0_16px_40px_-12px_rgba(38,35,27,.4)] p-3" :style="popStyle" @click.stop>
+        <div class="flex items-start justify-between gap-1 mb-2">
+          <div class="min-w-0 flex-1">
+            <div class="text-[11.5px] font-semibold truncate">{{editP ? editP.judul : ''}}</div>
+            <div class="text-[10px] text-mut truncate flex items-center gap-1 mt-0.5">
+              <span class="w-1.5 h-1.5 rounded-full flex-none" :style="{background: editP ? katWarna(editP.kategori) : '#999'}"></span>
+              <span class="truncate">{{namaSiswa(edit.sid).nama}} · {{editHuruf ? 'huruf' : 'angka'}}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-0.5 flex-none">
+            <button @click="navSiswa(-1)" :disabled="editIdx<=1" title="Siswa sebelumnya"
+              class="w-6 h-6 grid place-items-center rounded-md text-mut hover:bg-paper hover:text-pine disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-default">
+              <ic n="chev-up" s="w-3.5 h-3.5"></ic>
+            </button>
+            <button @click="navSiswa(1)" :disabled="!editHasNext" title="Siswa berikutnya"
+              class="w-6 h-6 grid place-items-center rounded-md text-mut hover:bg-paper hover:text-pine disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-default">
+              <ic n="chev-down" s="w-3.5 h-3.5"></ic>
+            </button>
+            <button @click="tutupEdit" class="w-6 h-6 grid place-items-center rounded-md text-mut hover:bg-paper hover:text-ink" aria-label="Tutup">
+              <ic n="x" s="w-3.5 h-3.5"></ic>
+            </button>
+          </div>
+        </div>
+
+        <template v-if="!editHuruf">
+          <div class="flex items-center gap-2">
+            <input ref="nInput" v-model.number="edit.val" type="number" min="0" max="100" step="1" inputmode="numeric"
+              class="w-full h-11 text-center font-mono text-[22px] font-semibold border border-line2 rounded-lg bg-paper outline-none focus:border-pine tnum"
+              :class="gtxcls(edit.val)" @keyup.enter="simpanLanjut" @keyup.esc="tutupEdit">
+            <div class="flex flex-col gap-1 flex-none">
+              <button @click="edit.val = clampN((edit.val||0)+5)" class="w-8 h-5 grid place-items-center rounded bg-paper border border-line hover:border-pine text-mut hover:text-pine text-[11px]">+5</button>
+              <button @click="edit.val = clampN((edit.val||0)-5)" class="w-8 h-5 grid place-items-center rounded bg-paper border border-line hover:border-pine text-mut hover:text-pine text-[11px]">−5</button>
+            </div>
+          </div>
+          <div class="mt-1.5 flex items-center justify-between">
+            <span class="text-[10px] text-mut tnum">{{editIdx}} / {{siswaTampil.length}} siswa</span>
+            <span class="text-[11px] font-semibold" :class="gtxcls(edit.val)">{{predikatShort(edit.val)}}</span>
+          </div>
+          <div class="mt-2.5 flex gap-2">
+            <button v-if="edit.ada" @click="hapusNilai" class="w-9 h-9 rounded-lg border border-line hover:border-brick hover:text-brick text-mut grid place-items-center transition-colors flex-none" title="Kosongkan nilai"><ic n="trash" s="w-4 h-4"></ic></button>
+            <button @click="simpanNilai" class="flex-1 h-9 rounded-lg border border-line hover:bg-paper text-[13px] font-medium text-ink2 transition">Simpan</button>
+          </div>
+          <button @click="simpanLanjut" class="mt-1.5 w-full h-9 rounded-lg bg-pine hover:bg-pined text-white text-[13px] font-semibold flex items-center justify-center gap-1.5 transition" title="Simpan & lanjut ke siswa berikutnya">
+            Simpan &amp; Lanjut <ic n="chev-down" s="w-4 h-4"></ic>
+          </button>
+          <div class="mt-1.5 text-[10px] text-mut text-center leading-snug">Enter: simpan &amp; lanjut · Esc: tutup</div>
+        </template>
+
+        <template v-else>
+          <div class="grid grid-cols-4 gap-1.5">
+            <button v-for="g in hurufList" :key="'gg'+g" @click="pilihHuruf(g)"
+              class="h-9 rounded-lg border border-transparent font-mono font-semibold text-[13px] transition"
+              :class="[gbCls(g), edit.val===g ? 'gb-on' : '']"
+              :title="bandTitle(g)">{{g}}</button>
+          </div>
+          <div class="mt-2 flex items-center gap-2">
+            <button v-if="edit.ada" @click="pilihHuruf(edit.val)" class="w-9 h-9 rounded-lg border border-line hover:border-brick hover:text-brick text-mut grid place-items-center transition-colors flex-none" title="Kosongkan nilai"><ic n="trash" s="w-4 h-4"></ic></button>
+            <button @click="simpanLanjut" class="flex-1 h-9 rounded-lg bg-pine hover:bg-pined text-white text-[13px] font-semibold flex items-center justify-center gap-1.5 transition" title="Lanjut ke siswa berikutnya">
+              Lanjut <ic n="chev-down" s="w-4 h-4"></ic>
+            </button>
+          </div>
+          <div class="mt-1.5 flex items-center justify-between text-[10px] text-mut">
+            <span class="tnum">{{editIdx}} / {{siswaTampil.length}} siswa</span>
+            <span>klik huruf = simpan</span>
+          </div>
+          <div class="mt-1.5 text-[10px] text-mut text-center leading-snug">Enter: lanjut · Esc: tutup</div>
+        </template>
+      </div>
+    </transition>
+
+    <transition name="pop">
+      <div v-if="editAbs" class="fixed z-[60] w-[216px] max-w-[calc(100vw-1rem)] bg-card border border-line rounded-xl shadow-[0_16px_40px_-12px_rgba(38,35,27,.4)] p-3" :style="absPopStyle" @click.stop>
+        <div class="flex items-start justify-between gap-1 mb-2">
+          <div class="min-w-0 flex-1">
+            <div class="text-[11.5px] font-semibold tnum">{{hariID(editAbs.t)}}, {{tglID(editAbs.t)}}</div>
+            <div class="text-[10px] text-mut truncate mt-0.5">{{namaSiswa(editAbs.sid).nama}}</div>
+          </div>
+          <div class="flex items-center gap-0.5 flex-none">
+            <button @click="navAbsen(-1)" :disabled="absIdx<=1" title="Siswa sebelumnya"
+              class="w-6 h-6 grid place-items-center rounded-md text-mut hover:bg-paper hover:text-pine disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-default">
+              <ic n="chev-up" s="w-3.5 h-3.5"></ic>
+            </button>
+            <button @click="navAbsen(1)" :disabled="!absHasNext" title="Siswa berikutnya"
+              class="w-6 h-6 grid place-items-center rounded-md text-mut hover:bg-paper hover:text-pine disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-default">
+              <ic n="chev-down" s="w-3.5 h-3.5"></ic>
+            </button>
+            <button @click="editAbs=null" class="w-6 h-6 grid place-items-center rounded-md text-mut hover:bg-paper hover:text-ink" aria-label="Tutup">
+              <ic n="x" s="w-3.5 h-3.5"></ic>
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button v-for="st in statusAbs" :key="st.k" @click="pilihAbsen(st.k)"
+            class="h-10 rounded-lg border text-[12px] font-semibold flex items-center justify-center gap-1.5 transition"
+            :class="['absbtn-'+st.k, absCur===st.k ? 'abson border-pine' : 'border-transparent hover:border-line2']">
+            <span class="w-1.5 h-1.5 rounded-full" :style="{background:st.dot}"></span>{{st.label}}
+          </button>
+        </div>
+        <div class="mt-2 flex items-center gap-2">
+          <button v-if="absAda" @click="pilihAbsen(absCur)" class="w-9 h-9 rounded-lg border border-line hover:border-brick hover:text-brick text-mut grid place-items-center transition-colors flex-none" title="Kosongkan status"><ic n="trash" s="w-4 h-4"></ic></button>
+          <button @click="lanjutAbsen" class="flex-1 h-9 rounded-lg bg-pine hover:bg-pined text-white text-[13px] font-semibold flex items-center justify-center gap-1.5 transition" title="Lanjut ke siswa berikutnya">
+            Lanjut <ic n="chev-down" s="w-4 h-4"></ic>
+          </button>
+        </div>
+        <div class="mt-1.5 flex items-center justify-between text-[10px] text-mut">
+          <span class="tnum">{{absIdx}} / {{siswaTampil.length}} siswa</span>
+          <span>tekan H · S · I · A</span>
+        </div>
+      </div>
+    </transition>
+
+    <transition name="pop">
+      <div v-if="menuKol" class="fixed z-[60] w-52 max-w-[calc(100vw-1rem)] bg-card border border-line rounded-xl shadow-xl p-1.5" :style="menuKolStyle" @click.stop>
+        <div class="px-3 pt-1.5 pb-1 text-[10px] uppercase tracking-[0.12em] text-mut font-semibold truncate">{{penById(menuKol.pid).judul}}</div>
+        <button class="mitem" @click="editPen(menuKol.pid)"><ic n="pencil" s="w-4 h-4 text-mut"></ic>Ubah penilaian</button>
+        <button class="mitem text-brick hover:bg-[#F7E9E2]" @click="askHapusPen(menuKol.pid)"><ic n="trash" s="w-4 h-4"></ic>Hapus penilaian</button>
+      </div>
+    </transition>
+
+    <transition name="pop">
+      <div v-if="menuSesi" class="fixed z-[60] w-56 max-w-[calc(100vw-1rem)] bg-card border border-line rounded-xl shadow-xl p-1.5" :style="menuSesiStyle" @click.stop>
+        <div class="px-3 pt-1.5 pb-1 text-[10px] uppercase tracking-[0.12em] text-mut font-semibold truncate">
+          {{sesiById(menuSesi.id) ? kelasOf(sesiById(menuSesi.id).kelasId).nama : ''}}
+        </div>
+        <button class="mitem" @click="bukaNilaiDariSesi(menuSesi.id)"><ic n="grid" s="w-4 h-4 text-mut"></ic>Buka buku nilai</button>
+        <button class="mitem" @click="editSesi(menuSesi.id)"><ic n="pencil" s="w-4 h-4 text-mut"></ic>Ubah sesi</button>
+        <button class="mitem text-brick hover:bg-[#F7E9E2]" @click="askHapusSesi(menuSesi.id)"><ic n="trash" s="w-4 h-4"></ic>Hapus sesi</button>
+      </div>
+    </transition>
+
+    <div class="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-[90] flex flex-col gap-2 items-end">
+      <transition-group name="toast">
+        <div v-for="t in toasts" :key="t.id" class="flex items-center gap-2.5 bg-ink text-[#F2EEE3] rounded-lg pl-3 pr-4 py-2.5 shadow-xl text-[13px] max-w-[calc(100vw-2rem)]">
+          <ic :n="t.tipe==='warn' ? 'alertc' : t.tipe==='err' ? 'xcirc' : 'checkc'" s="w-4 h-4 flex-none" :class="t.tipe==='ok' ? 'text-[#9CC7A6]' : 'text-[#E2A08F]'"></ic>
+          <span class="min-w-0">{{t.msg}}</span>
+        </div>
+      </transition-group>
+    </div>
+  </template>
+</div>
+
+<script>
+/* ====== KONFIGURASI ====== */
+// PENTING: Ganti URL di bawah ini dengan URL deployment Google Apps Script Anda
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEXupDM_-DRKVVdF6Ynol-3vBZPeHkD_zRvU3_klywBpYqECkMsGpkV3nLGnPL8eA2/exec';
+const KEY = 'dafnil-v1';
+
+/* ---------- util ---------- */
+const HARI=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+const HARIF=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const BLN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const BLNF=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const pad=n=>String(n).padStart(2,'0');
+const fmtIsoD=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const mnt=t=>Number(t.slice(0,2))*60+Number(t.slice(3));
+const mulberry=a=>function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+function nextSesi(d){d=new Date(d);do{d.setDate(d.getDate()+1)}while(d.getDay()!==1&&d.getDay()!==4);return d}
+function genPert(start,n){let d=new Date(start+'T00:00:00');if(d.getDay()!==1&&d.getDay()!==4)d=nextSesi(d);const out=[];for(let i=0;i<n;i++){out.push(fmtIsoD(d));d=nextSesi(d)}return out}
+let UID=0;const uid=()=>'u'+(++UID);
+
+const JAMKE=[
+  {ke:1, m:'07:00',s:'07:40'},{ke:2, m:'07:40',s:'08:20'},{ke:3, m:'08:20',s:'09:00'},
+  {ke:4, m:'09:20',s:'10:00'},{ke:5, m:'10:00',s:'10:40'},{ke:6, m:'10:40',s:'11:20'},
+  {ke:7, m:'11:40',s:'12:20'},{ke:8, m:'12:20',s:'13:00'},{ke:9, m:'13:30',s:'14:10'},
+  {ke:10,m:'14:10',s:'14:50'}
+];
+const ISTIRAHAT_SETELAH=[3,6,8];
+
+const HURUF=[
+  {h:'A+',lo:97,hi:100,mid:98},  {h:'A',lo:93,hi:96,mid:94.5},{h:'A-',lo:90,hi:92,mid:91},
+  {h:'B+',lo:87,hi:89,mid:88},   {h:'B',lo:83,hi:86,mid:84.5},{h:'B-',lo:80,hi:82,mid:81},
+  {h:'C+',lo:77,hi:79,mid:78},   {h:'C',lo:73,hi:76,mid:74.5},{h:'C-',lo:70,hi:72,mid:71},
+  {h:'D+',lo:67,hi:69,mid:68},   {h:'D',lo:63,hi:66,mid:64.5},{h:'D-',lo:60,hi:62,mid:61},
+  {h:'E',lo:0, hi:59, mid:55}
+];
+function hurufDari(n){ n=Math.max(0,Math.min(100,n)); const g=HURUF.find(x=>n>=x.lo&&n<=x.hi); return g?g.h:'E' }
+function angkaDari(h){ const g=HURUF.find(x=>x.h===h); return g?g.mid:null }
+
+const N1=[['Aditya Pratama','L'],['Balqis Zahira','P'],['Bima Saputra','L'],['Citra Lestari','P'],['Damar Yusuf','L'],['Eka Putriani','P'],['Fajar Ramadhan','L'],['Gita Anjani','P'],['Hafiz Alfarizi','L'],['Intan Permatasari','P'],['Kevin Halim','L'],['Larasati Wulandari','P'],['Muhammad Rizky','L'],['Nadia Rahmawati','P']];
+const N2=[['Naufal Arkan','L'],['Olivia Salsabila','P'],['Pandu Setiawan','L'],['Qonita Sari','P'],['Raka Aditama','L'],['Salma Nabila','P'],['Tegar Prakoso','L'],['Ulya Kamila','P'],['Vino Bastian','L'],['Wulan Purnama','P'],['Yahya Aulia','L'],['Zahrana Aurelia','P']];
+const N3=[['Arga Maulana','L'],['Bunga Kirana','P'],['Dimas Prasetyo','L'],['Fitri Handayani','P'],['Galang Nugraha','L'],['Hesti Maharani','P'],['Ilham Nurdin','L'],['Jasmine Oktaviani','P'],['Krisna Adi','L'],['Laila Ramadhani','P'],['Nabila Syakira','P']];
+
+function buatKelas(cfg){
+  const k={id:cfg.id,nama:cfg.nama,warna:cfg.warna,
+    siswa:cfg.siswa.map((x,i)=>({id:cfg.pre+i,nama:x[0],gender:x[1],nis:cfg.nis+pad(i+1)})),
+    penilaian:cfg.pen.map((p,i)=>({id:cfg.pre+'p'+i,judul:p[0],kategori:p[1],tgl:p[2],ket:p[3]||'',skala:p[4]||'angka'})),
+    pertemuan:cfg.pert,nilai:{},absen:{},catatan:cfg.cat||[]};
+  const R=mulberry(cfg.seed);
+  for(const s of k.siswa){
+    const base=(cfg.base && cfg.base[s.id]!=null)?cfg.base[s.id]:55+R()*37;
+    for(const p of k.penilaian){
+      if(R()<0.07)continue;
+      const v=Math.max(38,Math.min(100,Math.round(base+R()*24-10)));
+      k.nilai[s.id+':'+p.id]=p.skala==='huruf'?hurufDari(v):v;
+    }
+  }
+  for(let ti=0;ti<k.pertemuan.length-2;ti++){
+    for(const s of k.siswa){
+      const r=R();let v='H';
+      if(r>0.88&&r<=0.92)v='S';else if(r>0.92&&r<=0.955)v='I';else if(r>0.955)v='A';
+      k.absen[s.id+':'+k.pertemuan[ti]]=v;
+    }
+  }
+  return k;
+}
+
+function jadwalSeed(){
+  const S=(id,hari,jamMulai,durJam,kelasId,ruang,ket)=>({id,hari,jamMulai,durJam,kelasId,ruang,ket});
+  return [
+    S('js1', 1,1,2,'k1','R. 12','Aljabar — persamaan linier'),
+    S('js2', 1,4,2,'k2','R. 14','FPB & KPK'),
+    S('js3', 2,2,2,'k3','Lab IPA','Praktik — kalor'),
+    S('js4', 2,5,2,'k1','R. 12','Bilangan berpangkat'),
+    S('js5', 3,2,2,'k2','R. 14','Pecahan & desimal'),
+    S('js6', 3,4,2,'k3','Lab IPA','Getaran & gelombang'),
+    S('js7', 4,1,2,'k2','R. 14','Pola bilangan'),
+    S('js8', 4,4,2,'k1','R. 12','Proyek statistik'),
+    S('js9', 5,1,2,'k3','Lab IPA','Tata surya'),
+    S('js10',5,4,2,'k1','R. 12','Teorema Pythagoras'),
+    S('js11',4,9,2,'k3','Lab IPA','Pengayaan — olimpiade IPA')
+  ];
+}
+
+const app=Vue.createApp({
+  data(){return{
+    // === AUTH STATE ===
+    auth: {
+      isLoggedIn: false,
+      token: localStorage.getItem('dafnil_token') || '',
+      user: JSON.parse(localStorage.getItem('dafnil_user') || 'null'),
+      username: '',
+      password: '',
+      showPass: false,
+      loading: false,
+      error: ''
+    },
+    showSetup: false,
+    userMenuOpen: false,
+    
+    // === SYNC STATE ===
+    syncStatus: 'idle',
+    syncTimer: null,
+    lastSync: null,
+    
+    // === ORIGINAL STATE ===
+    view:'nilai', kelasAktif:'k1', kelasList:[], kats:[],
+    search:'',
+    edit:null, editAbs:null, flashKey:null, menuKol:null, menuSesi:null, _noTutup:false,
+    modalPen:null, modalSesi:null, modalSis:null, confirmBox:null, penErr:'', sisErr:'', sesErr:'',
+    skalaAwalPen:'angka',
+    drawerId:null, ctipe:'baik', cteks:'',
+    bobotOpen:false, kelasOpen:false,
+    jadwal:[],
+    jdMode:'harian', jdHari:1,
+    nowTs:Date.now(),
+    toasts:[], saveT:'idle', tid:null,
+    statusAbs:[{k:'H',label:'Hadir',dot:'#1F5B3C'},{k:'S',label:'Sakit',dot:'#7A580E'},{k:'I',label:'Izin',dot:'#5F5849'},{k:'A',label:'Alpa',dot:'#9C3520'}],
+    hurufList:HURUF.map(x=>x.h),
+    HARIJ:[{n:1,label:'Senin'},{n:2,label:'Selasa'},{n:3,label:'Rabu'},{n:4,label:'Kamis'},{n:5,label:'Jumat'}],
+    JAMKE:JAMKE,
+    tabs:[{id:'nilai',ic:'grid',label:'Buku Nilai'},{id:'absensi',ic:'calendar',label:'Absensi'},{id:'jadwal',ic:'clock',label:'Jadwal'},{id:'siswa',ic:'users',label:'Siswa'},{id:'statistik',ic:'chart',label:'Statistik'}]
+  }},
+
+  computed:{
+    kelas(){ return this.kelasList.find(k=>k.id===this.kelasAktif)||this.kelasList[0] },
+    siswaTampil(){
+      const q=this.search.trim().toLowerCase();
+      return q? this.kelas.siswa.filter(s=>s.nama.toLowerCase().includes(q)) : this.kelas.siswa;
+    },
+    rowsNilai(){ return this.siswaTampil.map(s=>({s,r:this.rataS(s)})) },
+    rowsAbsen(){ return this.siswaTampil.map(s=>({s,a:this.absenS(s)})) },
+    rowsSiswa(){ return this.siswaTampil.map(s=>({s,r:this.rataS(s),a:this.absenS(s),cb:this.countTipe(s,'baik'),cw:this.countTipe(s,'perhatian')})) },
+    drawerS(){ return this.kelas.siswa.find(s=>s.id===this.drawerId)||null },
+    editP(){ return this.edit? (this.kelas.penilaian.find(p=>p.id===this.edit.pid)||null) : null },
+    editHuruf(){ return !!(this.edit && this.editP && this.editP.skala==='huruf') },
+    editIdx(){ if(!this.edit)return 0; return this.siswaTampil.findIndex(s=>s.id===this.edit.sid)+1 },
+    editHasNext(){ return this.edit && this.editIdx>0 && this.editIdx<this.siswaTampil.length },
+    absIdx(){ if(!this.editAbs)return 0; return this.siswaTampil.findIndex(s=>s.id===this.editAbs.sid)+1 },
+    absHasNext(){ return this.editAbs && this.absIdx>0 && this.absIdx<this.siswaTampil.length },
+    absCur(){ return this.editAbs? (this.kelas.absen[this.editAbs.sid+':'+this.editAbs.t]||null) : null },
+    absAda(){ return this.absCur!=null },
+    popStyle(){ return this.edit? {left:this.edit.x+'px',top:this.edit.y+'px'} : {} },
+    absPopStyle(){ return this.editAbs? {left:this.editAbs.x+'px',top:this.editAbs.y+'px'} : {} },
+    menuKolStyle(){ return this.menuKol? {left:Math.max(8,Math.min(this.menuKol.x-104,window.innerWidth-224))+'px',top:this.menuKol.y+'px'} : {} },
+    menuSesiStyle(){ return this.menuSesi? {left:Math.max(8,Math.min(this.menuSesi.x-112,window.innerWidth-240))+'px',top:this.menuSesi.y+'px'} : {} },
+    totalSiswa(){ return this.kelasList.reduce((a,k)=>a+k.siswa.length,0) },
+    hariIniLabel(){ const d=new Date(); return HARIF[d.getDay()]+', '+d.getDate()+' '+BLNF[d.getMonth()]+' '+d.getFullYear() },
+    labelHariIni(){ const d=new Date(this.nowTs).getDay(); return (d>=1&&d<=5)? HARIF[d] : 'Akhir Pekan' },
+    dSekarang(){ return new Date(this.nowTs).getDay() },
+    mSekarang(){ const d=new Date(this.nowTs); return d.getHours()*60+d.getMinutes() },
+
+    gridJadwal(){
+      const grid={};
+      for(const h of [1,2,3,4,5]){
+        const skip=new Set();
+        const sesiHari=this.jadwal.filter(j=>j.hari===h).sort((a,b)=>a.jamMulai-b.jamMulai);
+        for(const s of sesiHari){
+          for(let k=s.jamMulai+1;k<s.jamMulai+s.durJam;k++)skip.add(k);
+        }
+        const cells=[];
+        for(let k=1;k<=10;k++){
+          if(skip.has(k))continue;
+          cells.push({ke:k,sesi:sesiHari.find(x=>x.jamMulai===k)||null});
+        }
+        grid[h]=cells;
+      }
+      return grid;
+    },
+    sesiHariIni(){
+      if(this.dSekarang<1||this.dSekarang>5)return [];
+      return this.jadwal.filter(s=>s.hari===this.dSekarang).sort((a,b)=>a.jamMulai-b.jamMulai);
+    },
+    jamHariIni(){ return this.sesiHariIni.reduce((a,s)=>a+s.durJam,0) },
+    sesiAktifId(){
+      if(this.dSekarang<1||this.dSekarang>5)return null;
+      for(const s of this.jadwal){
+        if(s.hari!==this.dSekarang)continue;
+        const m1=mnt(this.jke(s.jamMulai).m),m2=mnt(this.jke(s.jamMulai+s.durJam-1).s);
+        if(this.mSekarang>=m1&&this.mSekarang<m2)return s.id;
+      }
+      return null;
+    },
+    beban(){
+      const jam=this.jadwal.reduce((a,s)=>a+s.durJam,0);
+      const perKelas=this.kelasList.map(k=>({k,jam:this.jadwal.filter(s=>s.kelasId===k.id).reduce((a,s)=>a+s.durJam,0)}));
+      const perHari=this.HARIJ.map(h=>({h:h.n,jam:this.jadwal.filter(s=>s.hari===h.n).reduce((a,s)=>a+s.durJam,0)}));
+      return {jam,perKelas,perHari};
+    },
+    labelPekan(){
+      const d=new Date(this.nowTs);
+      const off=(d.getDay()+6)%7;
+      const sen=new Date(d);sen.setDate(d.getDate()-off);
+      const jum=new Date(sen);jum.setDate(sen.getDate()+4);
+      if(sen.getMonth()===jum.getMonth())
+        return sen.getDate()+'–'+jum.getDate()+' '+BLNF[sen.getMonth()]+' '+sen.getFullYear();
+      return sen.getDate()+' '+BLN[sen.getMonth()]+' – '+jum.getDate()+' '+BLN[jum.getMonth()]+' '+jum.getFullYear();
+    },
+
+    absenStat(){
+      const k=this.kelas;let kosong=0;
+      for(const t of k.pertemuan){
+        let ada=false;
+        for(const s of k.siswa){ if(k.absen[s.id+':'+t]!=null){ada=true;break} }
+        if(!ada)kosong++;
+      }
+      return {n:k.pertemuan.length,kosong,hadir:this.st.hadir};
+    },
+    st(){
+      const k=this.kelas,sis=k.siswa,ratas=[];
+      let max=null,min=null;
+      for(const s of sis){
+        const r=this.rataS(s);
+        if(r!=null){ratas.push(r);if(!max||r>max.v)max={v:r,s};if(!min||r<min.v)min={v:r,s}}
+      }
+      const rata=ratas.length?ratas.reduce((a,b)=>a+b,0)/ratas.length:null;
+      let H=0,ISI=0;for(const s of sis){const a=this.absenS(s);H+=a.h;ISI+=a.isi}
+      const hadir=ISI?Math.round(H/ISI*100):null;
+      let terisi=0;for(const s of sis)for(const p of k.penilaian)if(this.numOf(k.nilai[s.id+':'+p.id])!=null)terisi++;
+      const hist=[
+        {label:'0–59',warna:'#B4432C',count:ratas.filter(v=>v<60).length},
+        {label:'60–69',warna:'#C77F3A',count:ratas.filter(v=>v>=60&&v<70).length},
+        {label:'70–79',warna:'#C08A1E',count:ratas.filter(v=>v>=70&&v<80).length},
+        {label:'80–89',warna:'#7E9A5B',count:ratas.filter(v=>v>=80&&v<90).length},
+        {label:'90–100',warna:'#2E5E46',count:ratas.filter(v=>v>=90).length}];
+      const hmax=Math.max(1,...hist.map(b=>b.count));
+      const perPen=k.penilaian.map(p=>{
+        const vs=k.siswa.map(s=>this.numOf(k.nilai[s.id+':'+p.id])).filter(v=>v!=null);
+        return {p,mean:vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null,n:vs.length};
+      });
+      const katM=this.kats.map(kt=>{
+        const vs=sis.map(s=>this.katMean(s,kt.id)).filter(v=>v!=null);
+        return {kt,mean:vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null};
+      });
+      const ranking=sis.map(s=>({s,rata:this.rataS(s)})).filter(r=>r.rata!=null)
+        .sort((a,b)=>b.rata-a.rata).map(r=>({s:r.s,rata:r.rata,delta:rata==null?0:r.rata-r.rata}));
+      return {rata,ratas,max,min,hadir,terisi,total:sis.length*k.penilaian.length,hist,hmax,perPen,katM,ranking};
+    }
+  },
+
+  methods:{
+    /* ========== AUTH METHODS ========== */
+    async handleLogin(){
+      if(!this.auth.username || !this.auth.password){
+        this.auth.error = 'Username dan password wajib diisi';
+        return;
+      }
+      
+      if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA'){
+        this.auth.error = 'URL Google Apps Script belum dikonfigurasi. Silakan edit APPS_SCRIPT_URL di kode.';
+        return;
+      }
+      
+      this.auth.loading = true;
+      this.auth.error = '';
+      
+      try{
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'login',
+            username: this.auth.username,
+            password: this.auth.password
+          })
+        });
+        
+        const data = await res.json();
+        
+        if(data.success){
+          this.auth.token = data.token;
+          this.auth.user = data.user;
+          this.auth.isLoggedIn = true;
+          localStorage.setItem('dafnil_token', data.token);
+          localStorage.setItem('dafnil_user', JSON.stringify(data.user));
+          this.auth.username = '';
+          this.auth.password = '';
+          await this.loadFromCloud();
+          this.toast('Selamat datang, ' + (data.user.nama || data.user.username) + '!');
+          this.$nextTick(() => {
+            if(window.matchMedia('(min-width: 1024px)').matches) this.jdMode='mingguan';
+            if(this.dSekarang>=1&&this.dSekarang<=5) this.jdHari=this.dSekarang;
+            this._tick = setInterval(()=>{this.nowTs=Date.now()},30000);
+            window.addEventListener('click',()=>this.tutupSemuaPopover());
+            this.setupKeydown();
+          });
+        }else{
+          this.auth.error = data.error || 'Login gagal';
+        }
+      }catch(err){
+        this.auth.error = 'Tidak bisa terhubung ke server: ' + err.message;
+      }finally{
+        this.auth.loading = false;
+      }
+    },
+    
+    handleLogout(){
+      if(!confirm('Yakin ingin keluar? Data sudah tersimpan di cloud.')) return;
+      localStorage.removeItem('dafnil_token');
+      localStorage.removeItem('dafnil_user');
+      this.auth.isLoggedIn = false;
+      this.auth.token = '';
+      this.auth.user = null;
+      this.userMenuOpen = false;
+      if(this._tick) clearInterval(this._tick);
+      this.toast('Anda telah keluar');
+    },
+    
+    /* ========== CLOUD SYNC METHODS ========== */
+    async loadFromCloud(){
+      if(!this.auth.token) return;
+      
+      try{
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'load',
+            token: this.auth.token
+          })
+        });
+        
+        const data = await res.json();
+        
+        if(data.success && data.data){
+          if(data.data.kelasList) this.kelasList = data.data.kelasList;
+          if(data.data.kats) this.kats = data.data.kats;
+          if(data.data.jadwal) this.jadwal = data.data.jadwal;
+          for(const k of this.kelasList){
+            for(const p of k.penilaian){
+              if(!p.skala) p.skala = 'angka';
+            }
+          }
+          this.syncStatus = 'saved';
+          this.lastSync = new Date();
+          this.toast('Data berhasil dimuat dari cloud');
+        }else if(data.success){
+          this.seed();
+          this.toast('Data contoh dimuat (belum ada data di cloud)');
+          setTimeout(() => this.saveToCloud(true), 1000);
+        }else{
+          if(data.error && data.error.includes('Token')){
+            this.toast('Sesi berakhir, silakan login ulang', 'err');
+            this.handleLogout();
+          }
+        }
+      }catch(err){
+        console.error('Load error:', err);
+        this.toast('Gagal memuat dari cloud, gunakan data lokal', 'warn');
+        this.loadFromLocalStorage();
+      }
+    },
+    
+    loadFromLocalStorage(){
+      try{
+        const raw = localStorage.getItem(KEY);
+        if(raw){
+          const d = JSON.parse(raw);
+          if(d && Array.isArray(d.kelasList) && d.kelasList.length && Array.isArray(d.kats)){
+            this.kelasList = d.kelasList;
+            this.kats = d.kats;
+            if(Array.isArray(d.jadwal)) this.jadwal = d.jadwal;
+            return;
+          }
+        }
+      }catch(e){}
+      this.seed();
+      if(!Array.isArray(this.jadwal)) this.jadwal = jadwalSeed();
+    },
+    
+    async saveToCloud(immediate = false){
+      if(!this.auth.token || !this.auth.isLoggedIn) return;
+      
+      if(this.syncTimer) clearTimeout(this.syncTimer);
+      
+      if(!immediate){
+        this.syncStatus = 'saving';
+        this.syncTimer = setTimeout(() => this.saveToCloud(true), 1500);
+        return;
+      }
+      
+      this.syncStatus = 'saving';
+      
+      try{
+        const payload = {
+          action: 'save',
+          token: this.auth.token,
+          data: {
+            kelasList: this.kelasList,
+            kats: this.kats,
+            jadwal: this.jadwal,
+            savedAt: new Date().toISOString()
+          }
+        };
+        
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        
+        if(data.success){
+          this.syncStatus = 'saved';
+          this.lastSync = new Date();
+          try{
+            localStorage.setItem(KEY, JSON.stringify({
+              kelasList: this.kelasList,
+              kats: this.kats,
+              jadwal: this.jadwal
+            }));
+          }catch(e){}
+        }else{
+          this.syncStatus = 'error';
+          if(data.error && data.error.includes('Token')){
+            this.toast('Sesi berakhir, silakan login ulang', 'err');
+            this.handleLogout();
+          }else{
+            this.toast('Gagal menyimpan: ' + (data.error || 'Unknown'), 'err');
+          }
+        }
+      }catch(err){
+        console.error('Save error:', err);
+        this.syncStatus = 'error';
+        this.toast('Gagal terhubung ke cloud', 'err');
+      }
+    },
+    
+    async manualSync(){
+      this.userMenuOpen = false;
+      this.toast('Memulai sinkronisasi...');
+      await this.saveToCloud(true);
+      await this.loadFromCloud();
+    },
+
+    /* ========== ORIGINAL METHODS ========== */
+    seed(){
+      this.kats=[
+        {id:'tugas',label:'Tugas',warna:'#2E5E46',bobot:30},
+        {id:'ulangan',label:'Ulangan',warna:'#B0432A',bobot:40},
+        {id:'praktik',label:'Praktik',warna:'#C08A1E',bobot:15},
+        {id:'proyek',label:'Proyek',warna:'#2A7A74',bobot:15}];
+      this.jadwal=jadwalSeed();
+      this.kelasList=[
+        buatKelas({id:'k1',nama:'Matematika · VIII-A',warna:'#2E5E46',pre:'a',nis:'2410',seed:20250825,
+          siswa:N1,pert:genPert('2025-08-25',12),
+          base:{a12:92,a10:50,a13:88,a2:57},
+          pen:[['PR · Bilangan','tugas','2025-08-25','Latihan operasi bilangan bulat'],
+               ['Kuis 1 · Bilangan','ulangan','2025-09-01','15 soal isian singkat'],
+               ['UL 1 · Bilangan Berpangkat','ulangan','2025-09-15','Bilangan berpangkat & notasi ilmiah'],
+               ['PR · Aljabar','tugas','2025-09-29','Operasi bentuk aljabar'],
+               ['Praktik · GeoGebra','praktik','2025-10-06','Menggambar grafik fungsi linier','huruf'],
+               ['UL 2 · Aljabar','ulangan','2025-10-20','Persamaan linier satu variabel'],
+               ['Proyek · Statistik Kelas','proyek','2025-11-03','Survei mini & penyajian data'],
+               ['Kuis 2 · Teorema Pythagoras','ulangan','2025-11-10','Penerapan pythagoras']],
+          cat:[{id:'ct1',siswaId:'a8',tipe:'perhatian',teks:'Terlambat mengumpulkan PR · Aljabar',tgl:'2025-10-02'},
+               {id:'ct2',siswaId:'a7',tipe:'baik',teks:'Juara 2 lomba matematika antar-kelas',tgl:'2025-10-15'},
+               {id:'ct3',siswaId:'a3',tipe:'baik',teks:'Aktif bertanya saat diskusi kelas',tgl:'2025-09-11'},
+               {id:'ct4',siswaId:'a12',tipe:'baik',teks:'Nilai UL 1 tertinggi di kelas',tgl:'2025-09-17'},
+               {id:'ct5',siswaId:'a10',tipe:'perhatian',teks:'Perlu pendampingan pada materi aljabar',tgl:'2025-10-22'},
+               {id:'ct6',siswaId:'a13',tipe:'baik',teks:'Memandu kelompok pada proyek statistik',tgl:'2025-11-05'}]}),
+        buatKelas({id:'k2',nama:'Matematika · VIII-B',warna:'#2A7A74',pre:'b',nis:'2411',seed:777,
+          siswa:N2,pert:genPert('2025-08-26',12),
+          base:{b3:91,b8:52},
+          pen:[['PR · Bilangan Bulat','tugas','2025-08-26','Operasi campuran bilangan bulat'],
+               ['Kuis · FPB & KPK','ulangan','2025-09-02','Hitung cepat 10 soal'],
+               ['UL 1 · Bilangan','ulangan','2025-09-16','Pecahan & desimal'],
+               ['PR · Aljabar','tugas','2025-09-30','Penyederhanaan bentuk aljabar'],
+               ['Praktik · Papan Kartesius','praktik','2025-10-07','Menentukan koordinat titik'],
+               ['UL 2 · Aljabar','ulangan','2025-10-21','Persamaan & pertidaksamaan linier'],
+               ['Proyek · Pola Bilangan','proyek','2025-11-04','Laporan pola bilangan figur']],
+          cat:[{id:'ct7',siswaId:'b2',tipe:'perhatian',teks:'Bercakap saat ulangan — sudah ditegur',tgl:'2025-09-17'},
+               {id:'ct8',siswaId:'b5',tipe:'baik',teks:'Rutin membantu teman belajar',tgl:'2025-10-08'},
+               {id:'ct9',siswaId:'b9',tipe:'baik',teks:'Presentasi proyek sangat runtut',tgl:'2025-11-06'}]}),
+        buatKelas({id:'k3',nama:'IPA · IX-C',warna:'#C08A1E',pre:'c',nis:'2311',seed:4242,
+          siswa:N3,pert:genPert('2025-09-03',10),
+          base:{c1:87,c4:55},
+          pen:[['LKPD · Gerak','tugas','2025-09-03','Gerak lurus beraturan & GLBB'],
+               ['UL · Getaran & Gelombang','ulangan','2025-09-17','Frekuensi, periode, cepat rambat'],
+               ['PR · Zat & Wujud','tugas','2025-10-01','Perubahan wujud zat'],
+               ['Praktik Lab · Kalor','praktik','2025-10-08','Pengukuran kalor jenis air'],
+               ['UL 2 · Kalor','ulangan','2025-10-22','Perpindahan kalor'],
+               ['Proyek · Ekosistem','proyek','2025-11-05','Poster rantai makanan','huruf'],
+               ['Kuis · Tata Surya','ulangan','2025-11-12','Planet & tata surya']],
+          cat:[{id:'ct10',siswaId:'c1',tipe:'baik',teks:'Menjadi instruktur kecil saat praktik kalor',tgl:'2025-10-09'},
+               {id:'ct11',siswaId:'c4',tipe:'perhatian',teks:'Alpa dua pertemuan berturut-turut',tgl:'2025-10-24'},
+               {id:'ct12',siswaId:'c8',tipe:'baik',teks:'Laporan LKPD paling rapi di kelas',tgl:'2025-09-10'}]})
+      ];
+    },
+    jadwalSave(){
+      this.saveToCloud(false);
+      clearTimeout(this.tid);
+      this.tid=setTimeout(()=>{
+        try{
+          localStorage.setItem(KEY,JSON.stringify({kelasList:this.kelasList,kats:this.kats,jadwal:this.jadwal}));
+          this.saveT='saved';setTimeout(()=>{this.saveT='idle'},1800);
+        }catch(e){}
+      },700);
+    },
+
+    gantiKelas(id){ this.kelasAktif=id;this.kelasOpen=false;this.drawerId=null;this.edit=null;this.editAbs=null;this.search='' },
+    kat(id){ return this.kats.find(k=>k.id===id)||this.kats[0] },
+    katWarna(id){ return this.kat(id).warna },
+
+    gkey(s,p){ return s.id+':'+p.id },
+    nget(s,p){ return this.kelas.nilai[this.gkey(s,p)]??null },
+    numOf(v){
+      if(v==null||v==='')return null;
+      if(typeof v==='number')return isNaN(v)?null:v;
+      return angkaDari(v);
+    },
+    nnum(s,p){ return this.numOf(this.kelas.nilai[this.gkey(s,p)]) },
+    nz(v){ if(v===null||v===undefined||v==='')return null;const x=Number(v);return isNaN(x)?null:x },
+    gtxt(n){ return n==null?'·':n },
+    gcls(v){ v=this.numOf(v);return v==null?'g-nil':v>=80?'g-hi':v>=65?'g-mid':'g-lo' },
+    gtxcls(v){ v=this.numOf(v);return v==null?'text-mut':v>=80?'tx-hi':v>=65?'tx-mid':'tx-lo' },
+    ghex(v){ v=this.numOf(v);return v==null?'#C7BFAA':v>=80?'#2E5E46':v>=65?'#C08A1E':'#B0432A' },
+    gbCls(g){ const m=angkaDari(g);return m>=80?'gb-hi':m>=65?'gb-mid':'gb-lo' },
+    bandTitle(g){ const x=HURUF.find(y=>y.h===g);return g+' · '+(x? x.lo+'–'+x.hi : '') },
+    barStyle(v){ v=this.numOf(v);return {width:(v==null?0:Math.max(0,Math.min(100,v)))+'%',background:this.ghex(v)} },
+    predikat(n){ n=this.numOf(n);
+      if(n==null)return ['—','Belum dinilai'];
+      if(n>=86)return ['A','Sangat Baik'];
+      if(n>=71)return ['B','Baik'];
+      if(n>=56)return ['C','Cukup'];
+      return ['D','Perlu Bimbingan'];
+    },
+    predikatShort(v){ const p=this.predikat(v);return p[0]+' · '+p[1] },
+    rataS(s){ return this.rataSOf(this.kelas,s) },
+    rataSOf(k,s){
+      let sw=0,acc=0;
+      for(const kt of this.kats){
+        const pens=k.penilaian.filter(p=>p.kategori===kt.id);
+        const vs=pens.map(p=>this.numOf(k.nilai[s.id+':'+p.id])).filter(v=>v!=null);
+        if(vs.length){acc+=kt.bobot*(vs.reduce((a,b)=>a+b,0)/vs.length);sw+=kt.bobot}
+      }
+      return sw?acc/sw:null;
+    },
+    rataP(p){
+      const vs=this.kelas.siswa.map(s=>this.numOf(this.kelas.nilai[this.gkey(s,p)])).filter(v=>v!=null);
+      return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;
+    },
+    rataKelas(){ return this.rataKelasOf(this.kelas) },
+    rataKelasOf(k){
+      const vs=k.siswa.map(s=>this.rataSOf(k,s)).filter(v=>v!=null);
+      return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;
+    },
+    katMean(s,ktid){
+      const k=this.kelas,pens=k.penilaian.filter(p=>p.kategori===ktid),vs=[];
+      for(const p of pens){const v=this.numOf(k.nilai[this.gkey(s,p)]);if(v!=null)vs.push(v)}
+      return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;
+    },
+
+    posPopover(r,H){
+      const W=216;
+      let x=r.left+r.width/2-W/2;
+      x=Math.max(8,Math.min(x,window.innerWidth-W-10));
+      let y=r.bottom+6;
+      if(y+H>window.innerHeight-10)y=Math.max(8,r.top-H-6);
+      return {x,y};
+    },
+    setFlash(key){
+      this.flashKey=key;
+      setTimeout(()=>{if(this.flashKey===key)this.flashKey=null},750);
+    },
+    tutupSemuaPopover(){
+      this.menuKol=null;this.kelasOpen=false;this.bobotOpen=false;
+      this.edit=null;this.editAbs=null;this.menuSesi=null;
+      this.userMenuOpen=false;
+    },
+
+    bukaSel(s,p,ev){
+      if(this.edit&&this.edit.sid===s.id&&this.edit.pid===p.id)return;
+      this.menuKol=null;this.kelasOpen=false;this.bobotOpen=false;this.editAbs=null;this.menuSesi=null;
+      this.bukaSelAt(s,p,ev.currentTarget);
+    },
+    bukaSelAt(s,p,btn){
+      const r=btn.getBoundingClientRect();
+      const H=(p&&p.skala==='huruf')?300:312;
+      const pos=this.posPopover(r,H);
+      const v=this.kelas.nilai[this.gkey(s,p)];
+      this.edit={sid:s.id,pid:p.id,val:v==null?null:v,x:pos.x,y:pos.y,ada:v!=null};
+      this.$nextTick(()=>{const el=this.$refs.nInput;if(el&&this.edit&&!this.editHuruf){el.focus();el.select()}});
+    },
+    tutupEdit(){ this.edit=null },
+    clampN(v){ const x=this.nz(v);if(x==null)return 0;return Math.max(0,Math.min(100,Math.round(x))) },
+    pilihHuruf(g){
+      if(!this.edit)return;
+      const key=this.edit.sid+':'+this.edit.pid,k=this.kelas;
+      if(k.nilai[key]===g)delete k.nilai[key];
+      else k.nilai[key]=g;
+      this.edit.val=k.nilai[key]??null;
+      this.edit.ada=this.edit.val!=null;
+      this.setFlash(key);
+    },
+    simpanNilai(){
+      if(!this.edit)return;
+      if(!this.editHuruf){
+        const v=this.nz(this.edit.val);
+        if(v==null){this.toast('Isi angka 0–100 dulu','warn');return}
+        const {sid,pid}=this.edit;
+        this.kelas.nilai[sid+':'+pid]=Math.max(0,Math.min(100,Math.round(v)));
+        this.setFlash(sid+':'+pid);
+      }
+      this.tutupEdit();
+    },
+    simpanLanjut(){
+      if(!this.edit)return;
+      const {sid,pid}=this.edit;
+      if(!this.editHuruf){
+        const v=this.nz(this.edit.val);
+        if(v==null){this.toast('Isi angka 0–100 dulu','warn');return}
+        this.kelas.nilai[sid+':'+pid]=Math.max(0,Math.min(100,Math.round(v)));
+      }
+      this.setFlash(sid+':'+pid);
+      const idx=this.siswaTampil.findIndex(s=>s.id===sid);
+      const next=this.siswaTampil[idx+1];
+      if(!next){this.edit=null;this.toast('Baris terakhir — penilaian selesai','ok');return}
+      this.pindahSel(next.id,pid);
+    },
+    navSiswa(arah){
+      if(!this.edit)return;
+      const idx=this.siswaTampil.findIndex(s=>s.id===this.edit.sid);
+      const t=this.siswaTampil[idx+arah];
+      if(!t)return;
+      this.pindahSel(t.id,this.edit.pid);
+    },
+    pindahSel(sid,pid){
+      const s=this.kelas.siswa.find(x=>x.id===sid);
+      const p=this.kelas.penilaian.find(x=>x.id===pid);
+      const btn=document.querySelector('[data-cell="'+sid+'|'+pid+'"]');
+      if(!s||!p||!btn){this.edit=null;return}
+      this._noTutup=true;
+      btn.scrollIntoView({block:'nearest'});
+      this.bukaSelAt(s,p,btn);
+      setTimeout(()=>{this._noTutup=false},150);
+    },
+    hapusNilai(){
+      const {sid,pid}=this.edit;
+      delete this.kelas.nilai[sid+':'+pid];
+      this.setFlash(sid+':'+pid);
+      this.tutupEdit();
+    },
+
+    bukaAbsen(s,t,ev){
+      if(this.editAbs&&this.editAbs.sid===s.id&&this.editAbs.t===t){this.editAbs=null;return}
+      this.edit=null;this.menuKol=null;this.kelasOpen=false;this.bobotOpen=false;this.menuSesi=null;
+      this.bukaAbsenAt(s,t,ev.currentTarget);
+    },
+    bukaAbsenAt(s,t,btn){
+      const r=btn.getBoundingClientRect();
+      const pos=this.posPopover(r,254);
+      this.editAbs={sid:s.id,t,x:pos.x,y:pos.y};
+    },
+    pilihAbsen(v){
+      if(!this.editAbs)return;
+      const key=this.editAbs.sid+':'+this.editAbs.t,k=this.kelas;
+      if(k.absen[key]===v)delete k.absen[key];
+      else k.absen[key]=v;
+      this.setFlash(key);
+    },
+    lanjutAbsen(){
+      if(!this.editAbs)return;
+      const idx=this.siswaTampil.findIndex(s=>s.id===this.editAbs.sid);
+      const next=this.siswaTampil[idx+1];
+      if(!next){this.editAbs=null;this.toast('Baris terakhir — absensi selesai','ok');return}
+      this.pindahAbsen(next.id,this.editAbs.t);
+    },
+    navAbsen(arah){
+      if(!this.editAbs)return;
+      const idx=this.siswaTampil.findIndex(s=>s.id===this.editAbs.sid);
+      const t=this.siswaTampil[idx+arah];
+      if(!t)return;
+      this.pindahAbsen(t.id,this.editAbs.t);
+    },
+    pindahAbsen(sid,t){
+      const s=this.kelas.siswa.find(x=>x.id===sid);
+      const btn=document.querySelector('[data-abs="'+sid+'|'+t+'"]');
+      if(!s||!btn){this.editAbs=null;return}
+      this._noTutup=true;
+      btn.scrollIntoView({block:'nearest'});
+      this.bukaAbsenAt(s,t,btn);
+      setTimeout(()=>{this._noTutup=false},150);
+    },
+
+    jke(n){ return JAMKE[Math.max(1,Math.min(10,Math.round(n||1)))-1] },
+    kelasOf(id){ return this.kelasList.find(k=>k.id===id)||this.kelasList[0] },
+    kelasSplit(id){ const k=this.kelasOf(id);const parts=k.nama.split('·');return {mapel:(parts[0]||'').trim(),kode:(parts[1]||'').trim()} },
+    cellFor(h,ke){ const g=this.gridJadwal[h];return g? g.find(c=>c.ke===ke) : undefined },
+    sesiDi(h,ke){ return this.jadwal.find(s=>s.hari===h&&ke>=s.jamMulai&&ke<s.jamMulai+s.durJam)||null },
+    sampaiJam(s){ return this.jke(s.jamMulai+s.durJam-1).s },
+    labelIst(jk){
+      if(jk===3)return 'Istirahat · 09:00–09:20';
+      if(jk===6)return 'Istirahat · 11:20–11:40';
+      if(jk===8)return 'Istirahat & makan siang · 13:00–13:30';
+      return '';
+    },
+    tglHariPekan(n){
+      const d=new Date(this.nowTs);
+      const off=(d.getDay()+6)%7;
+      const t=new Date(d);t.setDate(d.getDate()-off+(n-1));
+      return t.getDate()+' '+BLN[t.getMonth()];
+    },
+    jamWaktuSingkat(s){ return this.jke(s.jamMulai).m+'–'+this.jke(s.jamMulai+s.durJam-1).s },
+    statusSesi(s){
+      const m1=mnt(this.jke(s.jamMulai).m),m2=mnt(this.jke(s.jamMulai+s.durJam-1).s);
+      if(this.mSekarang>=m2)return 'done';
+      if(this.mSekarang>=m1)return 'live';
+      return 'next';
+    },
+    sesiById(id){ return this.jadwal.find(s=>s.id===id)||null },
+    bukaMenuSesi(s,ev){
+      if(this.menuSesi&&this.menuSesi.id===s.id){this.menuSesi=null;return}
+      const r=ev.currentTarget.getBoundingClientRect();
+      this.menuSesi={id:s.id,x:r.left+r.width/2,y:r.bottom+6};
+      this.edit=null;this.editAbs=null;this.kelasOpen=false;this.bobotOpen=false;this.menuKol=null;
+    },
+    bukaNilaiDariSesi(id){
+      const s=this.sesiById(id);if(!s)return;
+      this.menuSesi=null;
+      this.kelasAktif=s.kelasId;this.view='nilai';this.drawerId=null;this.search='';
+      this.toast('Membuka buku nilai '+this.kelas.nama);
+    },
+    seberangIsti(mulai,dur){
+      for(const a of ISTIRAHAT_SETELAH){
+        if(mulai<=a&&mulai+dur>a)return true;
+      }
+      return false;
+    },
+    jamBentrok(ke){
+      const m=this.modalSesi;if(!m)return false;
+      if(ke+m.dur-1>10)return true;
+      if(this.seberangIsti(ke,m.dur))return true;
+      for(const s of this.jadwal){
+        if(s.hari!==m.hari)continue;
+        if(m.id&&s.id===m.id)continue;
+        const a1=ke,a2=ke+m.dur-1,b1=s.jamMulai,b2=s.jamMulai+s.durJam-1;
+        if(a1<=b2&&b1<=a2)return true;
+      }
+      return false;
+    },
+    jamBentrokSlot(ke){
+      return this.seberangIsti(ke,2)||ke+1>10||!!this.sesiDi(this.jdHari,ke);
+    },
+    ruangTerakhir(kelasId){
+      const ss=this.jadwal.filter(s=>s.kelasId===kelasId);
+      return ss.length? ss[ss.length-1].ruang : '';
+    },
+    bukaSesiBaru(hari,jk){
+      const d=this.dSekarang;
+      const defH=hari!=null? hari : (this.jdMode==='harian'? this.jdHari : (d>=1&&d<=5? d : 1));
+      this.modalSesi={id:null,hari:defH,mulai:jk||1,dur:2,kelasId:this.kelasAktif,ruang:this.ruangTerakhir(this.kelasAktif),ket:''};
+      this.sesErr='';
+    },
+    editSesi(id){
+      const s=this.sesiById(id);if(!s)return;
+      this.modalSesi={id:s.id,hari:s.hari,mulai:s.jamMulai,dur:s.durJam,kelasId:s.kelasId,ruang:s.ruang,ket:s.ket||''};
+      this.sesErr='';this.menuSesi=null;
+    },
+    simpanSesiM(){
+      const m=this.modalSesi;if(!m)return;
+      if(!m.ruang.trim()){this.sesErr='Ruang wajib diisi.';return}
+      if(m.mulai+m.dur-1>10){this.sesErr='Sesi melebihi jam ke-10.';return}
+      if(this.jamBentrok(m.mulai)){
+        this.sesErr=this.seberangIsti(m.mulai,m.dur)
+          ? 'Durasi sesi menyeberang jam istirahat — pisahkan menjadi dua sesi.'
+          : 'Jam ini bentrok dengan sesi lain di hari yang sama.';
+        return;
+      }
+      this.sesErr='';
+      const ruang=m.ruang.trim(),ket=m.ket.trim();
+      if(m.id){
+        const s=this.jadwal.find(x=>x.id===m.id);
+        if(s)Object.assign(s,{hari:m.hari,jamMulai:m.mulai,durJam:m.dur,kelasId:m.kelasId,ruang,ket});
+        this.toast('Sesi diperbarui');
+      }else{
+        this.jadwal.push({id:uid(),hari:m.hari,jamMulai:m.mulai,durJam:m.dur,kelasId:m.kelasId,ruang,ket});
+        this.toast('Sesi mengajar ditambahkan');
+      }
+      this.modalSesi=null;
+    },
+    askHapusSesi(id){
+      const s=this.sesiById(id);if(!s)return;
+      this.konfirm('Hapus sesi?',
+        this.kelasOf(s.kelasId).nama+' · '+this.HARIJ[s.hari-1].label+', jam '+s.jamMulai+'–'+(s.jamMulai+s.durJam-1)+' akan dihapus dari jadwal.',
+        ()=>this.hapusSesi(id),'Ya, hapus');
+    },
+    hapusSesi(id){ this.jadwal=this.jadwal.filter(s=>s.id!==id); this.toast('Sesi dihapus') },
+
+    penById(pid){ return this.kelas.penilaian.find(p=>p.id===pid)||{judul:''} },
+    bukaMenuKol(p,ev){
+      if(this.menuKol&&this.menuKol.pid===p.id){this.menuKol=null;return}
+      const r=ev.currentTarget.getBoundingClientRect();
+      this.menuKol={pid:p.id,x:r.left+r.width/2,y:r.bottom+6};
+      this.edit=null;this.editAbs=null;this.kelasOpen=false;this.bobotOpen=false;this.menuSesi=null;
+    },
+    bukaPenBaru(){ this.modalPen={id:null,judul:'',kategori:'tugas',tgl:this.isoToday(),ket:'',skala:'angka'};this.penErr='';this.skalaAwalPen='angka' },
+    editPen(pid){
+      const p=this.penById(pid);if(!p.judul)return;
+      this.modalPen={id:p.id,judul:p.judul,kategori:p.kategori,tgl:p.tgl,ket:p.ket||'',skala:p.skala||'angka'};
+      this.skalaAwalPen=p.skala||'angka';
+      this.penErr='';this.menuKol=null;
+    },
+    simpanPenilaian(){
+      const m=this.modalPen;if(!m)return;
+      const judul=m.judul.trim();
+      if(!judul){this.penErr='Judul penilaian wajib diisi.';return}
+      this.penErr='';
+      const skalaBaru=m.skala||'angka';
+      if(m.id&&skalaBaru!==this.skalaAwalPen){
+        for(const s of this.kelas.siswa){
+          const key=s.id+':'+m.id,v=this.kelas.nilai[key];
+          if(v==null)continue;
+          if(skalaBaru==='huruf')this.kelas.nilai[key]=hurufDari(Math.max(0,Math.min(100,this.numOf(v))));
+          else if(typeof v==='string')this.kelas.nilai[key]=Math.round(angkaDari(v));
+        }
+        this.toast('Skala penilaian dikonversi — nilai diperbarui');
+      }
+      if(m.id){
+        const p=this.kelas.penilaian.find(p=>p.id===m.id);
+        if(p)Object.assign(p,{judul,kategori:m.kategori,tgl:m.tgl,ket:m.ket,skala:skalaBaru});
+        if(skalaBaru===this.skalaAwalPen)this.toast('Penilaian diperbarui');
+      }else{
+        const arr=this.kelas.penilaian;let at=arr.length;
+        for(let i=0;i<arr.length;i++){if(arr[i].tgl>m.tgl){at=i;break}}
+        arr.splice(at,0,{id:uid(),judul,kategori:m.kategori,tgl:m.tgl,ket:m.ket,skala:skalaBaru});
+        this.toast('Penilaian "'+judul+'" ditambahkan ('+(skalaBaru==='huruf'?'A+ – E':'0–100')+')');
+      }
+      this.modalPen=null;
+    },
+    askHapusPen(pid){
+      const p=this.penById(pid);
+      this.konfirm('Hapus penilaian?','Kolom "'+(p.judul||'')+'" beserta seluruh nilainya akan dihapus dari kelas ini.',
+        ()=>this.hapusPen(pid),'Ya, hapus');
+    },
+    hapusPen(pid){
+      const k=this.kelas;
+      k.penilaian=k.penilaian.filter(p=>p.id!==pid);
+      for(const s of k.siswa)delete k.nilai[s.id+':'+pid];
+      this.toast('Penilaian dihapus');
+    },
+
+    bukaSisBaru(){ this.modalSis={nama:'',nis:'',gender:'L'};this.sisErr='' },
+    simpanSiswa(){
+      const m=this.modalSis;if(!m)return;
+      const nama=m.nama.trim();
+      if(!nama){this.sisErr='Nama siswa wajib diisi.';return}
+      this.kelas.siswa.push({id:uid(),nama,gender:m.gender,nis:m.nis.trim()||'—'});
+      this.modalSis=null;
+      this.toast(nama+' bergabung dengan '+this.kelas.nama);
+    },
+    namaSiswa(sid){ return this.kelas.siswa.find(s=>s.id===sid)||{nama:'?'} },
+    bukaDrawer(s){ this.drawerId=s.id;this.edit=null;this.editAbs=null },
+    bukaDrawerId(id){ this.drawerId=id },
+    askHapusSiswa(){
+      const s=this.drawerS;if(!s)return;
+      this.konfirm('Keluarkan siswa?',s.nama+' dikeluarkan dari kelas ini — nilai, absensi, dan catatannya ikut terhapus.',
+        ()=>this.hapusSiswa(s),'Ya, keluarkan');
+    },
+    hapusSiswa(s){
+      const k=this.kelas;
+      k.siswa=k.siswa.filter(x=>x.id!==s.id);
+      for(const key of Object.keys(k.nilai))if(key.startsWith(s.id+':'))delete k.nilai[key];
+      for(const key of Object.keys(k.absen))if(key.startsWith(s.id+':'))delete k.absen[key];
+      k.catatan=k.catatan.filter(c=>c.siswaId!==s.id);
+      this.drawerId=null;this.toast(s.nama+' dikeluarkan dari kelas');
+    },
+
+    catatanS(s){ return this.kelas.catatan.filter(c=>c.siswaId===s.id).sort((a,b)=>a.tgl<b.tgl?1:-1) },
+    countTipe(s,tipe){ return this.kelas.catatan.filter(c=>c.siswaId===s.id&&c.tipe===tipe).length },
+    tambahCatatan(){
+      const teks=this.cteks.trim();
+      if(!teks||!this.drawerS)return;
+      this.kelas.catatan.push({id:uid(),siswaId:this.drawerId,tipe:this.ctipe,teks,tgl:this.isoToday()});
+      this.cteks='';
+    },
+
+    absenGet(s,t){ return this.kelas.absen[s.id+':'+t]??null },
+    absenS(s){
+      const k=this.kelas;let h=0,sx=0,ix=0,ax=0;
+      for(const t of k.pertemuan){
+        const v=k.absen[s.id+':'+t];
+        if(v==='H')h++;else if(v==='S')sx++;else if(v==='I')ix++;else if(v==='A')ax++;
+      }
+      const isi=h+sx+ix+ax;
+      return {h,s:sx,i:ix,a:ax,isi,pct:isi?Math.round(h/isi*100):null};
+    },
+    absTip(s){
+      const a=this.absenS(s);
+      return 'Hadir '+a.h+' · Sakit '+a.s+' · Izin '+a.i+' · Alpa '+a.a+' (dari '+a.isi+' pertemuan terabsen)';
+    },
+    pctCls(p){ return p==null?'text-mut':p>=95?'tx-hi':p>=85?'text-ink':p>=70?'tx-mid':'tx-lo' },
+    semuaHadir(t){
+      for(const s of this.kelas.siswa)this.kelas.absen[s.id+':'+t]='H';
+      this.toast('Semua siswa ditandai hadir · '+this.tglID(t));
+    },
+    tambahPertemuan(){
+      const k=this.kelas,last=k.pertemuan[k.pertemuan.length-1];
+      const iso=fmtIsoD(nextSesi(new Date(last+'T00:00:00')));
+      k.pertemuan.push(iso);
+      this.toast('Pertemuan '+this.tglID(iso)+' ditambahkan');
+    },
+
+    spark(s){
+      const k=this.kelas;
+      const pens=[...k.penilaian].sort((a,b)=>a.tgl<b.tgl?-1:a.tgl>b.tgl?1:0);
+      const pts=[];
+      for(const p of pens){
+        const raw=k.nilai[s.id+':'+p.id],v=this.numOf(raw);
+        if(v!=null)pts.push({v,label:p.judul+' · '+raw});
+      }
+      const n=pts.length,W=320,H=100,pd=10;
+      const X=i=>pd+(n===1?(W-2*pd)/2:i*(W-2*pd)/(n-1));
+      const Y=v=>H-pd-(v/100)*(H-2*pd);
+      const line=pts.map((p,i)=>X(i).toFixed(1)+','+Y(p.v).toFixed(1)).join(' ');
+      const dots=pts.map((p,i)=>({x:+X(i).toFixed(1),y:+Y(p.v).toFixed(1),v:p.v,label:p.label}));
+      return {n,line,dots,lo:n?Math.round(Math.min(...pts.map(p=>p.v))):null,hi:n?Math.round(Math.max(...pts.map(p=>p.v))):null};
+    },
+
+    fmt(n){ n=this.numOf(n);return n==null?'—':String(Math.round(n)) },
+    fmt1(n){ n=this.numOf(n);return n==null?'—':n.toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1}) },
+    fdelta(d){ d=this.nz(d);if(d==null||Math.abs(d)<0.05)return '—';return this.fmt1(Math.abs(d)) },
+    deltaIc(d){ return d>0.05?'up':d<-0.05?'down':'minus' },
+    inisial(s){ return s.nama.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase() },
+    tglID(iso){ const d=new Date(iso+'T00:00:00');return d.getDate()+' '+BLN[d.getMonth()] },
+    hariID(iso){ const d=new Date(iso+'T00:00:00');return HARI[d.getDay()] },
+    isoToday(){ return fmtIsoD(new Date()) },
+
+    konfirm(judul,teks,aksi,btn){ this.confirmBox={judul,teks,btn:btn||'Ya, lanjutkan',aksi};this.menuKol=null },
+    jalankanKonfirm(){ const c=this.confirmBox;this.confirmBox=null;if(c&&c.aksi)c.aksi() },
+    tutupModal(){ this.modalPen=null;this.modalSesi=null;this.modalSis=null;this.confirmBox=null;this.penErr='';this.sisErr='';this.sesErr='' },
+    scrollTutup(){ if(this._noTutup)return; this.edit=null;this.menuKol=null;this.editAbs=null;this.menuSesi=null },
+    toast(msg,tipe){
+      const id=uid();this.toasts.push({id,msg,tipe:tipe||'ok'});
+      setTimeout(()=>{this.toasts=this.toasts.filter(t=>t.id!==id)},2800);
+    },
+    unduhCSV(){
+      const k=this.kelas;
+      const rows=[['Nama','NIS',...k.penilaian.map(p=>p.judul+' ['+this.kat(p.kategori).label+' · '+(p.skala==='huruf'?'A+–E':'0–100')+']'),'Rata-rata']];
+      for(const s of k.siswa){
+        const r=this.rataS(s);
+        rows.push([s.nama,s.nis,...k.penilaian.map(p=>{const v=k.nilai[this.gkey(s,p)];return v==null?'':v}),r==null?'':r.toFixed(1).replace('.',',')]);
+      }
+      const csv='\uFEFF'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='dafnil_'+k.nama.replace(/[^\w]+/g,'-')+'.csv';
+      a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+      this.toast('CSV '+k.nama+' diunduh');
+    },
+    askReset(){
+      this.konfirm('Muat ulang data contoh?','Semua perubahan Anda akan diganti dengan data contoh awal. Tindakan ini tidak bisa dibatalkan.',
+        ()=>{
+          try{localStorage.removeItem(KEY)}catch(e){}
+          this.seed();this.drawerId=null;this.search='';this.view='nilai';
+          this.toast('Data contoh dimuat ulang');
+          // Auto-save ke cloud
+          setTimeout(() => this.saveToCloud(true), 500);
+        },'Muat ulang');
+    },
+    
+    setupKeydown(){
+      if(this._keydownSetup) return;
+      this._keydownSetup = true;
+      window.addEventListener('keydown',e=>{
+        if(e.key==='Escape'){this.tutupSemuaPopover();this.drawerId=null;return}
+        const tag=e.target&&e.target.tagName;
+        if(tag==='INPUT'||tag==='TEXTAREA')return;
+        if(this.editAbs){
+          const map={h:'H','1':'H',s:'S','2':'S',i:'I','3':'I',a:'A','4':'A'};
+          const k=(e.key||'').toLowerCase();
+          if(map[k]){e.preventDefault();this.pilihAbsen(map[k]);return}
+          if(e.key==='Enter'){e.preventDefault();this.lanjutAbsen();return}
+          if(e.key==='ArrowDown'){e.preventDefault();this.navAbsen(1);return}
+          if(e.key==='ArrowUp'){e.preventDefault();this.navAbsen(-1);return}
+        }
+        if(this.edit&&this.editHuruf){
+          if(e.key==='Enter'){e.preventDefault();this.simpanLanjut();return}
+          if(e.key==='ArrowDown'){e.preventDefault();this.navSiswa(1);return}
+          if(e.key==='ArrowUp'){e.preventDefault();this.navSiswa(-1);return}
+        }
+      });
+    }
+  },
+
+  created(){
+    if(this.auth.token && this.auth.user){
+      this.auth.isLoggedIn = true;
+      this.loadFromCloud();
+    }else{
+      this.kelasList = [];
+      this.kats = [];
+      this.jadwal = [];
+    }
+    
+    this.$watch('kelasList',()=>{
+      if(this.auth.isLoggedIn) this.jadwalSave();
+    },{deep:true});
+    this.$watch('kats',()=>{
+      if(this.auth.isLoggedIn) this.jadwalSave();
+    },{deep:true});
+    this.$watch('jadwal',()=>{
+      if(this.auth.isLoggedIn) this.jadwalSave();
+    },{deep:true});
+  },
+  mounted(){
+    if(!this.auth.isLoggedIn) return;
+    
+    if(window.matchMedia('(min-width: 1024px)').matches) this.jdMode='mingguan';
+    if(this.dSekarang>=1&&this.dSekarang<=5) this.jdHari=this.dSekarang;
+    this._tick=setInterval(()=>{this.nowTs=Date.now()},30000);
+    window.addEventListener('click',()=>this.tutupSemuaPopover());
+    this.setupKeydown();
+  }
+});
+
+app.component('ic',{
+  props:{n:String,s:String},
+  computed:{cls(){return this.s||'w-4 h-4'}},
+  template:`<svg class="ic" :class="cls"><use :href="'#i-'+n"/></svg>`
+});
+app.directive('focus',{mounted(el){requestAnimationFrame(()=>el.focus())}});
+app.mount('#app');
+</script>
+</body>
+</html>
