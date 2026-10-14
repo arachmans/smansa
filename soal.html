@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ujian Sains &amp; Matematika</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+
+<!-- KaTeX untuk persamaan matematis -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+
+<!-- SortableJS untuk drag & drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+<!-- Vue 3 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.27/dist/vue.global.prod.js"></script>
+
+<!-- TailwindCSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      paper:'#F8F4EA', paperdim:'#E9E2D0', ink:'#211E1A', inksoft:'#5B5443',
+      faint:'#8B8371', line:'#D9D2BE', pen:'#C0361F', verd:'#31693B', ochre:'#9A6700'
+    },
+    fontFamily: {
+      display:['Fraunces','Georgia','serif'],
+      body:['Spectral','Georgia','serif'],
+      mono:['"IBM Plex Mono"','ui-monospace','monospace'],
+      hand:['Caveat','cursive']
+    }
+  }}
+}
+</script>
+
+<style>
+[v-cloak]{display:none}
+::selection{background:#211E1A;color:#F8F4EA}
+:focus-visible{outline:2px solid #C0361F;outline-offset:2px}
+html{scroll-behavior:smooth}
+body{font-family:'Spectral',Georgia,serif;color:#211E1A;-webkit-font-smoothing:antialiased}
+
+/* ---- kertas ---- */
+.sheet{background:#F8F4EA;border:1px solid #CBC3AC;box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 18px 40px -22px rgba(70,58,30,.5)}
+.paper-noise{position:relative}
+.paper-noise::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+
+/* ---- tipografi soal ---- */
+.qtext{font-family:'Spectral',serif;font-size:1.17rem;line-height:1.8;color:#211E1A}
+@media(min-width:768px){.qtext{font-size:1.27rem}}
+.qtext-sm{font-family:'Spectral',serif;font-size:15.5px;line-height:1.7}
+.katex{font-size:1.06em}
+.qtext .katex-display{margin:.9em 0}
+.mono-label{font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.22em;color:#8B8371;font-weight:500}
+.tchip{font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.22em;font-weight:600;border:1.5px solid #211E1A;padding:3px 9px;color:#211E1A;background:#FDFBF4}
+
+/* ---- pilihan ganda ---- */
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border:1.5px solid rgba(33,30,26,.28);background:#FCF9F1;border-radius:3px;cursor:pointer;font-family:'Spectral',serif;font-size:1.02rem;line-height:1.6;transition:border-color .15s,background .15s,box-shadow .15s}
+.opt:hover{border-color:#211E1A;background:#FFFEFA}
+.opt-sel{border:2px solid #211E1A;padding:11px 13px;background:#fff;box-shadow:3px 4px 0 rgba(33,30,26,.14)}
+.bulat{width:28px;height:28px;min-width:28px;border-radius:9999px;border:1.5px solid rgba(33,30,26,.55);display:grid;place-items:center;font-family:'IBM Plex Mono';font-size:11px;font-weight:600;transition:.15s}
+.opt:hover .bulat{background:rgba(33,30,26,.08)}
+.bulat-sel{background:#211E1A;border-color:#211E1A;color:#F8F4EA}
+
+/* ---- kategorisasi ---- */
+.chip{display:inline-flex;align-items:center;gap:8px;background:#FFFEFA;border:1.5px solid rgba(33,30,26,.4);padding:7px 12px;font-family:'Spectral',serif;font-size:15px;border-radius:3px;cursor:grab;box-shadow:1px 2px 0 rgba(60,50,25,.1);transition:box-shadow .15s,border-color .15s}
+.chip:hover{border-color:#211E1A}
+.chip-picked{border-color:#C0361F;background:#FFF6F2;box-shadow:0 0 0 2px rgba(192,54,31,.25)}
+.poolbox{min-height:78px;border:1.5px dashed rgba(33,30,26,.4);background:rgba(255,254,250,.55);padding:10px;display:flex;flex-wrap:wrap;gap:8px;border-radius:4px;align-items:center}
+.bucketbox{min-height:100px;border:1.5px dashed rgba(33,30,26,.45);background:rgba(255,254,250,.8);padding:10px;display:flex;flex-wrap:wrap;gap:8px;border-radius:4px;align-items:center;transition:border-color .15s,background .15s}
+.bucket-ready{border:2px solid #C0361F;background:#FFF7F3;cursor:pointer}
+
+/* ---- pengurutan ---- */
+.ordrow{display:flex;align-items:center;gap:10px;background:#FFFEFA;border:1.5px solid rgba(33,30,26,.35);padding:9px 12px;border-radius:3px;box-shadow:1px 2px 0 rgba(60,50,25,.08)}
+.ordrow .pos{font-family:'IBM Plex Mono';font-size:11px;color:#8B8371;min-width:14px}
+.handle-zone{flex:1;display:flex;align-items:center;gap:10px;cursor:grab;font-family:'Spectral',serif;font-size:16.5px}
+.arrbtn{width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(33,30,26,.3);color:#5B5443;border-radius:3px;transition:.15s}
+.arrbtn:hover:not(:disabled){border-color:#211E1A;background:#fff;color:#211E1A}
+.arrbtn:disabled{opacity:.25;cursor:default}
+
+/* drag & drop */
+.lift{transform:rotate(1.6deg) scale(1.03);box-shadow:0 12px 20px -10px rgba(60,48,25,.5);position:relative;z-index:6;opacity:.95}
+.sortable-ghost{opacity:.35;background:#fff}
+
+/* ---- navigasi & tombol ---- */
+.navbtn{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.18em;font-weight:600;padding:11px 18px;border:1.5px solid rgba(33,30,26,.75);color:#211E1A;background:transparent;border-radius:3px;transition:.15s}
+.navbtn:disabled{opacity:.3;cursor:default}
+.navbtn:not(:disabled):hover{background:#211E1A;color:#F8F4EA}
+.navbtn-solid{background:#211E1A;color:#F8F4EA}
+.navbtn-solid:hover{background:#3A362E}
+.navbtn-red{background:#C0361F;border-color:#C0361F;color:#F8F4EA}
+.navbtn-red:hover{background:#A82C17;border-color:#A82C17}
+
+/* ---- timer ---- */
+.timer{display:flex;align-items:center;gap:9px;border:1.5px solid #211E1A;padding:7px 14px;background:#FDFBF4;color:#211E1A}
+.timer.urgent{border-color:#C0361F;background:#FFF4EF;color:#C0361F}
+@keyframes blinker{50%{opacity:.45}}
+.timer.urgent .tval{animation:blinker 1s steps(1) infinite}
+
+/* ---- LJK ---- */
+.ljk{aspect-ratio:1/1;display:grid;place-items:center;font-family:'IBM Plex Mono';font-size:13px;border:1.5px solid;border-radius:2px;transition:all .15s}
+.ljk-answered{background:#211E1A;color:#F8F4EA;border-color:#211E1A}
+.ljk-idle{border-color:rgba(33,30,26,.3);color:rgba(33,30,26,.65)}
+.ljk-idle:hover{border-color:#211E1A;color:#211E1A}
+.ljk-cur-ans{background:#211E1A;color:#F8F4EA;border:2px solid #C0361F}
+.ljk-cur-empty{border:2px solid #C0361F;color:#C0361F;font-weight:600}
+
+/* ---- koreksi ---- */
+.stamp{display:inline-block;font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.25em;font-weight:600;border:2px solid;padding:3px 8px 2px 10px;transform:rotate(-3deg);outline:1.5px solid currentColor;outline-offset:2.5px}
+.st-correct{color:#31693B;border-color:#31693B}
+.st-wrong{color:#C0361F;border-color:#C0361F}
+.st-partial{color:#9A6700;border-color:#9A6700}
+.c-ok{color:#31693B;font-weight:600}
+.c-no{color:#C0361F;font-weight:600}
+.wavy{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='6'%3E%3Cpath d='M0 3 Q3.5 0.5 7 3 T14 3 T21 3 T28 3' fill='none' stroke='%23C0361F' stroke-width='1.4'/%3E%3C/svg%3E");background-repeat:repeat-x;background-position:left bottom;padding-bottom:7px}
+
+/* ---- transisi ---- */
+.q-enter-active{transition:opacity .22s ease,transform .22s ease}
+.q-leave-active{transition:opacity .15s ease,transform .15s ease}
+.q-enter-from{opacity:0;transform:translateX(16px)}
+.q-leave-to{opacity:0;transform:translateX(-12px)}
+.toast-enter-active,.toast-leave-active{transition:all .25s ease}
+.toast-enter-from{opacity:0;transform:translateY(10px)}
+.toast-leave-to{opacity:0;transform:translateY(6px)}
+</style>
+</head>
+
+<body class="bg-paperdim min-h-screen">
+<div id="app" v-cloak>
+
+  <!-- ================= SAMPUL UJIAN ================= -->
+  <div v-if="screen==='cover'" class="min-h-screen flex items-center justify-center p-4 py-10">
+    <div class="sheet paper-noise w-full max-w-2xl px-6 sm:px-10 md:px-12 py-10 md:py-12">
+
+      <!-- stempel -->
+      <div class="absolute right-6 top-7 md:right-12 md:top-9 rotate-[-7deg] border-[3px] border-pen/80 text-pen/80 font-mono text-[10px] font-semibold tracking-[0.3em] px-3 py-1.5 select-none">BAGIAN A</div>
+
+      <div class="border-y-[3px] border-double border-ink py-4 text-center">
+        <p class="font-mono text-[10px] tracking-[0.35em] text-inksoft">PEMERIKSAAN AKHIR · SEMESTER GANJIL</p>
+        <h1 class="font-display font-black text-4xl md:text-5xl mt-2 leading-tight">Ujian Sains <span class="italic font-semibold">&amp;</span> Matematika</h1>
+      </div>
+
+      <div class="mt-5 grid grid-cols-3 divide-x divide-ink/25 border-y border-ink/25 py-3 text-center">
+        <div><p class="font-mono text-[9px] tracking-[0.25em] text-faint">WAKTU</p><p class="font-display font-bold text-lg mt-0.5">20 menit</p></div>
+        <div><p class="font-mono text-[9px] tracking-[0.25em] text-faint">SOAL</p><p class="font-display font-bold text-lg mt-0.5">10 butir</p></div>
+        <div><p class="font-mono text-[9px] tracking-[0.25em] text-faint">NILAI MAKS</p><p class="font-display font-bold text-lg mt-0.5">100</p></div>
+      </div>
+
+      <!-- nama peserta -->
+      <label class="block mt-8">
+        <span class="font-mono text-[10px] tracking-[0.3em] text-inksoft">NAMA PESERTA</span>
+        <div class="mt-2 flex items-center gap-3 border-b-2 border-ink/70 focus-within:border-pen transition-colors">
+          <ic name="pen" :size="18" class="text-faint shrink-0"></ic>
+          <input v-model="nameInput" @keydown.enter.prevent="startExam" type="text" autocomplete="name" placeholder="tulis namamu di sini…"
+                 class="w-full bg-transparent font-display font-semibold text-2xl py-1.5 outline-none placeholder:text-faint/40 placeholder:font-normal">
+        </div>
+      </label>
+
+      <!-- tata tertib -->
+      <div class="mt-9 space-y-3 font-body text-[15px] leading-relaxed text-ink/90">
+        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">01</span><p>Memuat <b>10 soal</b> berbagai tipe: pilihan ganda, isian singkat, kategorisasi, dan pengurutan — sebagian memuat <b>gambar</b> dan <b>persamaan matematis</b>.</p></div>
+        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">02</span><p>Waktu pengerjaan 20 menit. Saat waktu habis, jawaban <b>terkumpul otomatis</b>.</p></div>
+        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">03</span><p>Soal kategorisasi &amp; pengurutan dinilai <b>parsial per item</b> — pastikan semua kartu terpasang.</p></div>
+        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">04</span><p>Navigasi bebas: klik nomor pada <b>Lembar Jawaban</b> untuk berpindah soal. Panah ←/→ pada papan ketik juga berlaku.</p></div>
+      </div>
+
+      <button @click="startExam" class="navbtn navbtn-solid mt-10 w-full justify-center !py-4 !text-[12px] group">
+        MULAI UJIAN
+        <ic name="right" :size="15" class="group-hover:translate-x-1 transition-transform"></ic>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= LEMBAR UJIAN ================= -->
+  <div v-else-if="screen==='exam'" class="min-h-screen py-6 md:py-10 px-3 md:px-6">
+    <div class="mx-auto max-w-6xl">
+      <div class="sheet paper-noise overflow-hidden">
+
+        <!-- kop -->
+        <header class="border-b-2 border-ink px-5 md:px-10 pt-6 pb-4 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p class="font-mono text-[10px] tracking-[0.3em] text-inksoft">PEMERIKSAAN AKHIR · SEMESTER GANJIL</p>
+            <h1 class="font-display font-black text-2xl md:text-3xl mt-1">Lembar Ujian</h1>
+            <p class="font-mono text-[9px] tracking-[0.28em] text-faint mt-1.5">KODE TRX-042 · 10 SOAL · 20 MENIT</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="text-right hidden md:block">
+              <p class="font-mono text-[9px] tracking-[0.25em] text-faint">PESERTA</p>
+              <p class="font-display font-semibold text-lg leading-tight">{{ student }}</p>
+            </div>
+            <div class="timer" :class="{urgent: timeLeft<=60}">
+              <ic name="clock" :size="17"></ic>
+              <div class="leading-none">
+                <p class="font-mono text-[8px] tracking-[0.25em] text-faint">SISA WAKTU</p>
+                <p class="tval font-mono font-semibold text-xl tabular-nums mt-0.5">{{ fmtTime }}</p>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="grid lg:grid-cols-[1fr_292px]">
+
+          <!-- ===== kolom soal ===== -->
+          <main class="relative px-5 sm:px-8 md:px-10 py-8 lg:py-10 border-b lg:border-b-0 lg:border-r-2 border-dashed border-line">
+
+            <!-- nomor di margin kiri (desktop) -->
+            <div class="hidden md:block absolute top-9 left-10 w-14 text-center">
+              <div class="font-display font-black text-5xl leading-none text-ink/90">{{ pad2(currentIdx+1) }}</div>
+              <div class="font-mono text-[10px] text-faint mt-1.5">/ {{ pad2(total) }}</div>
+            </div>
+            <div class="hidden md:block absolute top-9 bottom-24 left-[102px] w-px bg-pen/25"></div>
+
+            <div class="md:pl-16">
+              <transition name="q" mode="out-in">
+                <div :key="currentIdx">
+
+                  <!-- nomor (mobile) -->
+                  <div class="md:hidden flex items-baseline gap-2 mb-4">
+                    <span class="font-display font-black text-3xl leading-none">{{ pad2(currentIdx+1) }}</span>
+                    <span class="font-mono text-[10px] text-faint">/ {{ pad2(total) }}</span>
+                  </div>
+
+                  <!-- ===== PILIHAN GANDA ===== -->
+                  <div v-if="q.type==='mc'">
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="tchip">PILIHAN GANDA</span>
+                      <span class="font-mono text-[10px] tracking-wider text-faint">{{ q.points }} POIN</span>
+                    </div>
+                    <p class="qtext mt-4" v-html="rt(q.text)"></p>
+
+                    <figure v-if="q.image" class="mt-5">
+                      <div class="inline-block bg-[#FFFDF6] border border-line p-3 shadow-[2px_3px_0_rgba(60,50,30,0.08)]">
+                        <img v-if="q.image.src" :src="q.image.src" :alt="q.image.caption || 'ilustrasi soal'" class="w-[min(420px,100%)] h-auto">
+                        <div v-else class="w-[min(340px,100%)]" v-html="q.image.svg"></div>
+                      </div>
+                      <figcaption v-if="q.image.caption" class="mt-2 font-mono text-[9px] tracking-[0.18em] text-faint uppercase">{{ q.image.caption }}</figcaption>
+                    </figure>
+
+                    <div class="mt-6 space-y-3">
+                      <button v-for="(opt,i) in q.options" :key="'mc'+i" type="button" class="opt" :class="{'opt-sel': ca.choice===i}" @click="ansMc(i)">
+                        <span class="bulat" :class="{'bulat-sel': ca.choice===i}">{{ letter(i) }}</span>
+                        <span v-if="opt.text" class="flex-1" v-html="rt(opt.text)"></span>
+                        <div v-if="opt.svg" class="flex-1 max-w-[200px] border border-line bg-white p-2" :class="{'!border-ink': ca.choice===i}">
+                          <div v-html="opt.svg"></div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- ===== ISIAN SINGKAT ===== -->
+                  <div v-else-if="q.type==='short'">
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="tchip">ISIAN SINGKAT</span>
+                      <span class="font-mono text-[10px] tracking-wider text-faint">{{ q.points }} POIN</span>
+                    </div>
+                    <p class="qtext mt-4" v-html="rt(q.text)"></p>
+
+                    <div class="mt-7 max-w-xs sm:max-w-sm">
+                      <label :for="'short-'+currentIdx" class="mono-label">JAWABANMU</label>
+                      <div class="mt-2 flex items-baseline gap-3 border-b-[1.5px] border-dotted border-ink/50 pb-2 focus-within:border-pen transition-colors">
+                        <span v-if="q.prefix" class="qtext !text-xl" v-html="rt(q.prefix)"></span>
+                        <input :id="'short-'+currentIdx" type="text" autocomplete="off" spellcheck="false"
+                               v-model="ca.value" @keydown.enter.prevent="onEnterShort"
+                               :placeholder="q.placeholder || 'jawabanmu…'"
+                               class="w-full bg-transparent font-display font-semibold text-2xl outline-none placeholder:text-faint/40 placeholder:font-normal">
+                      </div>
+                      <p class="mt-2.5 font-mono text-[9px] tracking-wide text-faint">HURUF BESAR/KECIL DIABAIKAN · TEKAN ENTER UNTUK SOAL BERIKUTNYA</p>
+                    </div>
+                  </div>
+
+                  <!-- ===== KATEGORISASI ===== -->
+                  <div v-else-if="q.type==='categorize'">
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="tchip">KATEGORISASI</span>
+                      <span class="font-mono text-[10px] tracking-wider text-faint">{{ q.points }} POIN</span>
+                    </div>
+                    <p class="qtext mt-4" v-html="rt(q.text)"></p>
+
+                    <div class="mt-6">
+                      <p class="mono-label">KARTU BELUM DITEMPATKAN · {{ ca.pool.length }}</p>
+                      <div id="cat-pool" class="poolbox mt-2">
+                        <div v-for="id in ca.pool" :key="'p'+id" class="chip" :class="{'chip-picked': picked===id}" :data-id="id" @click.stop="onChipClick(id, null)">
+                          <span v-html="rt(q.items[id])"></span>
+                          <ic name="grip" :size="12" class="text-faint/60"></ic>
+                        </div>
+                        <p v-if="ca.pool.length===0" class="font-mono text-[10px] tracking-wide text-faint m-auto">semua kartu sudah ditempatkan</p>
+                      </div>
+                    </div>
+
+                    <div class="mt-5 grid sm:grid-cols-2 gap-4">
+                      <div v-for="(cat,ci) in q.categories" :key="'c'+ci">
+                        <p class="mono-label">{{ cat }} · {{ ca.buckets[ci].length }} KARTU</p>
+                        <div class="bucketbox mt-2" :data-bucket="ci" :class="{'bucket-ready': picked!=null}" @click="onBucketClick(ci)">
+                          <div v-for="id in ca.buckets[ci]" :key="'b'+ci+'-'+id" class="chip" :data-id="id" @click.stop="onChipClick(id, ci)">
+                            <span v-html="rt(q.items[id])"></span>
+                            <ic name="grip" :size="12" class="text-faint/60"></ic>
+                          </div>
+                          <p v-if="ca.buckets[ci].length===0" class="font-mono text-[10px] tracking-wide text-faint/80 m-auto">seret atau ketuk kartu ke sini</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p class="mt-4 font-mono text-[9px] tracking-wide text-faint leading-relaxed">CARA: seret kartu ke kotak · atau ketuk kartu lalu ketuk kotak tujuan · ketuk kartu di dalam kotak untuk mengembalikannya</p>
+                  </div>
+
+                  <!-- ===== PENGURUTAN ===== -->
+                  <div v-else-if="q.type==='order'">
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="tchip">PENGURUTAN</span>
+                      <span class="font-mono text-[10px] tracking-wider text-faint">{{ q.points }} POIN</span>
+                    </div>
+                    <p class="qtext mt-4" v-html="rt(q.text)"></p>
+
+                    <div id="ord-list" class="mt-6 space-y-2">
+                      <div v-for="(id,pos) in ca.order" :key="'o'+id" class="ordrow" :data-id="id">
+                        <span class="pos">{{ pos+1 }}</span>
+                        <div class="handle-zone"><span v-html="rt(q.items[id])"></span></div>
+                        <button type="button" class="arrbtn" :disabled="pos===0" @click.stop="moveOrder(pos,-1)" aria-label="naikkan"><ic name="up" :size="14"></ic></button>
+                        <button type="button" class="arrbtn" :disabled="pos===ca.order.length-1" @click.stop="moveOrder(pos,1)" aria-label="turunkan"><ic name="down" :size="14"></ic></button>
+                        <ic name="grip" :size="14" class="text-faint/60"></ic>
+                      </div>
+                    </div>
+                    <p class="mt-4 font-mono text-[9px] tracking-wide text-faint">SERET BARIS, ATAU GUNAKAN TOMBOL PANAH — POSISI PALING ATAS = PERTAMA</p>
+                  </div>
+
+                </div>
+              </transition>
+
+              <!-- navigasi soal -->
+              <div class="mt-10 border-t border-dashed border-line pt-5 flex items-center justify-between gap-3">
+                <button type="button" class="navbtn" :disabled="currentIdx===0" @click="prev">
+                  <ic name="left" :size="15"></ic><span>SEBELUMNYA</span>
+                </button>
+                <p class="font-mono text-[10px] tracking-[0.25em] text-faint hidden md:block">SOAL {{ pad2(currentIdx+1) }} DARI {{ pad2(total) }}</p>
+                <button v-if="currentIdx < total-1" type="button" class="navbtn navbtn-solid" @click="next">
+                  <span>BERIKUTNYA</span><ic name="right" :size="15"></ic>
+                </button>
+                <button v-else type="button" class="navbtn navbtn-red" @click="showConfirm=true">
+                  <span>KUMPULKAN</span><ic name="flag" :size="15"></ic>
+                </button>
+              </div>
+            </div>
+          </main>
+
+          <!-- ===== LEMBAR JAWABAN (LJK) ===== -->
+          <aside class="px-5 md:px-7 py-8 lg:py-10 flex flex-col">
+            <div class="flex items-center justify-between">
+              <p class="font-mono text-[10px] tracking-[0.3em] font-semibold text-ink">LEMBAR JAWABAN</p>
+              <ic name="pen" :size="14" class="text-faint"></ic>
+            </div>
+            <div class="mt-3 h-[2px] bg-ink"></div>
+            <p class="font-mono text-[9px] text-faint mt-2 tracking-wide">kotak gelap = sudah terjawab · klik nomor untuk pindah</p>
+
+            <div class="grid grid-cols-5 gap-2 mt-4">
+              <button v-for="(qq,i) in questions" :key="'nav'+i" type="button"
+                      class="ljk" :class="ljkClass(i)" @click="go(i)"
+                      :aria-label="'soal nomor '+(i+1)">{{ pad2(i+1) }}</button>
+            </div>
+
+            <div class="mt-5 border-t border-dashed border-line pt-4 flex items-center justify-between font-mono text-[10px] tracking-[0.2em]">
+              <span class="text-inksoft">TERJAWAB</span>
+              <span :class="answeredCount===total ? 'c-ok' : 'c-no'">{{ answeredCount }}/{{ total }}</span>
+            </div>
+
+            <div class="mt-auto pt-6">
+              <button type="button" class="navbtn navbtn-red w-full justify-center !py-3.5" @click="showConfirm=true">
+                <ic name="flag" :size="15"></ic>KUMPULKAN JAWABAN
+              </button>
+              <p v-if="unansweredCount" class="font-mono text-[9px] text-pen mt-2 tracking-wide text-center">{{ unansweredCount }} SOAL MASIH KOSONG</p>
+              <p v-else class="font-mono text-[9px] c-ok !font-normal mt-2 tracking-wide flex items-center justify-center gap-1"><ic name="check" :size="11"></ic>SEMUA SOAL TERJAWAB</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <p class="text-center font-mono text-[9px] text-faint mt-5 tracking-[0.2em]">VUE · TAILWINDCSS · KATEX · SORTABLEJS — SELURUH KALKULASI BERJALAN DI BROWSER</p>
+    </div>
+  </div>
+
+  <!-- ================= HASIL & KOREKSI ================= -->
+  <div v-else-if="screen==='result'" class="min-h-screen py-6 md:py-10 px-3 md:px-6">
+    <div class="mx-auto max-w-3xl">
+      <div class="sheet paper-noise px-6 md:px-12 py-10">
+
+        <div class="border-y-[3px] border-double border-ink py-4 text-center">
+          <p class="font-mono text-[10px] tracking-[0.35em] text-inksoft">LEMBAR HASIL PEMERIKSAAN</p>
+          <h1 class="font-display font-black text-3xl md:text-4xl mt-1.5">Sains &amp; Matematika</h1>
+        </div>
+        <div class="mt-4 flex flex-wrap justify-between gap-x-6 gap-y-1 font-mono text-[10px] tracking-wider text-inksoft">
+          <span>PESERTA: <b class="text-ink">{{ student }}</b></span>
+          <span>{{ tanggal() }}<template v-if="timeUp"> · DIKUMPULKAN OTOMATIS (WAKTU HABIS)</template></span>
+        </div>
+
+        <!-- nilai -->
+        <div class="mt-9 flex flex-wrap items-center gap-9 md:gap-12">
+          <div class="relative shrink-0">
+            <div class="w-36 h-36 md:w-40 md:h-40 rounded-full border-[3.5px] border-pen flex flex-col items-center justify-center rotate-[-2deg]">
+              <span class="font-mono text-[9px] tracking-[0.3em] text-pen">NILAI</span>
+              <span class="font-display font-black text-6xl text-pen leading-none mt-1">{{ nilai }}</span>
+              <span class="font-mono text-[8px] text-pen/70 mt-1.5 tracking-[0.2em]">DARI 100</span>
+            </div>
+            <span class="font-hand text-pen text-[25px] absolute -bottom-4 -right-2 rotate-[-10deg] select-none">Pengawas Ujian</span>
+          </div>
+          <div class="grid grid-cols-3 flex-1 min-w-[260px] divide-x divide-ink/25 border-y border-ink/25">
+            <div class="py-4 text-center">
+              <div class="font-display font-black text-4xl">{{ nCorrect }}</div>
+              <div class="font-mono text-[9px] tracking-[0.25em] text-inksoft mt-1">BENAR</div>
+            </div>
+            <div class="py-4 text-center">
+              <div class="font-display font-black text-4xl text-ochre">{{ nPartial }}</div>
+              <div class="font-mono text-[9px] tracking-[0.25em] text-inksoft mt-1">SEBAGIAN</div>
+            </div>
+            <div class="py-4 text-center">
+              <div class="font-display font-black text-4xl text-pen">{{ nWrong }}</div>
+              <div class="font-mono text-[9px] tracking-[0.25em] text-inksoft mt-1">SALAH</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-7 font-hand text-pen text-2xl md:text-[28px] wavy inline-block rotate-[-1deg] select-none">“{{ resultNote }}”</p>
+
+        <button type="button" class="navbtn mt-9 w-full justify-center !py-4" @click="restart">
+          <ic name="pen" :size="15"></ic>ULANGI UJIAN DENGAN SUSUNAN BARU
+        </button>
+
+        <!-- koreksi rinci -->
+        <div class="mt-11 border-t-2 border-ink"></div>
+        <p class="font-mono text-[10px] tracking-[0.35em] text-inksoft mt-5">KOREKSI RINCIAN</p>
+
+        <div v-for="(g,i) in graded" :key="'rev'+i" class="mt-8">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-baseline gap-3 flex-wrap">
+              <span class="font-display font-black text-3xl">{{ pad2(i+1) }}</span>
+              <span class="font-mono text-[9px] tracking-[0.2em] border border-ink/50 px-1.5 py-0.5 text-inksoft">{{ typeLabel(questions[i]) }}</span>
+              <span class="font-mono text-[11px] text-faint">{{ fmtPoin(g.score) }}/{{ questions[i].points }} POIN</span>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <span v-if="g.status!=='correct'" class="font-hand text-xl text-pen/90 -rotate-3 select-none">{{ noteFor(i) }}</span>
+              <span class="stamp" :class="'st-'+g.status">{{ g.status==='correct' ? 'BENAR' : (g.status==='partial' ? 'SEBAGIAN' : 'SALAH') }}</span>
+            </div>
+          </div>
+          <p class="mt-2 qtext-sm" v-html="rt(questions[i].text)"></p>
+
+          <figure v-if="questions[i].image" class="mt-3">
+            <div class="inline-block bg-[#FFFDF6] border border-line p-2">
+              <img v-if="questions[i].image.src" :src="questions[i].image.src" alt="gambar soal" class="w-[220px] max-w-full h-auto">
+              <div v-else class="w-[250px] max-w-full" v-html="questions[i].image.svg"></div>
+            </div>
+            <figcaption v-if="questions[i].image.caption" class="mt-1.5 font-mono text-[9px] tracking-[0.18em] text-faint uppercase">{{ questions[i].image.caption }}</figcaption>
+          </figure>
+
+          <!-- rincian: pilihan ganda -->
+          <div v-if="questions[i].type==='mc'" class="mt-3 font-body text-[15px] flex flex-wrap gap-x-10 gap-y-1.5">
+            <p><span class="mono-label">JAWABANMU</span>
+              <template v-if="g.user!=null"><b :class="g.user===questions[i].answer ? 'c-ok' : 'c-no'">{{ letter(g.user) }}</b><span v-if="questions[i].options[g.user].text"> — <span v-html="rt(questions[i].options[g.user].text)"></span></span></template>
+              <template v-else><i class="text-faint">tidak dijawab</i></template>
+            </p>
+            <p><span class="mono-label">KUNCI</span><b class="c-ok">{{ letter(questions[i].answer) }}</b><span v-if="questions[i].options[questions[i].answer].text"> — <span v-html="rt(questions[i].options[questions[i].answer].text)"></span></span></p>
+          </div>
+
+          <!-- rincian: isian -->
+          <div v-else-if="questions[i].type==='short'" class="mt-3 font-body text-[15px] flex flex-wrap gap-x-10 gap-y-1.5">
+            <p><span class="mono-label">JAWABANMU</span><b :class="g.status==='correct' ? 'c-ok' : 'c-no'">{{ g.user || '—' }}</b></p>
+            <p><span class="mono-label">KUNCI</span><b class="c-ok">{{ questions[i].accept[0] }}</b></p>
+          </div>
+
+          <!-- rincian: kategorisasi -->
+          <div v-else-if="questions[i].type==='categorize'" class="mt-3 overflow-x-auto">
+            <table class="w-full text-left font-body text-[14.5px] border-collapse">
+              <thead>
+                <tr class="font-mono text-[9px] tracking-[0.2em] text-inksoft text-left border-b-[1.5px] border-ink/60">
+                  <th class="py-2 pr-4 font-medium">ITEM</th>
+                  <th class="pr-4 font-medium">JAWABANMU</th>
+                  <th class="font-medium">KUNCI</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="r in g.rows" :key="'cr'+r.id" class="border-b border-line">
+                  <td class="py-1.5 pr-4" v-html="rt(r.t)"></td>
+                  <td class="pr-4" :class="r.good ? 'c-ok' : 'c-no'">
+                    <span class="inline-flex items-center gap-1.5">
+                      {{ r.userCat==null ? '— (tidak ditempatkan)' : questions[i].categories[r.userCat] }}
+                      <ic :name="r.good ? 'check' : 'x'" :size="13"></ic>
+                    </span>
+                  </td>
+                  <td>{{ questions[i].categories[r.cat] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- rincian: pengurutan -->
+          <div v-else-if="questions[i].type==='order'" class="mt-3 grid sm:grid-cols-2 gap-6 font-body text-[15px]">
+            <div>
+              <p class="mono-label">URUTANMU</p>
+              <ol class="mt-1.5 space-y-1">
+                <li v-for="r in g.rows" :key="'ur'+r.id" class="flex items-center gap-2">
+                  <span class="font-mono text-[10px] text-faint w-4">{{ r.p+1 }}</span>
+                  <span v-html="rt(questions[i].items[r.id])"></span>
+                  <ic :name="r.good ? 'check' : 'x'" :size="13" :class="r.good ? 'text-verd' : 'text-pen'"></ic>
+                </li>
+              </ol>
+            </div>
+            <div>
+              <p class="mono-label">KUNCI URUTAN</p>
+              <ol class="mt-1.5 space-y-1">
+                <li v-for="(it,k) in questions[i].items" :key="'kr'+k" class="flex items-center gap-2">
+                  <span class="font-mono text-[10px] text-faint w-4">{{ k+1 }}</span><span v-html="rt(it)"></span>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-center font-mono text-[9px] text-faint mt-5 tracking-[0.2em]">TERIMA KASIH TELAH MENGERJAKAN UJIAN INI</p>
+    </div>
+  </div>
+
+  <!-- ================= MODAL KONFIRMASI ================= -->
+  <div v-if="showConfirm" class="fixed inset-0 z-50 grid place-items-center p-4">
+    <div class="absolute inset-0 bg-ink/55 backdrop-blur-[2px]" @click="showConfirm=false"></div>
+    <div class="sheet paper-noise relative w-full max-w-md px-8 py-9">
+      <p class="font-mono text-[10px] tracking-[0.3em] text-inksoft">KONFIRMASI</p>
+      <h3 class="font-display font-black text-3xl mt-1.5">Kumpulkan jawaban?</h3>
+      <div class="mt-4 border-y border-dashed border-line py-3.5 font-body text-[15.5px] leading-relaxed">
+        <p>Anda telah menjawab <b>{{ answeredCount }}</b> dari <b>{{ total }}</b> soal.</p>
+        <p v-if="unansweredCount" class="text-pen mt-1 flex items-center gap-1.5"><ic name="alert" :size="14"></ic>Masih ada {{ unansweredCount }} soal kosong — nilai bisa lebih rendah.</p>
+        <p v-else class="text-verd mt-1 flex items-center gap-1.5"><ic name="check" :size="14"></ic>Semua soal sudah terjawab.</p>
+      </div>
+      <p class="font-mono text-[9px] tracking-wider text-faint mt-3">JAWABAN TIDAK DAPAT DIUBAH SETELAH DIKUMPULKAN.</p>
+      <div class="mt-6 grid grid-cols-2 gap-3">
+        <button type="button" class="navbtn justify-center" @click="showConfirm=false">PERIKSA LAGI</button>
+        <button type="button" class="navbtn navbtn-red justify-center" @click="doSubmit(false)">YA, KUMPULKAN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST ================= -->
+  <div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] w-full max-w-sm px-4 space-y-2">
+    <transition-group name="toast">
+      <div v-for="t in toasts" :key="t.id" class="bg-ink text-paper font-mono text-[11px] px-4 py-3 flex items-center gap-2.5 shadow-lg rounded-[3px]">
+        <ic :name="t.kind==='warn' ? 'alert' : 'check'" :size="14" :class="t.kind==='warn' ? 'text-pen' : 'text-verd'"></ic>
+        <span class="flex-1">{{ t.msg }}</span>
+      </div>
+    </transition-group>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   UTIL
+============================================================ */
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+/* Render teks campuran: $...$ = math inline, $$...$$ = math display (KaTeX) */
+function rt(s){
+  if(s==null) return '';
+  let out='', i=0, m;
+  const re=/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g;
+  while((m=re.exec(s))){
+    out+=esc(s.slice(i,m.index));
+    const tex=(m[1]!==undefined)?m[1]:m[2];
+    try{ out+=katex.renderToString(tex,{displayMode:m[1]!==undefined,throwOnError:false}); }
+    catch(e){ out+=esc(m[0]); }
+    i=m.index+m[0].length;
+  }
+  return (out+esc(s.slice(i))).replace(/\n/g,'<br>');
+}
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function shuffledNotIdentity(n){let r;do{r=shuffle([...Array(n).keys()])}while(n>1&&r.every((v,i)=>v===i));return r}
+
+/* ============================================================
+   BANK SOAL — 10 butir, 4 tipe
+============================================================ */
+const TRI_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 215" style="width:100%;height:auto;display:block" role="img" aria-label="Segitiga siku-siku dengan sisi a 6 cm, b 8 cm, dan sisi miring c">
+<polygon points="60,180 60,60 320,180" fill="#FCF9F1" stroke="#211E1A" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="60,168 74,168 74,180" fill="none" stroke="#211E1A" stroke-width="1.1"/>
+<text x="42" y="125" font-family="Spectral, Georgia, serif" font-style="italic" font-size="16" fill="#211E1A" text-anchor="middle">6 cm</text>
+<text x="190" y="201" font-family="Spectral, Georgia, serif" font-style="italic" font-size="16" fill="#211E1A" text-anchor="middle">8 cm</text>
+<text x="195" y="109" font-family="Spectral, Georgia, serif" font-style="italic" font-size="17" fill="#C0361F" text-anchor="middle" transform="rotate(24.8 195 109)">c</text>
+</svg>`;
+
+function graph(curve){
+  let g='';
+  for(let x=10;x<=110;x+=10) g+=`<line x1="${x}" y1="10" x2="${x}" y2="80"/>`;
+  for(let y=10;y<=80;y+=10) g+=`<line x1="10" y1="${y}" x2="110" y2="${y}"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" style="width:100%;height:auto;display:block" role="img" aria-label="grafik fungsi"><g stroke="#DCD5C1" stroke-width="0.7">${g}</g><path d="M10 45H110M60 6V84" stroke="#211E1A" stroke-width="1.4" fill="none"/><path d="${curve}" stroke="#C0361F" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+const QUESTIONS=[
+  { type:'mc', points:1,
+    text:"Jika $f(x) = x^{3} - 3x^{2} + 5$, maka turunan pertama $f'(x)$ adalah…",
+    options:[
+      {text:'$3x^{2} - 6x$'},
+      {text:'$3x^{2} - 6x + 5$'},
+      {text:'$3x^{2} - 6$'},
+      {text:'$x^{3} - 6x$'}
+    ], answer:0 },
+
+  { type:'mc', points:1,
+    text:"Nilai dari $$\\int_{0}^{2}\\left(3x^{2}-2x\\right)\\,dx$$ adalah…",
+    options:[{text:'$2$'},{text:'$4$'},{text:'$6$'},{text:'$8$'}], answer:1 },
+
+  { type:'mc', points:1,
+    text:"Perhatikan segitiga siku-siku pada gambar berikut. Jika panjang sisi tegak $a = 6$ cm dan $b = 8$ cm, maka panjang sisi miring $c$ adalah…",
+    image:{ svg:TRI_SVG, caption:'Gambar 1 · Segitiga siku-siku (tidak sesuai skala)' },
+    options:[
+      {text:'$\\sqrt{28}$ cm'},{text:'$12$ cm'},{text:'$10$ cm'},{text:'$48$ cm'}
+    ], answer:2 },
+
+  { type:'mc', points:1,
+    text:"Empat grafik berikut digambar dengan skala yang sama. Manakah yang merepresentasikan fungsi $y = |x|$?",
+    options:[
+      {svg:graph('M42 13 Q60 77 78 13')},   /* y = x²   */
+      {svg:graph('M24 9 L60 45 L96 9')},    /* y = |x|  */
+      {svg:graph('M28 17 L92 81')},         /* y = -x   */
+      {svg:graph('M60 45 Q78 27 96 26')}    /* y = √x   */
+    ], answer:1 },
+
+  { type:'mc', points:1,
+    text:"Perhatikan gambar kawasan pegunungan berikut. Faktor utama yang menyebabkan suhu udara di kawasan tersebut jauh lebih dingin dibandingkan wilayah pesisir adalah…",
+    image:{ src:'https://picsum.photos/seed/highland42/720/420.jpg', caption:'Gambar 2 · Kawasan pegunungan (ilustrasi)' },
+    options:[
+      {text:'Jaraknya yang sangat jauh dari laut sehingga tidak terjangkau angin laut.'},
+      {text:'Ketinggiannya (elevasi) yang besar dari permukaan laut.'},
+      {text:'Curah hujannya yang tinggi sepanjang tahun.'},
+      {text:'Kelembapan udaranya yang sangat rendah.'}
+    ], answer:1 },
+
+  { type:'short', points:1,
+    text:"Diketahui persamaan kuadrat $x^{2} - 5x + 6 = 0$. Jika $x_{1} = 2$ merupakan salah satu akarnya, nilai akar yang lain, $x_{2}$, adalah…",
+    prefix:'$x_{2} =$', accept:['3'], numeric:true, placeholder:'angka' },
+
+  { type:'short', points:1,
+    text:"Dalam tabel periodik unsur, lambang kimia untuk besi ditulis dengan dua huruf. Lambang tersebut adalah…",
+    accept:['Fe'], placeholder:'dua huruf' },
+
+  { type:'categorize', points:1,
+    text:"Kelompokkan setiap hewan berikut ke dalam kelompok yang tepat — Vertebrata (bertulang belakang) atau Invertebrata (tanpa tulang belakang).",
+    categories:['VERTEBRATA','INVERTEBRATA'],
+    items:['Katak','Cacing tanah','Kolibri','Kupu-kupu','Ular sawah','Udang'],
+    cats:[0,1,0,1,0,1] },
+
+  { type:'order', points:1,
+    text:"Urutkan planet-planet berikut mulai dari yang paling dekat dengan Matahari.",
+    items:['Merkurius','Venus','Bumi','Mars','Jupiter'] },
+
+  { type:'order', points:1,
+    text:"Urutkan bilangan-bilangan berikut mulai dari yang paling kecil.",
+    items:['$1.4$','$\\sqrt{2}$','$1.5$','$\\frac{7}{4}$'] }
+];
+
+/* ============================================================
+   IKON (SVG inline, stroke)
+============================================================ */
+const ICONS={
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  left:'<path d="M19 12H5M12 19l-7-7 7-7"/>',
+  right:'<path d="M5 12h14M12 5l7 7-7 7"/>',
+  up:'<path d="M6 15l6-6 6 6"/>',
+  down:'<path d="M6 9l6 6 6-6"/>',
+  grip:'<circle cx="9" cy="5" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="5" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="19" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="19" r="1.3" fill="currentColor" stroke="none"/>',
+  alert:'<circle cx="12" cy="12" r="9"/><path d="M12 8v4.6M12 15.9h.01"/>',
+  pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  flag:'<path d="M4 21V4m0 1h13l-2.5 3.5L17 12H4"/>'
+};
+
+/* ============================================================
+   APLIKASI
+============================================================ */
+const DURATION = 20*60;
+let sortables = [];
+let initTimer = null;
+let timerId   = null;
+let toastSeq  = 0;
+
+const app = Vue.createApp({
+  data(){
+    return {
+      screen:'cover', student:'', nameInput:'',
+      questions:QUESTIONS, currentIdx:0, answers:[],
+      timeLeft:DURATION, timeUp:false, submittedAt:null,
+      showConfirm:false, toasts:[], picked:null
+    }
+  },
+
+  computed:{
+    total(){ return this.questions.length },
+    q(){ return this.questions[this.currentIdx] },
+    ca(){ return this.answers[this.currentIdx] },
+    fmtTime(){ const s=Math.max(0,this.timeLeft); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0') },
+    answeredCount(){ return this.questions.reduce((n,q,i)=>n+(this.isAnswered(this.answers[i],q)?1:0),0) },
+    unansweredCount(){ return this.total-this.answeredCount },
+    graded(){ return this.questions.map((q,i)=>this.grade(q,this.answers[i])) },
+    totalScore(){ return this.graded.reduce((s,g)=>s+g.score,0) },
+    nilai(){ const pts=this.questions.reduce((s,q)=>s+q.points,0); return Math.round(100*this.totalScore/pts) },
+    nCorrect(){ return this.graded.filter(g=>g.status==='correct').length },
+    nPartial(){ return this.graded.filter(g=>g.status==='partial').length },
+    nWrong(){ return this.graded.filter(g=>g.status==='wrong').length },
+    resultNote(){
+      const v=this.nilai;
+      if(v>=90) return 'Luar biasa! Konsepmu sangat kokoh — pertahankan.';
+      if(v>=75) return 'Bagus! Tinggal rapikan beberapa detail kecil.';
+      if(v>=60) return 'Cukup baik. Perbanyak latihan soal urutan & kategori ya.';
+      return 'Jangan menyerah — pelajari kunci jawaban di bawah, lalu coba lagi.';
+    }
+  },
+
+  watch:{
+    /* ganti soal: lepas Sortable lama, pasang ulang setelah transisi selesai */
+    currentIdx(){
+      this.picked=null;
+      this.teardownSortables();
+      clearTimeout(initTimer);
+      initTimer=setTimeout(()=>this.setupSortables(),200);
+    }
+  },
+
+  methods:{
+    /* ---------- render helper ---------- */
+    rt, pad2(n){ return String(n).padStart(2,'0') },
+    letter(i){ return 'ABCDE'[i] || '—' },
+    typeLabel(q){ return ({mc:'PILIHAN GANDA',short:'ISIAN SINGKAT',categorize:'KATEGORISASI',order:'PENGURUTAN'})[q.type] },
+    fmtPoin(n){ const r=Math.round(n*100)/100; return Number.isInteger(r)?String(r):r.toFixed(2).replace(/0+$/,'').replace('.',',') },
+    tanggal(){ return (this.submittedAt||new Date()).toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) },
+
+    /* ---------- toast ---------- */
+    toast(msg,kind='ok'){
+      const id=++toastSeq;
+      this.toasts.push({id,msg,kind});
+      setTimeout(()=>{ this.toasts=this.toasts.filter(t=>t.id!==id) },3600);
+    },
+
+    /* ---------- alur ujian ---------- */
+    startExam(){
+      if(!this.nameInput.trim()){ this.toast('Tulis nama peserta dulu ya.','warn'); return }
+      this.student=this.nameInput.trim();
+      this.answers=this.questions.map(q=>{
+        const base={dirty:false};
+        if(q.type==='mc')      return {...base, choice:null};
+        if(q.type==='short')   return {...base, value:''};
+        if(q.type==='categorize') return {...base, pool:shuffle([...Array(q.items.length).keys()]), buckets:q.categories.map(()=>[])};
+        if(q.type==='order')   return {...base, order:shuffledNotIdentity(q.items.length)};
+        return base;
+      });
+      this.screen='exam'; this.currentIdx=0; this.startTimer();
+      this.$nextTick(()=>{ clearTimeout(initTimer); initTimer=setTimeout(()=>this.setupSortables(),80) });
+      this.toast('Selamat mengerjakan, '+this.student+'!');
+    },
+
+    startTimer(){
+      clearInterval(timerId);
+      timerId=setInterval(()=>{
+        this.timeLeft--;
+        if(this.timeLeft===60) this.toast('Sisa waktu 1 menit!','warn');
+        if(this.timeLeft<=0) this.doSubmit(true);
+      },1000);
+    },
+
+    next(){ if(this.currentIdx<this.total-1) this.currentIdx++; else this.showConfirm=true },
+    prev(){ if(this.currentIdx>0) this.currentIdx-- },
+    go(i){ if(i!==this.currentIdx) this.currentIdx=i },
+
+    /* ---------- status jawaban ---------- */
+    isAnswered(a,q){
+      if(!a||!q) return false;
+      if(q.type==='mc')  return a.choice!=null;
+      if(q.type==='short') return !!(a.value||'').trim();
+      if(q.type==='categorize') return a.pool.length===0;
+      if(q.type==='order') return !!a.dirty;
+      return false;
+    },
+    ljkClass(i){
+      const ansd=this.isAnswered(this.answers[i],this.questions[i]);
+      if(i===this.currentIdx) return ansd?'ljk-cur-ans':'ljk-cur-empty';
+      return ansd?'ljk-answered':'ljk-idle';
+    },
+
+    /* ---------- pilihan ganda ---------- */
+    ansMc(i){ this.ca.choice=i },
+
+    /* ---------- isian ---------- */
+    onEnterShort(){
+      if(this.currentIdx===this.total-1) this.toast('Ini sudah soal terakhir.','warn');
+      else this.currentIdx++;
+    },
+    checkShort(q,v){
+      const val=(v||'').trim().toLowerCase().replace(/,/g,'.');
+      if(!val) return false;
+      if(q.numeric){
+        const x=parseFloat(val);
+        return q.accept.some(s=>{ const y=parseFloat(String(s).replace(',','.')); return !isNaN(x)&&!isNaN(y)&&Math.abs(x-y)<1e-6 });
+      }
+      return q.accept.some(s=>String(s).toLowerCase().trim()===val);
+    },
+
+    /* ---------- kategorisasi (ketuk / seret) ---------- */
+    onChipClick(id,fromBucket){
+      if(fromBucket==null){                       /* kartu di pool: pilih (ketuk) */
+        this.picked=this.picked===id?null:id;
+      }else{                                      /* kartu di kotak: kembalikan ke pool */
+        const a=this.ca;
+        a.buckets=a.buckets.map(b=>b.filter(x=>x!==id));
+        a.pool=[...a.pool,id];
+        a.dirty=true; this.picked=null;
+      }
+    },
+    onBucketClick(ci){
+      if(this.picked==null) return;               /* ketuk kotak tujuan */
+      const a=this.ca;
+      a.pool=a.pool.filter(x=>x!==this.picked);
+      a.buckets=a.buckets.map((b,i)=> i===ci ? [...b,this.picked] : b);
+      this.picked=null; a.dirty=true;
+    },
+    syncCat(){                                    /* sinkronkan state dari DOM setelah drag */
+      const a=this.ca; if(!a) return;
+      const grab=sel=>Array.from(document.querySelectorAll(sel+' .chip')).map(el=>+el.dataset.id);
+      a.pool=grab('#cat-pool');
+      a.buckets=this.q.categories.map((c,ci)=>grab('[data-bucket="'+ci+'"]'));
+      a.dirty=true;
+    },
+    userCatOf(a,id){
+      if(!a||!a.pool) return null;
+      if(a.pool.includes(id)) return null;
+      for(let i=0;i<(a.buckets||[]).length;i++) if(a.buckets[i].includes(id)) return i;
+      return null;
+    },
+
+    /* ---------- pengurutan ---------- */
+    moveOrder(pos,dir){
+      const a=this.ca, j=pos+dir;
+      if(j<0||j>=a.order.length) return;
+      const o=a.order.slice();
+      [o[pos],o[j]]=[o[j],o[pos]];
+      a.order=o; a.dirty=true;
+    },
+    syncOrder(){
+      const a=this.ca; if(!a) return;
+      a.order=Array.from(document.querySelectorAll('#ord-list .ordrow')).map(el=>+el.dataset.id);
+      a.dirty=true;
+    },
+
+    /* ---------- SortableJS lifecycle ---------- */
+    teardownSortables(){ sortables.forEach(s=>{try{s.destroy()}catch(e){}}); sortables=[] },
+    setupSortables(){
+      this.teardownSortables();
+      const q=this.q; if(!q||this.screen!=='exam') return;
+      if(q.type==='categorize'){
+        const opts={group:'cats',animation:170,ghostClass:'sortable-ghost',chosenClass:'lift',onEnd:()=>this.syncCat()};
+        const pool=document.getElementById('cat-pool');
+        if(pool) sortables.push(new Sortable(pool,opts));
+        q.categories.forEach((c,ci)=>{
+          const el=document.querySelector('[data-bucket="'+ci+'"]');
+          if(el) sortables.push(new Sortable(el,opts));
+        });
+      }else if(q.type==='order'){
+        const el=document.getElementById('ord-list');
+        if(el) sortables.push(new Sortable(el,{animation:170,ghostClass:'sortable-ghost',chosenClass:'lift',handle:'.handle-zone',onEnd:()=>this.syncOrder()}));
+      }
+    },
+
+    /* ---------- penilaian ---------- */
+    grade(q,a){
+      a=a||{};
+      if(q.type==='mc'){
+        const ok=a.choice===q.answer;
+        return {status:ok?'correct':'wrong',score:ok?q.points:0,user:a.choice};
+      }
+      if(q.type==='short'){
+        const ok=this.checkShort(q,a.value);
+        return {status:ok?'correct':'wrong',score:ok?q.points:0,user:(a.value||'').trim()};
+      }
+      if(q.type==='categorize'){
+        const total=q.items.length; let okn=0;
+        const rows=q.items.map((t,id)=>{
+          const uc=this.userCatOf(a,id), good=uc===q.cats[id];
+          if(good) okn++;
+          return {id,t,cat:q.cats[id],userCat:uc,good};
+        });
+        return {status:okn===total?'correct':(okn===0?'wrong':'partial'),score:q.points*okn/total,rows};
+      }
+      if(q.type==='order'){
+        const total=q.items.length; let okn=0;
+        const rows=(a.order||[]).map((id,p)=>{ const good=id===p; if(good) okn++; return {id,p,good} });
+        return {status:okn===total?'correct':(okn===0?'wrong':'partial'),score:q.points*okn/total,rows};
+      }
+      return {status:'wrong',score:0};
+    },
+    noteFor(i){
+      const wrong=['cek lagi ya!','kurang teliti…','pelajari ulang ya','hampir saja…'];
+      const partial=['hampir benar!','sebagian saja…'];
+      const g=this.graded[i];
+      const arr=g.status==='partial'?partial:wrong;
+      return arr[i%arr.length];
+    },
+
+    /* ---------- akhir ujian ---------- */
+    doSubmit(auto=false){
+      if(this.screen!=='exam') return;
+      clearInterval(timerId); timerId=null;
+      this.teardownSortables(); clearTimeout(initTimer);
+      this.timeUp=auto; this.showConfirm=false;
+      this.submittedAt=new Date();
+      this.screen='result';
+      this.toast(auto?'Waktu habis — jawaban dikumpulkan otomatis.':'Jawaban berhasil dikumpulkan.');
+    },
+    restart(){
+      clearInterval(timerId); timerId=null;
+      this.teardownSortables(); clearTimeout(initTimer);
+      this.screen='cover'; this.nameInput=this.student;
+      this.currentIdx=0; this.answers=[]; this.picked=null;
+      this.timeLeft=DURATION; this.timeUp=false; this.submittedAt=null;
+      window.scrollTo({top:0});
+    }
+  },
+
+  mounted(){
+    /* navigasi keyboard ←/→ (di luar input) */
+    window.addEventListener('keydown',e=>{
+      if(this.screen!=='exam') return;
+      const tag=(e.target&&e.target.tagName)||'';
+      if(tag==='INPUT'||tag==='TEXTAREA') return;
+      if(e.key==='ArrowRight'&&this.currentIdx<this.total-1) this.currentIdx++;
+      else if(e.key==='ArrowLeft'&&this.currentIdx>0) this.currentIdx--;
+    });
+  }
+});
+
+/* komponen ikon SVG inline */
+app.component('Ic',{
+  props:{name:String, size:{type:Number, default:16}},
+  computed:{ html(){ return ICONS[this.name]||'' } },
+  template:`<svg :width="size" :height="size" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" v-html="html"></svg>`
+});
+
+app.mount('#app');
+</script>
+</body>
+</html>
