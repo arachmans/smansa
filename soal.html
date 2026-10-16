@@ -14,6 +14,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 
+<!-- Prism untuk syntax highlighting kode -->
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-clike.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-cpp.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+
 <!-- SortableJS untuk drag & drop -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
@@ -98,8 +105,34 @@ body{font-family:'Spectral',Georgia,serif;color:#211E1A;-webkit-font-smoothing:a
 .arrbtn:hover:not(:disabled){border-color:#211E1A;background:#fff;color:#211E1A}
 .arrbtn:disabled{opacity:.25;cursor:default}
 
+/* ---- KODE: blok listing & penyusunan ---- */
+.codeblock,.codelist{border:1.5px solid rgba(33,30,26,.45);background:#FFFDF6;border-radius:4px;box-shadow:2px 3px 0 rgba(60,50,30,.08);overflow:hidden}
+.cb-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:5px 12px;border-bottom:1px dashed #D9D2BE;background:rgba(33,30,26,.045);font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.22em;font-weight:600;color:#5B5443}
+.codeblock{counter-reset:cl}
+.codeblock pre{margin:0;padding:10px 12px 12px;overflow-x:auto}
+.codeblock code{display:block;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.85;color:#211E1A}
+.cl{display:block;white-space:pre;counter-increment:cl;position:relative;padding-left:44px;min-height:1.85em}
+.cl::before{content:counter(cl,decimal-leading-zero);position:absolute;left:10px;top:.34em;width:22px;text-align:right;color:#8B8371;opacity:.65;font-size:9px;letter-spacing:.05em;user-select:none}
+.qtext .codeblock,.qtext-sm .codeblock{margin:1.05em 0}
+.icode{font-family:'IBM Plex Mono',monospace;font-size:.82em;background:rgba(33,30,26,.06);border:1px solid rgba(33,30,26,.18);border-radius:3px;padding:1px 5px;white-space:nowrap}
+
+.coderow{display:flex;align-items:center;gap:8px;padding:3px 10px 3px 0;border-bottom:1px dashed rgba(33,30,26,.18)}
+.coderow:last-child{border-bottom:none}
+.coderow:hover{background:rgba(255,255,255,.65)}
+.coderow .ln{font-family:'IBM Plex Mono';font-size:9px;color:#8B8371;min-width:34px;text-align:right;padding-left:10px;user-select:none}
+.coderow .handle-zone{flex:1;display:flex;align-items:center;cursor:grab;overflow-x:auto;padding:2px 0}
+.codeline{margin:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.8;white-space:pre;color:#211E1A;flex:1}
+
+/* token Prism — palet kertas/tinta */
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#8B8371;font-style:italic}
+.token.punctuation,.token.operator{color:#5B5443}
+.token.keyword,.token.atrule,.token.directive,.token.tag{color:#C0361F;font-weight:500}
+.token.string,.token.char,.token.attr-value,.token.selector{color:#31693B}
+.token.number,.token.boolean,.token.constant,.token.builtin,.token.attr-name{color:#9A6700}
+.token.function,.token.class-name,.token.title{color:#211E1A;font-weight:600}
+
 /* drag & drop */
-.lift{transform:rotate(1.6deg) scale(1.03);box-shadow:0 12px 20px -10px rgba(60,48,25,.5);position:relative;z-index:6;opacity:.95}
+.lift{transform:rotate(1.6deg) scale(1.03);box-shadow:0 12px 20px -10px rgba(60,50,25,.5);position:relative;z-index:6;opacity:.95}
 .sortable-ghost{opacity:.35;background:#fff}
 
 /* ---- navigasi & tombol ---- */
@@ -178,10 +211,11 @@ body{font-family:'Spectral',Georgia,serif;color:#211E1A;-webkit-font-smoothing:a
 
       <!-- tata tertib -->
       <div class="mt-9 space-y-3 font-body text-[15px] leading-relaxed text-ink/90">
-        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">01</span><p>Memuat <b>{{ questions.length }} soal</b> berbagai tipe: pilihan ganda, isian singkat, <b>menjodohkan</b>, kategorisasi, dan pengurutan — sebagian memuat <b>gambar</b> dan <b>persamaan matematis</b>.</p></div>
+        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">01</span><p>Memuat <b>{{ questions.length }} soal</b> berbagai tipe: pilihan ganda, isian singkat, <b>menjodohkan</b>, kategorisasi, pengurutan, dan <b>penyusunan baris kode</b> (Python, C++) — sebagian memuat <b>gambar</b>, <b>persamaan matematis</b>, dan <b>potongan program</b>.</p></div>
         <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">02</span><p>Waktu pengerjaan {{ durationMin }} menit. Saat waktu habis, jawaban <b>terkumpul otomatis</b>.</p></div>
-        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">03</span><p>Soal menjodohkan, kategorisasi &amp; pengurutan dinilai <b>parsial per item</b> — pastikan semua pasangan/kartu terpasang.</p></div>
-        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">04</span><p>Navigasi bebas: klik nomor pada <b>Lembar Jawaban</b> untuk berpindah soal. Panah ←/→ pada papan ketik juga berlaku.</p></div>
+        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">03</span><p>Soal menjodohkan, kategorisasi, pengurutan &amp; penyusunan kode dinilai <b>parsial per item</b> — pastikan semua pasangan/kartu/baris terpasang.</p></div>
+        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">04</span><p>Pada soal penyusunan kode, <b>indentasi (spasi awal) tiap baris sudah tertulis dengan benar</b> — tugasmu adalah menentukan urutan barisnya agar program berjalan sesuai contoh eksekusi.</p></div>
+        <div class="flex gap-4"><span class="font-mono text-[10px] text-pen font-semibold mt-1">05</span><p>Navigasi bebas: klik nomor pada <b>Lembar Jawaban</b> untuk berpindah soal. Panah ←/→ pada papan ketik juga berlaku.</p></div>
       </div>
 
       <button @click="startExam" class="navbtn navbtn-solid mt-10 w-full justify-center !py-4 !text-[12px] group">
@@ -415,6 +449,38 @@ body{font-family:'Spectral',Georgia,serif;color:#211E1A;-webkit-font-smoothing:a
                     <p class="mt-4 font-mono text-[9px] tracking-wide text-faint">SERET BARIS, ATAU GUNAKAN TOMBOL PANAH — POSISI PALING ATAS = PERTAMA</p>
                   </div>
 
+                  <!-- ===== PENYUSUNAN KODE ===== -->
+                  <div v-else-if="q.type==='code'">
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="tchip">PENYUSUNAN KODE</span>
+                      <span class="font-mono text-[10px] tracking-wider text-faint">{{ q.points }} POIN</span>
+                    </div>
+                    <p class="qtext mt-4" v-html="rt(q.text)"></p>
+
+                    <!-- contoh eksekusi program yang benar -->
+                    <div v-if="q.io" class="mt-5 inline-flex flex-col min-w-[280px] border-[1.5px] border-ink/45 bg-[#FFFDF6] rounded-[3px] overflow-hidden shadow-[2px_3px_0_rgba(60,50,30,0.08)]">
+                      <p class="cb-bar"><span>CONTOH EKSEKUSI</span><span class="opacity-60">PROGRAM BENAR</span></p>
+                      <div class="px-4 py-2.5 font-mono text-[12px] space-y-1">
+                        <p v-if="q.io.masuk" class="flex items-baseline gap-3"><span class="text-[9px] tracking-[0.2em] text-faint">MASUKAN</span><span>{{ q.io.masuk }}</span></p>
+                        <p class="flex items-baseline gap-3"><span class="text-[9px] tracking-[0.2em] text-faint">KELUARAN</span><span class="text-pen font-semibold">{{ q.io.keluar }}</span></p>
+                      </div>
+                    </div>
+
+                    <!-- listing yang disusun -->
+                    <div class="mt-6 codelist">
+                      <p class="cb-bar"><span>{{ langName(q.lang) }}</span><span class="opacity-60">{{ q.lines.length }} BARIS — SERET ATAU GUNAKAN PANAH</span></p>
+                      <div id="cod-list">
+                        <div v-for="(id,pos) in ca.order" :key="'cd'+id" class="coderow" :data-id="id">
+                          <span class="ln">{{ pos+1 }}</span>
+                          <div class="handle-zone"><pre class="codeline" v-html="hlLine(q.lines[id], q.lang)"></pre></div>
+                          <button type="button" class="arrbtn" :disabled="pos===0" @click.stop="moveOrder(pos,-1)" aria-label="naikkan"><ic name="up" :size="13"></ic></button>
+                          <button type="button" class="arrbtn" :disabled="pos===ca.order.length-1" @click.stop="moveOrder(pos,1)" aria-label="turunkan"><ic name="down" :size="13"></ic></button>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="mt-3 font-mono text-[9px] tracking-wide text-faint">NOMOR KIRI = NOMOR BARIS PROGRAM · INDENTASI SUDAH BENAR TERTULIS — TENTUKAN URUTANNYA DARI ATAS KE BAWAH</p>
+                  </div>
+
                 </div>
               </transition>
 
@@ -443,7 +509,7 @@ body{font-family:'Spectral',Georgia,serif;color:#211E1A;-webkit-font-smoothing:a
             <div class="mt-3 h-[2px] bg-ink"></div>
             <p class="font-mono text-[9px] text-faint mt-2 tracking-wide">kotak gelap = sudah terjawab · klik nomor untuk pindah</p>
 
-            <div class="grid grid-cols-5 gap-2 mt-4">
+            <div class="grid gap-2 mt-4" :style="{gridTemplateColumns:'repeat('+ljkCols+',minmax(0,1fr))'}">
               <button v-for="(qq,i) in questions" :key="'nav'+i" type="button"
                       class="ljk" :class="ljkClass(i)" @click="go(i)"
                       :aria-label="'soal nomor '+(i+1)">{{ pad2(i+1) }}</button>
@@ -465,7 +531,7 @@ body{font-family:'Spectral',Georgia,serif;color:#211E1A;-webkit-font-smoothing:a
         </div>
       </div>
 
-      <p class="text-center font-mono text-[9px] text-faint mt-5 tracking-[0.2em]">VUE · TAILWINDCSS · KATEX · SORTABLEJS — SELURUH KALKULASI BERJALAN DI BROWSER</p>
+      <p class="text-center font-mono text-[9px] text-faint mt-5 tracking-[0.2em]">VUE · TAILWINDCSS · KATEX · PRISM · SORTABLEJS — SELURUH KALKULASI BERJALAN DI BROWSER</p>
     </div>
   </div>
 
@@ -642,6 +708,40 @@ body{font-family:'Spectral',Georgia,serif;color:#211E1A;-webkit-font-smoothing:a
               </ol>
             </div>
           </div>
+
+          <!-- rincian: penyusunan kode -->
+          <div v-else-if="questions[i].type==='code'" class="mt-3">
+            <p v-if="questions[i].io" class="font-mono text-[10px] text-inksoft tracking-wide">
+              CONTOH EKSEKUSI — <template v-if="questions[i].io.masuk">MASUKAN: {{ questions[i].io.masuk }} · </template>KELUARAN: <b class="text-pen">{{ questions[i].io.keluar }}</b>
+            </p>
+            <div class="grid sm:grid-cols-2 gap-5 items-start mt-2">
+              <div>
+                <p class="mono-label">SUSUNANMU</p>
+                <div class="codelist mt-1.5">
+                  <p class="cb-bar"><span>{{ langName(questions[i].lang) }}</span><span class="opacity-60">SUSUNANMU</span></p>
+                  <div>
+                    <div v-for="r in g.rows" :key="'cvr'+r.p" class="coderow">
+                      <span class="ln">{{ r.p+1 }}</span>
+                      <pre class="codeline" v-html="hlLine(questions[i].lines[r.id], questions[i].lang)"></pre>
+                      <ic :name="r.good ? 'check' : 'x'" :size="13" :class="r.good ? 'text-verd' : 'text-pen'"></ic>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p class="mono-label">KUNCI PROGRAM</p>
+                <div class="codelist mt-1.5">
+                  <p class="cb-bar"><span>{{ langName(questions[i].lang) }}</span><span class="opacity-60">BENAR</span></p>
+                  <div>
+                    <div v-for="(ln,k) in questions[i].lines" :key="'ckr'+k" class="coderow">
+                      <span class="ln">{{ k+1 }}</span>
+                      <pre class="codeline" v-html="hlLine(ln, questions[i].lang)"></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <p class="text-center font-mono text-[9px] text-faint mt-5 tracking-[0.2em]">TERIMA KASIH TELAH MENGERJAKAN UJIAN INI</p>
@@ -685,19 +785,97 @@ body{font-family:'Spectral',Georgia,serif;color:#211E1A;-webkit-font-smoothing:a
 ============================================================ */
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
-/* Render teks campuran: $...$ = math inline, $$...$$ = math display (KaTeX) */
-function rt(s){
-  if(s==null) return '';
+/* ---- inline: `kode` → <code class="icode"> ---- */
+function rtInline(s){
+  if(!s) return '';
   let out='', i=0, m;
-  const re=/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g;
+  const re=/`([^`\n]+)`/g;
   while((m=re.exec(s))){
-    out+=esc(s.slice(i,m.index));
-    const tex=(m[1]!==undefined)?m[1]:m[2];
-    try{ out+=katex.renderToString(tex,{displayMode:m[1]!==undefined,throwOnError:false}); }
-    catch(e){ out+=esc(m[0]); }
+    out+=esc(s.slice(i,m.index))+'<code class="icode">'+esc(m[1])+'</code>';
     i=m.index+m[0].length;
   }
   return (out+esc(s.slice(i))).replace(/\n/g,'<br>');
+}
+
+/* ---- matem: $...$ inline, $$...$$ display (KaTeX) ---- */
+function rtMath(s){
+  if(!s) return '';
+  let out='', i=0, m;
+  const re=/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g;
+  while((m=re.exec(s))){
+    out+=rtInline(s.slice(i,m.index));
+    const tex=(m[1]!==undefined)?m[1]:m[2];
+    try{ out+=katex.renderToString(tex,{displayMode:m[1]!==undefined,throwOnError:false}); }
+    catch(e){ out+=rtInline(m[0]); }
+    i=m.index+m[0].length;
+  }
+  return out+rtInline(s.slice(i));
+}
+
+/* ---- blok kode: ```lang ... ``` (Prism + nomor baris) ---- */
+const LANG_NAMES={python:'PYTHON',py:'PYTHON',cpp:'C++',c:'C',javascript:'JAVASCRIPT',js:'JAVASCRIPT',java:'JAVA',kotlin:'KOTLIN',go:'GO',rust:'RUST',php:'PHP',ruby:'RUBY'};
+function langName(l){ const k=(l||'').toLowerCase(); return LANG_NAMES[k]||(k?k.toUpperCase():'KODE') }
+
+/* pecah HTML hasil highlight menjadi baris-baris yang valid
+   (span yang terbuka di akhir baris ditutup & dibuka ulang di baris berikut) */
+function splitCodeLines(html){
+  const parts=String(html).split('\n');
+  const open=[];
+  return parts.map(part=>{
+    const prefix=open.map(c=>'<span class="'+c+'">').join('');
+    const re=/<span class="([^"]*)">|<\/span>/g;
+    let m;
+    while((m=re.exec(part))){
+      if(m[1]!==undefined) open.push(m[1]);
+      else open.pop();
+    }
+    return prefix+part+'</span>'.repeat(open.length);
+  });
+}
+
+function renderCodeBlock(code,lang){
+  const l=(lang||'').toLowerCase();
+  let html='';
+  try{
+    if(typeof Prism!=='undefined' && Prism.languages && Prism.languages[l]){
+      html=Prism.highlight(code,Prism.languages[l],l);
+    }else html=esc(code);
+  }catch(e){ html=esc(code) }
+  const lines=splitCodeLines(html);
+  return '<div class="codeblock"><div class="cb-bar"><span>'+langName(l)+
+         '</span><span style="opacity:.6">'+lines.length+' BARIS</span></div><pre><code>'+
+         lines.map(x=>'<span class="cl">'+(x||'\u00A0')+'</span>').join('')+'</code></pre></div>';
+}
+
+/* ---- render teks soal: gabungan kode + matem + inline ---- */
+function rt(s){
+  if(s==null) return '';
+  let out='', i=0, m;
+  const re=/```(\w*)\n([\s\S]*?)```/g;
+  while((m=re.exec(s))){
+    out+=rtMath(s.slice(i,m.index).replace(/\n+$/,''));
+    out+=renderCodeBlock(m[2].replace(/\n+$/,''),m[1]);
+    i=m.index+m[0].length;
+  }
+  const tail=s.slice(i);
+  const head=(i>0)?tail.replace(/^\n+/,''):tail;
+  return out+rtMath(head);
+}
+
+/* ---- highlight satu baris kode (untuk soal penyusunan), dengan cache ---- */
+const hlCache={};
+function hlLine(line,lang){
+  const key=(lang||'')+'\u0000'+line;
+  if(key in hlCache) return hlCache[key];
+  let html='';
+  try{
+    if(typeof Prism!=='undefined' && Prism.languages && Prism.languages[lang] && line.trim()){
+      html=Prism.highlight(line,Prism.languages[lang],lang);
+    }else html=esc(line);
+  }catch(e){ html=esc(line) }
+  const res=html||'\u00A0';
+  hlCache[key]=res;
+  return res;
 }
 
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -721,7 +899,6 @@ function graph(curve){
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" style="width:100%;height:auto;display:block" role="img" aria-label="grafik fungsi"><g stroke="#DCD5C1" stroke-width="0.7">${g}</g><path d="M10 45H110M60 6V84" stroke="#211E1A" stroke-width="1.4" fill="none"/><path d="${curve}" stroke="#C0361F" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 
-/* bangun datar untuk soal menjodohkan */
 function shape(inner){return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 84" style="width:100%;height:auto;display:block" role="img">${inner}</svg>`}
 const TX='font-family="Spectral, Georgia, serif" font-style="italic" font-size="13" fill="#211E1A" text-anchor="middle"';
 const SH_SQ  = shape(`<rect x="32" y="12" width="48" height="48" fill="#FCF9F1" stroke="#211E1A" stroke-width="2"/><text x="56" y="79" ${TX}>s</text>`);
@@ -730,7 +907,7 @@ const SH_CIR = shape(`<circle cx="55" cy="40" r="27" fill="#FCF9F1" stroke="#211
 const SH_TRAP= shape(`<polygon points="24,68 86,68 70,20 40,20" fill="#FCF9F1" stroke="#211E1A" stroke-width="2" stroke-linejoin="round"/><line x1="55" y1="24" x2="55" y2="66" stroke="#211E1A" stroke-width="1" stroke-dasharray="3 3"/><text x="48" y="47" ${TX}>t</text><text x="55" y="80" ${TX}>a</text><text x="55" y="15" ${TX}>b</text>`);
 
 /* ============================================================
-   BANK SOAL — 12 butir, 5 tipe
+   BANK SOAL — 16 butir, 6 tipe
 ============================================================ */
 const QUESTIONS=[
   { type:'mc', points:1,
@@ -762,7 +939,6 @@ const QUESTIONS=[
       {svg:graph('M60 45 Q78 27 96 26')}    /* y = √x   */
     ], answer:1 },
 
-  /* ---- MENJODOHKAN: gambar ↔ rumus ---- */
   { type:'match', points:1,
     text:"Jodohkan setiap bangun datar pada Kolom A dengan rumus luasnya yang tepat pada Kolom B.",
     left:[ {svg:SH_SQ}, {svg:SH_TRI}, {svg:SH_CIR}, {svg:SH_TRAP} ],
@@ -784,15 +960,29 @@ const QUESTIONS=[
       {text:'Kelembapan udaranya yang sangat rendah.'}
     ], answer:1 },
 
+  /* ---- MC dengan blok kode C++ ---- */
+  { type:'mc', points:1,
+    text:"Perhatikan potongan program C++ berikut, lalu tentukan keluarannya.\n```cpp\nint x = 7;\nint y = x % 3;\nstd::cout << x / 3 << y;\n```\nBilangan yang tercetak pada layar adalah… (ingat: pembagian dua bilangan bulat dibulatkan ke bawah)",
+    options:[
+      {text:'$21$'},
+      {text:'$2,1$'},
+      {text:'$31$'},
+      {text:'$12$'}
+    ], answer:0 },
+
   { type:'short', points:1,
     text:"Diketahui persamaan kuadrat $x^{2} - 5x + 6 = 0$. Jika $x_{1} = 2$ merupakan salah satu akarnya, nilai akar yang lain, $x_{2}$, adalah…",
     prefix:'$x_{2} =$', accept:['3'], numeric:true, placeholder:'angka' },
+
+  /* ---- isian dengan blok kode Python ---- */
+  { type:'short', points:1,
+    text:"Perhatikan potongan kode Python berikut (fungsi `len()` menghitung banyaknya elemen pada list).\n```python\ndata = [3, 1, 4, 1, 5]\nprint(len(data) + data[2])\n```\nBilangan yang dicetak program tersebut adalah…",
+    accept:['9'], numeric:true, placeholder:'angka' },
 
   { type:'short', points:1,
     text:"Dalam tabel periodik unsur, lambang kimia untuk besi ditulis dengan dua huruf. Lambang tersebut adalah…",
     accept:['Fe'], placeholder:'dua huruf' },
 
-  /* ---- MENJODOHKAN: fungsi ↔ turunan ---- */
   { type:'match', points:1,
     text:"Jodohkan setiap fungsi pada Kolom A dengan turunan pertamanya pada Kolom B.",
     left:[
@@ -821,7 +1011,35 @@ const QUESTIONS=[
 
   { type:'order', points:1,
     text:"Urutkan bilangan-bilangan berikut mulai dari yang paling kecil.",
-    items:['$1.4$','$\\sqrt{2}$','$1.5$','$\\frac{7}{4}$'] }
+    items:['$1.4$','$\\sqrt{2}$','$1.5$','$\\frac{7}{4}$'] },
+
+  /* ---- PENYUSUNAN KODE: Python ---- */
+  { type:'code', points:1, lang:'python',
+    text:"Susun baris-baris berikut menjadi program Python yang utuh dan benar. Program membaca sebuah bilangan bulat $n$, lalu mencetak hasil penjumlahan $1 + 2 + \\dots + n$.",
+    io:{ masuk:'5', keluar:'15' },
+    lines:[
+      'n = int(input())',
+      'total = 0',
+      'for i in range(1, n + 1):',
+      '    total += i',
+      'print(total)'
+    ] },
+
+  /* ---- PENYUSUNAN KODE: C++ ---- */
+  { type:'code', points:1, lang:'cpp',
+    text:"Susun baris-baris berikut menjadi program C++ yang utuh dan benar. Program mencetak hitungan mundur dari $5$ sampai $1$, masing-masing dipisahkan sebuah spasi.",
+    io:{ keluar:'5 4 3 2 1' },
+    lines:[
+      '#include <iostream>',
+      'int main() {',
+      '    int n = 5;',
+      '    while (n > 0) {',
+      '        std::cout << n << " ";',
+      '        n--;',
+      '    }',
+      '    return 0;',
+      '}'
+    ] }
 ];
 
 /* ============================================================
@@ -844,7 +1062,7 @@ const ICONS={
 /* ============================================================
    APLIKASI
 ============================================================ */
-const DURATION = 25*60;
+const DURATION = 30*60;
 let sortables = [];
 let initTimer = null;
 let timerId   = null;
@@ -877,15 +1095,16 @@ const app = Vue.createApp({
     nPartial(){ return this.graded.filter(g=>g.status==='partial').length },
     nWrong(){ return this.graded.filter(g=>g.status==='wrong').length },
     matchedCount(){ const a=this.ca; return (a && a.pairs) ? Object.keys(a.pairs).length : 0 },
+    ljkCols(){ return this.total>12 ? 4 : 5 },
     resultNote(){
       const v=this.nilai;
       if(v>=90) return 'Luar biasa! Konsepmu sangat kokoh — pertahankan.';
       if(v>=75) return 'Bagus! Tinggal rapikan beberapa detail kecil.';
-      if(v>=60) return 'Cukup baik. Perbanyak latihan soal urutan & kategori ya.';
+      if(v>=60) return 'Cukup baik. Perbanyak latihan soal urutan & kode ya.';
       return 'Jangan menyerah — pelajari kunci jawaban di bawah, lalu coba lagi.';
     },
 
-    /* geometri garis penghubung menjodohkan (dihitung ulang saat matchTick/pairs/drag berubah) */
+    /* geometri garis penghubung menjodohkan */
     matchGeom(){
       this.matchTick; /* dependensi reaktif */
       const wrap=this.$refs.matchWrap, a=this.ca;
@@ -901,7 +1120,7 @@ const app = Vue.createApp({
       };
       const curve=(p1,p2,li)=>{
         const dx=Math.max(36,Math.abs(p2.x-p1.x)*.45);
-        const wob=((li*7)%9)-4; /* lengkung bergelombang ala garis tangan */
+        const wob=((li*7)%9)-4;
         return `M${p1.x} ${p1.y} C ${p1.x+dx} ${p1.y+wob}, ${p2.x-dx} ${p2.y-wob}, ${p2.x} ${p2.y}`;
       };
       const lines=[];
@@ -920,7 +1139,6 @@ const app = Vue.createApp({
   },
 
   watch:{
-    /* ganti soal: lepas Sortable & reset state interaktif, pasang ulang setelah transisi selesai */
     currentIdx(){
       this.picked=null;
       this.msel=null; this.mtarget=null; this.mstart=null; this.mdrag=false;
@@ -933,10 +1151,11 @@ const app = Vue.createApp({
 
   methods:{
     /* ---------- render helper ---------- */
-    rt, pad2(n){ return String(n).padStart(2,'0') },
+    rt, hlLine, langName,
+    pad2(n){ return String(n).padStart(2,'0') },
     letter(i){ return 'ABCDE'[i] || '—' },
     alet(i){ return String.fromCharCode(97+i) },
-    typeLabel(q){ return ({mc:'PILIHAN GANDA',short:'ISIAN SINGKAT',match:'MENJODOHKAN',categorize:'KATEGORISASI',order:'PENGURUTAN'})[q.type] },
+    typeLabel(q){ return ({mc:'PILIHAN GANDA',short:'ISIAN SINGKAT',match:'MENJODOHKAN',categorize:'KATEGORISASI',order:'PENGURUTAN',code:'PENYUSUNAN KODE'})[q.type] },
     fmtPoin(n){ const r=Math.round(n*100)/100; return Number.isInteger(r)?String(r):r.toFixed(2).replace(/0+$/,'').replace('.',',') },
     tanggal(){ return (this.submittedAt||new Date()).toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) },
 
@@ -958,6 +1177,7 @@ const app = Vue.createApp({
         if(q.type==='match')   return {...base, pairs:{}, right:shuffle([...Array(q.right.length).keys()])};
         if(q.type==='categorize') return {...base, pool:shuffle([...Array(q.items.length).keys()]), buckets:q.categories.map(()=>[])};
         if(q.type==='order')   return {...base, order:shuffledNotIdentity(q.items.length)};
+        if(q.type==='code')    return {...base, order:shuffledNotIdentity(q.lines.length)};
         return base;
       });
       this.screen='exam'; this.currentIdx=0; this.startTimer();
@@ -990,6 +1210,7 @@ const app = Vue.createApp({
       if(q.type==='match') return a.pairs!=null && Object.keys(a.pairs).length===q.left.length;
       if(q.type==='categorize') return a.pool.length===0;
       if(q.type==='order') return !!a.dirty;
+      if(q.type==='code')  return !!a.dirty;
       return false;
     },
     ljkClass(i){
@@ -1016,7 +1237,7 @@ const app = Vue.createApp({
       return q.accept.some(s=>String(s).toLowerCase().trim()===val);
     },
 
-    /* ---------- MENJODOHKAN: ketuk-ketuk & seret-lepas ---------- */
+    /* ---------- MENJODOHKAN ---------- */
     bumpMatch(){ this.$nextTick(()=>{ this.matchTick++ }) },
     scheduleMatchRefresh(){ [280,470].forEach(t=>setTimeout(()=>{ if(this.screen==='exam') this.matchTick++ },t)) },
     matchLetterOf(li){
@@ -1042,7 +1263,6 @@ const app = Vue.createApp({
           const wr=wrap.getBoundingClientRect();
           this.mpos={x:e.clientX-wr.left, y:e.clientY-wr.top};
         }
-        /* sorot item tujuan potensial */
         const el=document.elementFromPoint(e.clientX,e.clientY);
         const row=el && el.closest ? el.closest('[data-mleft],[data-mright]') : null;
         if(row){
@@ -1061,7 +1281,6 @@ const app = Vue.createApp({
         if(tgt) this.matchPair(st.side,st.idx,tgt.side,tgt.idx);
         return;
       }
-      /* mode ketuk: pilih → ketuk pasangan (atau pindah/batal pilihan) */
       if(this.msel){
         if(this.msel.side===st.side && this.msel.idx===st.idx){ this.msel=null }
         else if(this.msel.side!==st.side){ this.matchPair(this.msel.side,this.msel.idx,st.side,st.idx) }
@@ -1075,11 +1294,10 @@ const app = Vue.createApp({
     matchPair(s1,i1,s2,i2){
       if(s1===s2) return;
       const leftIdx  = s1==='left' ? i1 : i2;
-      const rightPos = s1==='left' ? i2 : i1;      /* posisi tampil di kolom B */
+      const rightPos = s1==='left' ? i2 : i1;
       const a=this.ca;
       if(!a || a.pairs==null) return;
       const origRight=a.right[rightPos];
-      /* item kolom B dipakai ulang → pasangan lamanya otomatis terlepas */
       for(const k in a.pairs){ if(a.pairs[k]===origRight && +k!==leftIdx) delete a.pairs[k] }
       a.pairs[leftIdx]=origRight;
       this.msel=null;
@@ -1090,11 +1308,11 @@ const app = Vue.createApp({
       if(a && a.pairs){ delete a.pairs[li]; this.bumpMatch() }
     },
 
-    /* ---------- kategorisasi (ketuk / seret) ---------- */
+    /* ---------- kategorisasi ---------- */
     onChipClick(id,fromBucket){
-      if(fromBucket==null){                       /* kartu di pool: pilih (ketuk) */
+      if(fromBucket==null){
         this.picked=this.picked===id?null:id;
-      }else{                                      /* kartu di kotak: kembalikan ke pool */
+      }else{
         const a=this.ca;
         a.buckets=a.buckets.map(b=>b.filter(x=>x!==id));
         a.pool=[...a.pool,id];
@@ -1102,13 +1320,13 @@ const app = Vue.createApp({
       }
     },
     onBucketClick(ci){
-      if(this.picked==null) return;               /* ketuk kotak tujuan */
+      if(this.picked==null) return;
       const a=this.ca;
       a.pool=a.pool.filter(x=>x!==this.picked);
       a.buckets=a.buckets.map((b,i)=> i===ci ? [...b,this.picked] : b);
       this.picked=null; a.dirty=true;
     },
-    syncCat(){                                    /* sinkronkan state dari DOM setelah drag */
+    syncCat(){
       const a=this.ca; if(!a) return;
       const grab=sel=>Array.from(document.querySelectorAll(sel+' .chip')).map(el=>+el.dataset.id);
       a.pool=grab('#cat-pool');
@@ -1122,7 +1340,7 @@ const app = Vue.createApp({
       return null;
     },
 
-    /* ---------- pengurutan ---------- */
+    /* ---------- pengurutan & penyusunan kode (struktur sama: a.order) ---------- */
     moveOrder(pos,dir){
       const a=this.ca, j=pos+dir;
       if(j<0||j>=a.order.length) return;
@@ -1133,6 +1351,11 @@ const app = Vue.createApp({
     syncOrder(){
       const a=this.ca; if(!a) return;
       a.order=Array.from(document.querySelectorAll('#ord-list .ordrow')).map(el=>+el.dataset.id);
+      a.dirty=true;
+    },
+    syncCode(){
+      const a=this.ca; if(!a) return;
+      a.order=Array.from(document.querySelectorAll('#cod-list .coderow')).map(el=>+el.dataset.id);
       a.dirty=true;
     },
 
@@ -1152,6 +1375,9 @@ const app = Vue.createApp({
       }else if(q.type==='order'){
         const el=document.getElementById('ord-list');
         if(el) sortables.push(new Sortable(el,{animation:170,ghostClass:'sortable-ghost',chosenClass:'lift',handle:'.handle-zone',onEnd:()=>this.syncOrder()}));
+      }else if(q.type==='code'){
+        const el=document.getElementById('cod-list');
+        if(el) sortables.push(new Sortable(el,{animation:170,ghostClass:'sortable-ghost',chosenClass:'lift',handle:'.handle-zone',onEnd:()=>this.syncCode()}));
       }
     },
 
@@ -1188,6 +1414,16 @@ const app = Vue.createApp({
       if(q.type==='order'){
         const total=q.items.length; let okn=0;
         const rows=(a.order||[]).map((id,p)=>{ const good=id===p; if(good) okn++; return {id,p,good} });
+        return {status:okn===total?'correct':(okn===0?'wrong':'partial'),score:q.points*okn/total,rows};
+      }
+      if(q.type==='code'){
+        /* dinilai per isi baris (bukan id) — baris kembar seperti '}' tetap adil */
+        const total=q.lines.length; let okn=0;
+        const rows=(a.order||[]).map((id,p)=>{
+          const good=q.lines[id]===q.lines[p];
+          if(good) okn++;
+          return {id,p,good};
+        });
         return {status:okn===total?'correct':(okn===0?'wrong':'partial'),score:q.points*okn/total,rows};
       }
       return {status:'wrong',score:0};
@@ -1231,7 +1467,7 @@ const app = Vue.createApp({
       if(e.key==='ArrowRight'&&this.currentIdx<this.total-1) this.currentIdx++;
       else if(e.key==='ArrowLeft'&&this.currentIdx>0) this.currentIdx--;
     });
-    /* garis menjodohkan ikut menyesuaikan saat jendela diubah ukurannya / font termuat */
+    /* garis menjodohkan ikut menyesuaikan saat jendela diubah / font termuat */
     let rT=null;
     window.addEventListener('resize',()=>{ clearTimeout(rT); rT=setTimeout(()=>{ this.matchTick++ },150) });
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ this.matchTick++ });
