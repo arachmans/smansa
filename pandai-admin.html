@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Pandai - Aplikasi Belajar Interaktif</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        #webFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <iframe 
+        id="webFrame" 
+        src="about:blank"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"
+        referrerpolicy="no-referrer"
+        allowfullscreen
+    ></iframe>
+
+    <script>
+        // ============================================
+        // GANTI URL DI BAWAH INI dengan URL yang ingin ditampilkan
+        // ============================================
+        const TARGET_URL = 'https://script.google.com/macros/s/AKfycbw6CZ2Howlfr2sp-ZAiXkn1m-gQDOB0IN8FXyLJ6YFD01xC4qEM1aZMy_kNas4js4G3/exec?page=admin';
+        // ============================================
+
+        // Normalisasi URL: tambahkan https:// jika belum ada
+        function normalizeUrl(url) {
+            url = url.trim();
+            if (!url) return '';
+            if (!/^https?:\/\//i.test(url)) {
+                url = 'https://' + url;
+            }
+            return url;
+        }
+
+        // Ambil URL dari parameter ?url=... atau gunakan TARGET_URL
+        const params = new URLSearchParams(window.location.search);
+        const urlFromParam = params.get('url');
+        const finalUrl = normalizeUrl(urlFromParam || TARGET_URL);
+
+        // Muat URL ke iframe
+        document.getElementById('webFrame').src = finalUrl;
+    </script>
+
+</body>
+</html>
