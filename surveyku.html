@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Survey 7 KAIH Siswa SMANSA</title>
+<style>
+  /* ---------- Layar penuh murni ---------- */
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: #fff;
+  }
+  html { overflow: hidden; }
+  #gasFrame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+  }
+
+  /* ---------- Mode tinggi mengikuti konten ----------
+     Dipicu otomatis oleh laporan postMessage dari aplikasi,
+     atau oleh tombol [ ]. Dokumen ikut memanjang sehingga
+     fitur "capture full size screenshot" menangkap seluruh
+     konten (syarat screenshot full-page). */
+  html.grow { height: auto; overflow: auto; }
+  body.grow { height: auto; }
+  body.grow #gasFrame { height: var(--app-h); min-height: 100vh; }
+
+  /* ---------- Pesan fallback (bukan tombol, hanya teks) ---------- */
+  #start {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 24px;
+    color: #6b7280; background: #fff;
+    font: 14px/1.8 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  #start b { color: #111827; }
+
+  /* Indikator tinggi — hanya muncul sekejap saat tombol [ ] dipakai */
+  #badge {
+    position: fixed; top: 12px; right: 12px; z-index: 50;
+    background: #111827e6; color: #fff;
+    padding: 6px 12px; border-radius: 8px;
+    font: 12px/1.4 ui-monospace, Menlo, Consolas, monospace;
+    opacity: 0; transition: opacity .25s;
+    pointer-events: none; white-space: nowrap;
+  }
+  #badge.on { opacity: 1; }
+
+  /* Catatan unduhan (fallback bila popup diblokir) — tautan, bukan tombol */
+  #dlNote {
+    position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
+    z-index: 60; max-width: 90vw;
+    background: #111827f2; color: #e5e7eb;
+    padding: 10px 16px; border-radius: 10px;
+    font: 12.5px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  #dlNote a { color: #93c5fd; text-decoration: underline; word-break: break-all; }
+  .hide { display: none !important; }
+</style>
+</head>
+<body>
+
+  <iframe id="gasFrame" title="Aplikasi Google Apps Script"
+    allow="autoplay; clipboard-read; clipboard-write; encrypted-media; fullscreen; picture-in-picture; downloads; storage-access"
+    referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+  <!-- Pesan fallback bila APP_URL belum diisi -->
+  <div id="start" class="hide">
+    <span>APP_URL belum diisi.<br>
+    Buka file HTML ini dengan teks editor, lalu ganti nilai <b>APP_URL</b><br>
+    di bagian &lt;script&gt; dengan URL aplikasi Google Apps Script Anda<br>
+    (alamat yang diakhiri <b>/exec</b>).</span>
+  </div>
+
+  <!-- Elemen bantu tersembunyi (tanpa tombol) -->
+  <div id="badge"></div>
+  <div id="dlNote" class="hide">Popup diblokir browser — buka manual tautan ini (URL asli tetap utuh):&nbsp;<a target="_blank" rel="noopener"></a></div>
+
+<script>
+(function () {
+  'use strict';
+  var APP_URL = "https://script.google.com/macros/s/AKfycbzh3WQjuZYaCyimhPxmKIXicD2_QitBYAWMoYN86DoCna1UnC4IcxSzyx0UgbabG_ofJg/exec";
+
+  /* ---------- Elemen ---------- */
+  var frame    = document.getElementById('gasFrame');
+  var start    = document.getElementById('start');
+  var badge    = document.getElementById('badge');
+  var dlNote   = document.getElementById('dlNote');
+  var dlLink   = dlNote.querySelector('a');
+  var badgeT   = null, dlT = null;
+  var mode     = 'full';   /* full | auto | manual */
+  var manualH  = 0;
+
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+
+  function normalize(u) {
+    u = (u || '').trim();
+    if (!u) return '';
+    if (!/^https?:\/\//i.test(u)) u = 'https://' + u.replace(/^\/+/, '');
+    try { return new URL(u).href; } catch (e) { return ''; }
+  }
+
+  /* ---------- Indikator tinggi (sekejap, tanpa tombol) ---------- */
+  function flash(txt, ms) {
+    badge.textContent = txt;
+    badge.classList.add('on');
+    if (badgeT) clearTimeout(badgeT);
+    badgeT = setTimeout(function () { badge.classList.remove('on'); }, ms || 1400);
+  }
+
+  /* ---------- Mode tinggi ---------- */
+  function growTo(px) {
+    px = clamp(Math.round(px), 200, 200000);
+    document.documentElement.style.setProperty('--app-h', px + 'px');
+    document.documentElement.classList.add('grow');
+    document.body.classList.add('grow');
+  }
+
+  function setFull() {                       /* kembali ke layar penuh murni */
+    mode = 'full'; manualH = 0;
+    document.documentElement.classList.remove('grow');
+    document.body.classList.remove('grow');
+    document.documentElement.style.removeProperty('--app-h');
+    flash('Layar penuh — 100% viewport');
+  }
+
+  /* ---------- Pesan dari aplikasi GAS (protokol __gasViewer) ---------- */
+  window.addEventListener('message', function (ev) {
+    var d = ev.data;
+    if (!d || typeof d !== 'object' || d.__gasViewer !== true) return;
+
+    if (d.type === 'height') {               /* laporan tinggi konten */
+      var h = Number(d.height);
+      if (isFinite(h) && h > 0 && mode !== 'manual') {
+        mode = 'auto';
+        growTo(h);                           /* dokumen ikut memanjang -> siap screenshot full-page */
+      }
+
+    } else if (d.type === 'download' || d.type === 'navigate') {
+      /* Export/unduhan diteruskan ke jendela atas dengan URL PERSIS
+         dari aplikasi — alamat asli tetap utuh, tidak diblokir iframe. */
+      var u = String(d.url || '');
+      if (/^https?:\/\//i.test(u)) {
+        var w = null;
+        try { w = window.open(u, '_blank'); } catch (e) {}
+        if (!w) showDlNote(u);
+      }
+    }
+  });
+
+  function showDlNote(u) {
+    dlLink.textContent = u;
+    dlLink.href = u;
+    dlNote.classList.remove('hide');
+    if (dlT) clearTimeout(dlT);
+    dlT = setTimeout(function () { dlNote.classList.add('hide'); }, 20000);
+  }
+
+  /* ---------- Pintasan tersembunyi (tanpa tombol) ---------- */
+  window.addEventListener('keydown', function (e) {
+    var t = ((e.target && e.target.tagName) || '').toLowerCase();
+    if (t === 'input' || t === 'textarea' || t === 'select') return;
+
+    if (e.key === ']') {                     /* tinggi +100px */
+      var base = manualH || (document.documentElement.scrollHeight || window.innerHeight);
+      mode = 'manual';
+      manualH = base + 100;
+      growTo(manualH);
+      flash(manualH + ' px — tinggi dokumen (siap screenshot full-page)');
+    } else if (e.key === '[') {              /* tinggi -100px */
+      var base2 = (manualH || (document.documentElement.scrollHeight || window.innerHeight)) - 100;
+      if (base2 < 320) { setFull(); }
+      else {
+        mode = 'manual';
+        manualH = base2;
+        growTo(base2);
+        flash(base2 + ' px — tinggi dokumen');
+      }
+    } else if (e.key === 'Escape') {         /* kembali ke layar penuh */
+      setFull();
+    }
+  });
+
+  /* ---------- Muat aplikasi dari URL manual ---------- */
+  var url = normalize(APP_URL);
+  if (url) {
+    frame.src = url;    /* src SELALU URL asli /exec — reload (F5) pun kembali ke alamat asli */
+  } else {
+    frame.className = 'hide';
+    start.classList.remove('hide');
+    document.title = 'APP_URL belum diisi';
+  }
+})();
+</script>
+</body>
+</html>
