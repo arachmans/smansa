@@ -169,8 +169,8 @@
   <!-- ==================== MAIN WORKSPACE AREA ==================== -->
   <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
 
-    <!-- TOP HEADER -->
-    <header class="bg-white border-b border-slate-200 px-3 sm:px-5 py-2 shrink-0 z-20 shadow-xs">
+    <!-- TOP HEADER (Hidden on Dashboard) -->
+    <header v-if="activeTab !== 'dashboard'" class="bg-white border-b border-slate-200 px-3 sm:px-5 py-2 shrink-0 z-20 shadow-xs">
       <div class="flex flex-col gap-2">
         <!-- Row 1: Class Pills & Quick Settings -->
         <div class="flex items-center justify-between gap-2">
@@ -210,26 +210,26 @@
           <div class="flex items-center gap-1.5 shrink-0">
             <button
               @click="openCategoryManagerModal"
-              class="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold flex items-center gap-1 transition"
+              class="hidden sm:flex px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold items-center gap-1 transition"
               title="Ubah Nama & Bobot Kategori Nilai Akhir"
             >
               <i class="fa-solid fa-scale-balanced"></i>
-              <span class="hidden sm:inline">Kategori ({{ totalWeightPercentage }}%)</span>
+              <span>Kategori ({{ totalWeightPercentage }}%)</span>
             </button>
 
             <button
               @click="modals.gradeReference = true"
-              class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1 transition"
+              class="hidden sm:flex px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold items-center gap-1 transition"
               title="Lihat Tabel Konversi Nilai Huruf A+ sampai D"
             >
               <i class="fa-solid fa-spell-check"></i>
-              <span class="hidden sm:inline">A+..D</span>
+              <span>A+..D</span>
             </button>
 
             <button
               v-if="currentClass"
               @click="openClassModal('edit')"
-              class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1 border border-slate-200 transition"
+              class="px-2 sm:px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] sm:text-xs font-semibold flex items-center gap-1 border border-slate-200 transition"
               title="Pengaturan Kelas & KKM"
             >
               <i class="fa-solid fa-sliders text-emerald-600"></i>
@@ -246,8 +246,8 @@
           </div>
         </div>
 
-        <!-- Row 2: Search Bar & Tab-Specific Primary Buttons (Hidden on Dashboard) -->
-        <div v-if="activeTab !== 'dashboard'" class="flex items-center justify-between gap-2">
+        <!-- Row 2: Search Bar & Tab-Specific Primary Buttons -->
+        <div class="flex items-center justify-between gap-2">
           <div class="relative flex-1 max-w-md">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <input
@@ -337,9 +337,9 @@
 
     <!-- ==================== TAB 0: DASHBOARD PINTAR & JADWAL MENGAJAR (SENIN-JUMAT) ==================== -->
     <main v-if="activeTab === 'dashboard'" class="flex-1 overflow-y-auto p-3 sm:p-5 bg-slate-50 space-y-4 pb-24 lg:pb-8">
-      <!-- Top Real-Time / Simulation Control Strip -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <!-- Greeting & Live Clock -->
+      <!-- Top Real-Time Clock & Date Strip -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <!-- Greeting, Full Date & Live Clock -->
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex flex-col items-center justify-center shrink-0 shadow-sm">
             <i class="fa-regular fa-clock text-lg"></i>
@@ -349,83 +349,20 @@
               <h2 class="font-extrabold text-base sm:text-lg text-slate-800">
                 Dashboard Jadwal Mengajar
               </h2>
-              <span
-                class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border"
-                :class="timeSim.enabled
-                  ? 'bg-amber-100 text-amber-800 border-amber-300'
-                  : 'bg-emerald-100 text-emerald-800 border-emerald-300'"
-              >
-                <i class="fa-solid mr-1" :class="timeSim.enabled ? 'fa-flask' : 'fa-satellite-dish'"></i>
-                {{ timeSim.enabled ? 'Mode Simulasi Waktu' : 'Waktu Real-Time' }}
+              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border bg-emerald-100 text-emerald-800 border-emerald-300">
+                <i class="fa-solid fa-satellite-dish mr-1"></i>Waktu Real-Time
               </span>
             </div>
-            <p class="text-xs text-slate-500 mt-0.5">
-              Hari <strong class="text-slate-800">{{ effectiveDayName }}</strong> • Pukul <strong class="text-emerald-700 font-mono text-sm">{{ effectiveTimeString }}</strong>
-              <span v-if="effectiveDayName === 'Jumat'" class="ml-1.5 px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold text-[10px]">
-                Profil Waktu Khusus Jumat
-              </span>
-              <span v-else-if="isWeekday(effectiveDayName)" class="ml-1.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold text-[10px]">
-                Profil Waktu Senin–Kamis
-              </span>
+            <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+              <span>Hari <strong class="text-slate-800">{{ effectiveDayName }}, {{ effectiveFullDateString }}</strong></span>
+              <span>•</span>
+              <span>Pukul <strong class="text-emerald-700 font-mono text-sm">{{ effectiveTimeString }}</strong></span>
             </p>
-          </div>
-        </div>
-
-        <!-- Quick Simulation Controls (To easily test Live Ongoing Badge, Break, or Empty Day) -->
-        <div class="flex flex-wrap items-center gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200">
-          <span class="text-[10px] font-extrabold uppercase text-slate-400 px-1">Uji Coba Waktu:</span>
-          <button
-            @click="disableTimeSimulation"
-            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition"
-            :class="!timeSim.enabled ? 'bg-emerald-600 text-white shadow-2xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'"
-          >
-            Real-Time
-          </button>
-          <button
-            @click="applyPresetSimulation('Senin', '07:20')"
-            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition border"
-            :class="timeSim.enabled && timeSim.day === 'Senin' && timeSim.time === '07:20' ? 'bg-amber-500 text-white border-amber-500' : 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50'"
-            title="Simulasikan sedang mengajar di hari Senin jam 07:20"
-          >
-            <i class="fa-solid fa-play text-[9px] mr-1 text-emerald-600"></i>Senin 07:20 (Live)
-          </button>
-          <button
-            @click="applyPresetSimulation('Jumat', '07:15')"
-            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition border"
-            :class="timeSim.enabled && timeSim.day === 'Jumat' && timeSim.time === '07:15' ? 'bg-amber-500 text-white border-amber-500' : 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50'"
-            title="Simulasikan sedang mengajar dengan jam khusus Jumat"
-          >
-            <i class="fa-solid fa-mosque text-[9px] mr-1 text-indigo-600"></i>Jumat 07:15 (Live)
-          </button>
-          <button
-            @click="applyPresetSimulation('Kamis', '09:00')"
-            class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition border"
-            :class="timeSim.enabled && timeSim.day === 'Kamis' ? 'bg-amber-500 text-white border-amber-500' : 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50'"
-            title="Simulasikan hari tanpa jadwal mengajar (Selamat Bersantai)"
-          >
-            <i class="fa-solid fa-mug-hot text-[9px] mr-1 text-amber-600"></i>Hari Kosong
-          </button>
-
-          <!-- Custom Day & Time Picker -->
-          <div class="flex items-center gap-1 pl-1 border-l border-slate-200">
-            <select
-              v-model="timeSim.day"
-              @change="timeSim.enabled = true"
-              class="px-2 py-1 rounded-lg bg-white border border-slate-300 text-[11px] font-bold text-slate-700 outline-none"
-            >
-              <option v-for="d in ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu']" :key="d" :value="d">{{ d }}</option>
-            </select>
-            <input
-              v-model="timeSim.time"
-              @input="timeSim.enabled = true"
-              type="time"
-              class="px-2 py-0.5 rounded-lg bg-white border border-slate-300 text-[11px] font-bold text-slate-700 outline-none"
-            />
           </div>
         </div>
       </div>
 
-      <!-- DASHBOARD SUB-NAVIGATION: [Ringkasan Hari Ini] vs [Jadwal Mingguan Lengkap (Senin-Jumat)] -->
+      <!-- DASHBOARD SUB-NAVIGATION: [Ringkasan Hari Ini] vs [Jadwal Mingguan (Senin-Jumat)] -->
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-1.5 bg-white p-1 rounded-2xl border border-slate-200 shadow-2xs">
           <button
@@ -442,7 +379,7 @@
             :class="dashboardSubView === 'weekly' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
           >
             <i class="fa-regular fa-calendar-days"></i>
-            <span>Jadwal Mingguan Detail (Senin – Jumat)</span>
+            <span>Jadwal Mingguan (Senin – Jumat)</span>
           </button>
         </div>
 
@@ -472,6 +409,18 @@
                   <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-300"></span>
                 </span>
                 <span>SEDANG BERLANGSUNG SEKARANG • {{ currentLiveTeaching.slot.label }}</span>
+                <span
+                  v-if="currentLiveTeaching.continuation && currentLiveTeaching.continuation.isContinuation"
+                  class="px-2 py-0.5 rounded-full bg-amber-300 text-slate-900 text-[10px] font-extrabold"
+                >
+                  ↳ LANJUTAN {{ currentLiveTeaching.continuation.prevSlotLabel }} (SESI {{ currentLiveTeaching.continuation.sessionIndex }}/{{ currentLiveTeaching.continuation.totalSessions }})
+                </span>
+                <span
+                  v-else-if="currentLiveTeaching.continuation && currentLiveTeaching.continuation.hasNextSameClass"
+                  class="px-2 py-0.5 rounded-full bg-white/25 text-white text-[10px] font-extrabold"
+                >
+                  SESI 1/{{ currentLiveTeaching.continuation.totalSessions }} • BERLANJUT KE {{ currentLiveTeaching.continuation.nextSlotLabel }}
+                </span>
               </div>
 
               <div class="flex items-baseline gap-2.5 flex-wrap pt-1">
@@ -487,7 +436,13 @@
               </div>
 
               <p class="text-xs sm:text-sm text-emerald-50/90 flex items-center gap-3 flex-wrap">
-                <span><i class="fa-regular fa-clock mr-1"></i>Waktu: <strong>{{ currentLiveTeaching.slot.start }} – {{ currentLiveTeaching.slot.end }}</strong></span>
+                <span><i class="fa-regular fa-clock mr-1"></i>Waktu Slot: <strong>{{ currentLiveTeaching.slot.start }} – {{ currentLiveTeaching.slot.end }}</strong></span>
+                <span
+                  v-if="currentLiveTeaching.continuation && currentLiveTeaching.continuation.totalSessions > 1"
+                  class="px-2 py-0.5 rounded-lg bg-black/20 text-emerald-100 text-xs font-bold"
+                >
+                  <i class="fa-solid fa-link mr-1"></i>Total {{ currentLiveTeaching.continuation.totalSessions }} JP Berurutan ({{ currentLiveTeaching.continuation.blockStart }} – {{ currentLiveTeaching.continuation.blockEnd }})
+                </span>
                 <span v-if="currentLiveTeaching.schedule.note" class="italic">"{{ currentLiveTeaching.schedule.note }}"</span>
               </p>
 
@@ -590,7 +545,7 @@
             Selamat Bersantai, Bapak/Ibu Guru! ☕🌿
           </h3>
           <p class="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto mt-2 leading-relaxed">
-            Tidak ada jadwal mengajar di kelas pada hari <strong>{{ effectiveDayName }}</strong>. Nikmati waktu Anda untuk beristirahat sejenak, menikmati secangkir kopi/teh hangat, atau menyiapkan inspirasi pembelajaran berikutnya dengan tenang.
+            Tidak ada jadwal mengajar di kelas pada hari <strong>{{ effectiveDayName }}, {{ effectiveFullDateString }}</strong>. Nikmati waktu Anda untuk beristirahat sejenak, menikmati secangkir kopi/teh hangat, atau menyiapkan inspirasi pembelajaran berikutnya dengan tenang.
           </p>
 
           <div class="mt-6 flex flex-wrap items-center justify-center gap-2.5">
@@ -600,13 +555,6 @@
             >
               <i class="fa-regular fa-calendar-days"></i>
               <span>Lihat / Kelola Jadwal Mingguan (Senin – Jumat)</span>
-            </button>
-            <button
-              @click="applyPresetSimulation('Senin', '07:20')"
-              class="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-2 transition"
-            >
-              <i class="fa-solid fa-play text-emerald-600"></i>
-              <span>Coba Simulasi Hari Aktif (Senin 07:20)</span>
             </button>
           </div>
         </div>
@@ -695,6 +643,27 @@
                           Akan Datang
                         </span>
 
+                        <!-- Continuation / Multi-Session Indicator Badge -->
+                        <span
+                          v-if="getScheduleContinuationInfo(effectiveDayName, slot.id)?.isContinuation"
+                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 text-[10px] font-extrabold"
+                        >
+                          <i class="fa-solid fa-share text-[9px]"></i>
+                          <span>
+                            Lanjutan {{ getScheduleContinuationInfo(effectiveDayName, slot.id).prevSlotLabel }}
+                            (Sesi {{ getScheduleContinuationInfo(effectiveDayName, slot.id).sessionIndex }}/{{ getScheduleContinuationInfo(effectiveDayName, slot.id).totalSessions }})
+                          </span>
+                        </span>
+                        <span
+                          v-else-if="getScheduleContinuationInfo(effectiveDayName, slot.id)?.hasNextSameClass"
+                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold"
+                        >
+                          <i class="fa-solid fa-link text-[9px]"></i>
+                          <span>
+                            Sesi 1/{{ getScheduleContinuationInfo(effectiveDayName, slot.id).totalSessions }} • Berlanjut ke {{ getScheduleContinuationInfo(effectiveDayName, slot.id).nextSlotLabel }}
+                          </span>
+                        </span>
+
                         <span class="font-extrabold text-sm sm:text-base text-slate-800">
                           {{ getClassById(getScheduleCell(effectiveDayName, slot.id).classId)?.name }}
                         </span>
@@ -705,8 +674,23 @@
                           <i class="fa-solid fa-door-open mr-1"></i>{{ getScheduleCell(effectiveDayName, slot.id).room }}
                         </span>
                       </div>
-                      <div v-if="getScheduleCell(effectiveDayName, slot.id).note" class="text-xs text-slate-500 mt-0.5 italic">
-                        Materi: "{{ getScheduleCell(effectiveDayName, slot.id).note }}"
+
+                      <!-- Continuation Description / Note Line -->
+                      <div class="text-xs mt-1 flex items-center gap-2 flex-wrap">
+                        <span
+                          v-if="getScheduleContinuationInfo(effectiveDayName, slot.id)?.isContinuation"
+                          class="text-indigo-700 font-semibold"
+                        >
+                          <i class="fa-solid fa-arrows-turn-right mr-1"></i>Masih pelajaran &amp; kelas yang sama dari {{ getScheduleContinuationInfo(effectiveDayName, slot.id).firstSlotLabel }}
+                          <span v-if="getScheduleContinuationInfo(effectiveDayName, slot.id).afterBreak">(setelah istirahat)</span>
+                          • Total {{ getScheduleContinuationInfo(effectiveDayName, slot.id).blockStart }}–{{ getScheduleContinuationInfo(effectiveDayName, slot.id).blockEnd }}
+                        </span>
+                        <span
+                          v-if="getScheduleCell(effectiveDayName, slot.id).note"
+                          class="text-slate-500 italic"
+                        >
+                          Materi: "{{ getScheduleCell(effectiveDayName, slot.id).note }}"
+                        </span>
                       </div>
                     </template>
 
@@ -752,7 +736,7 @@
         </div>
       </template>
 
-      <!-- ==================== SUB-VIEW 2: MATRIKS JADWAL MINGGUAN DETAIL (SENIN S/D JUMAT) ==================== -->
+      <!-- ==================== SUB-VIEW 2: MATRIKS JADWAL MINGGUAN (SENIN S/D JUMAT) ==================== -->
       <template v-else>
         <div class="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden flex flex-col">
           <!-- Info Banner about Mon-Thu vs Friday Time Difference -->
@@ -784,9 +768,8 @@
             <table class="w-full border-collapse text-left select-none">
               <thead class="bg-slate-100 text-slate-700 border-b border-slate-300">
                 <tr>
-                  <th class="sticky left-0 z-20 bg-slate-100 px-3 py-2.5 min-w-[155px] border-r border-slate-300 sticky-col-shadow">
+                  <th class="sticky left-0 z-20 bg-slate-100 px-3 py-2.5 min-w-[140px] border-r border-slate-300 sticky-col-shadow">
                     <div class="text-xs font-extrabold uppercase text-slate-600">Urutan Slot</div>
-                    <div class="text-[10px] text-slate-400 font-semibold">Waktu Sen–Kam vs Jumat</div>
                   </th>
                   <th
                     v-for="day in scheduleDays"
@@ -798,8 +781,8 @@
                       <span>{{ day }}</span>
                       <span v-if="day === effectiveDayName" class="px-1.5 py-0.2 rounded-full bg-emerald-600 text-white text-[9px]">Hari Ini</span>
                     </div>
-                    <div class="text-[10px] font-semibold mt-0.5" :class="day === 'Jumat' ? 'text-indigo-600' : 'text-slate-400'">
-                      {{ day === 'Jumat' ? 'Waktu Khusus Jumat' : 'Waktu Reguler Sen–Kam' }}
+                    <div class="text-[10px] font-semibold mt-0.5" :class="day === effectiveDayName ? 'text-emerald-700 font-bold' : day === 'Jumat' ? 'text-indigo-600' : 'text-slate-500'">
+                      {{ getDateForWeekdayInCurrentWeek(day) }}
                     </div>
                   </th>
                 </tr>
@@ -811,11 +794,11 @@
                   :key="monSlot.id"
                   class="hover:bg-slate-50/60"
                 >
-                  <!-- Sticky Left Column Comparing Mon-Thu vs Friday Slot Time + Quick Reorder Arrows -->
+                  <!-- Sticky Left Column Comparing Mon-Thu (R) vs Friday (J) Slot Start Time + Quick Reorder Arrows -->
                   <td class="sticky left-0 z-10 bg-white px-3 py-2 border-r border-slate-200 sticky-col-shadow align-top">
                     <div class="flex items-center justify-between gap-1">
-                      <span class="text-xs font-extrabold text-slate-800">
-                        Baris {{ rowIdx + 1 }}
+                      <span class="w-5 h-5 rounded-md bg-slate-100 text-slate-700 text-xs font-extrabold flex items-center justify-center">
+                        {{ rowIdx + 1 }}
                       </span>
                       <div class="flex items-center gap-1">
                         <button
@@ -844,17 +827,17 @@
                     </div>
                     <div class="mt-1 space-y-1 text-[10px]">
                       <div
-                        class="px-1.5 py-0.5 rounded font-semibold"
+                        class="px-1.5 py-0.5 rounded font-bold"
                         :class="monSlot.type === 'break' ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-slate-100 text-slate-700'"
                       >
-                        <strong>Sen-Kam:</strong> {{ monSlot.label }} ({{ monSlot.start }}-{{ monSlot.end }})
+                        {{ formatSimpleSlotLabel(monSlot, 'R') }}
                       </div>
                       <div
                         v-if="schedulePeriodsByGroup.fri[rowIdx]"
-                        class="px-1.5 py-0.5 rounded font-semibold"
+                        class="px-1.5 py-0.5 rounded font-bold"
                         :class="schedulePeriodsByGroup.fri[rowIdx].type === 'break' ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-indigo-50 text-indigo-800'"
                       >
-                        <strong>Jumat:</strong> {{ schedulePeriodsByGroup.fri[rowIdx].label }} ({{ schedulePeriodsByGroup.fri[rowIdx].start }}-{{ schedulePeriodsByGroup.fri[rowIdx].end }})
+                        {{ formatSimpleSlotLabel(schedulePeriodsByGroup.fri[rowIdx], 'J') }}
                       </div>
                     </div>
                   </td>
@@ -894,7 +877,8 @@
                         class="p-2 rounded-xl border text-left transition relative"
                         :class="[
                           getScheduleCardColor(getScheduleCell(day, getDaySlotAtRow(day, rowIdx).id).classId),
-                          isSlotCurrentlyActive(day, getDaySlotAtRow(day, rowIdx)) ? 'ring-2 ring-emerald-600 shadow-md' : ''
+                          isSlotCurrentlyActive(day, getDaySlotAtRow(day, rowIdx)) ? 'ring-2 ring-emerald-600 shadow-md' : '',
+                          getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id)?.isContinuation ? 'border-t-2 border-dashed' : ''
                         ]"
                       >
                         <!-- Live Tag in Matrix Cell -->
@@ -904,6 +888,22 @@
                         >
                           <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
                           <span>SEDANG BERLANGSUNG</span>
+                        </div>
+
+                        <!-- Continuation Badge inside Weekly Matrix Cell -->
+                        <div
+                          v-if="getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id)?.isContinuation"
+                          class="mb-1 px-1.5 py-0.5 rounded bg-indigo-600/90 text-white text-[9px] font-extrabold flex items-center justify-between gap-1"
+                        >
+                          <span>↳ Lanjutan {{ getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id).prevSlotLabel }}</span>
+                          <span>({{ getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id).sessionIndex }}/{{ getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id).totalSessions }})</span>
+                        </div>
+                        <div
+                          v-else-if="getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id)?.hasNextSameClass"
+                          class="mb-1 px-1.5 py-0.5 rounded bg-black/10 text-slate-800 text-[9px] font-extrabold flex items-center justify-between gap-1"
+                        >
+                          <span>Sesi 1/{{ getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id).totalSessions }}</span>
+                          <span>→ Lanjut {{ getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id).nextSlotLabel }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-1">
@@ -916,6 +916,12 @@
                         </div>
                         <div class="text-[10px] opacity-85 truncate">
                           {{ getClassById(getScheduleCell(day, getDaySlotAtRow(day, rowIdx).id).classId)?.subject }}
+                        </div>
+                        <div
+                          v-if="getScheduleContinuationInfo(day, getDaySlotAtRow(day, rowIdx).id)?.isContinuation"
+                          class="text-[9px] font-semibold text-indigo-900/80 truncate mt-0.5 italic"
+                        >
+                          Masih kelas &amp; mapel yang sama
                         </div>
                         <div class="mt-1.5 pt-1 border-t border-black/10 flex items-center gap-1">
                           <button
@@ -1030,34 +1036,34 @@
         <table class="w-full border-collapse text-left select-none">
           <thead class="sticky top-0 z-20 bg-slate-100 text-slate-700 border-b border-slate-300 shadow-xs">
             <tr>
-              <!-- Sticky Left Column: Student -->
-              <th class="sticky left-0 z-30 bg-slate-100 px-3 py-2.5 min-w-[180px] max-w-[220px] sm:min-w-[220px] border-r border-slate-300 sticky-col-shadow">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+              <!-- Sticky Left Column: Student (Compact on Mobile so >= 3 score columns fit on screen) -->
+              <th class="sticky left-0 z-30 bg-slate-100 px-2 sm:px-3 py-2 sm:py-2.5 w-[130px] min-w-[130px] max-w-[130px] sm:w-auto sm:min-w-[220px] sm:max-w-[240px] border-r border-slate-300 sticky-col-shadow">
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-500 truncate">
                     Siswa ({{ filteredStudents.length }})
                   </span>
-                  <button @click="toggleSortStudent" class="text-xs text-slate-500 hover:text-slate-800 px-1.5 py-0.5 rounded bg-slate-200/70" title="Urutkan Nama / Nilai Akhir">
+                  <button @click="toggleSortStudent" class="text-[10px] sm:text-xs text-slate-500 hover:text-slate-800 px-1 sm:px-1.5 py-0.5 rounded bg-slate-200/70 shrink-0" title="Urutkan Nama / Nilai Akhir">
                     <i class="fa-solid" :class="sortBy === 'name' ? 'fa-arrow-down-a-z' : 'fa-arrow-down-9-1 text-emerald-600'"></i>
                   </button>
                 </div>
               </th>
 
-              <!-- Dynamic Assessment Columns -->
+              <!-- Dynamic Assessment Columns (72px on mobile = 3+ columns visible at once) -->
               <th
                 v-for="ass in filteredAssessments"
                 :key="ass.id"
-                class="px-2 py-2 min-w-[96px] sm:min-w-[108px] border-r border-slate-200 text-center align-top group transition"
+                class="px-1 sm:px-2 py-1.5 sm:py-2 w-[72px] min-w-[72px] max-w-[76px] sm:w-auto sm:min-w-[108px] sm:max-w-none border-r border-slate-200 text-center align-top group transition"
                 :class="getCategoryHeaderBg(ass.category)"
               >
                 <div class="flex flex-col items-center">
                   <!-- Category + Scale Type Quick Toggle Row -->
-                  <div class="flex items-center gap-1 mb-1">
-                    <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded" :class="getCategoryBadgeClass(ass.category)">
+                  <div class="flex items-center justify-center gap-0.5 sm:gap-1 mb-0.5 sm:mb-1 flex-wrap">
+                    <span class="text-[8px] sm:text-[9px] font-extrabold uppercase px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded truncate max-w-[42px] sm:max-w-none" :class="getCategoryBadgeClass(ass.category)">
                       {{ getCategoryShortName(ass.category) }}
                     </span>
                     <button
                       @click.stop="toggleAssessmentScaleType(ass)"
-                      class="text-[9px] font-extrabold px-1.5 py-0.5 rounded border transition"
+                      class="text-[8px] sm:text-[9px] font-extrabold px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded border transition shrink-0"
                       :class="ass.scaleType === 'letter'
                         ? 'bg-indigo-600 text-white border-indigo-600'
                         : 'bg-white text-slate-600 border-slate-300 hover:border-emerald-500'"
@@ -1070,16 +1076,16 @@
                   <!-- Column Title (Click to Edit) -->
                   <button
                     @click="openAssessmentModal('edit', ass)"
-                    class="text-xs font-bold text-slate-800 hover:text-emerald-700 line-clamp-1 max-w-[95px] flex items-center gap-1"
+                    class="text-[10px] sm:text-xs font-bold text-slate-800 hover:text-emerald-700 line-clamp-1 max-w-[66px] sm:max-w-[95px] flex items-center justify-center gap-0.5 sm:gap-1"
                     :title="'Edit kolom: ' + ass.title"
                   >
                     <span class="truncate">{{ ass.title }}</span>
-                    <i class="fa-solid fa-pen text-[9px] text-slate-400 group-hover:text-emerald-600"></i>
+                    <i class="fa-solid fa-pen text-[8px] sm:text-[9px] text-slate-400 group-hover:text-emerald-600 shrink-0"></i>
                   </button>
 
                   <!-- Column Average -->
-                  <div class="text-[10px] text-slate-500 font-semibold mt-0.5">
-                    Rata2: {{ getAssessmentAverageDisplay(ass) }}
+                  <div class="text-[9px] sm:text-[10px] text-slate-500 font-semibold mt-0.5 truncate max-w-[68px] sm:max-w-none">
+                    <span class="hidden sm:inline">Rata2: </span>{{ getAssessmentAverageDisplay(ass) }}
                   </div>
                 </div>
               </th>
@@ -1090,15 +1096,15 @@
               </th>
 
               <!-- Weighted Final Numeric Score -->
-              <th class="px-2.5 py-2.5 min-w-[90px] bg-emerald-50/90 border-r border-slate-200 text-center">
-                <div class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">Nilai Akhir</div>
-                <div class="text-[10px] text-emerald-600 font-semibold mt-0.5">Skala 0-100</div>
+              <th class="px-1.5 sm:px-2.5 py-2 sm:py-2.5 min-w-[70px] sm:min-w-[90px] bg-emerald-50/90 border-r border-slate-200 text-center">
+                <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">Nilai Akhir</div>
+                <div class="text-[9px] sm:text-[10px] text-emerald-600 font-semibold mt-0.5">0-100</div>
               </th>
 
               <!-- Final Letter Grade (A+ s/d D) -->
-              <th class="px-2.5 py-2.5 min-w-[88px] bg-indigo-50/80 text-center">
-                <div class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-900">Nilai Huruf</div>
-                <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">A+ s/d D</div>
+              <th class="px-1.5 sm:px-2.5 py-2 sm:py-2.5 min-w-[68px] sm:min-w-[88px] bg-indigo-50/80 text-center">
+                <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-indigo-900">Huruf</div>
+                <div class="text-[9px] sm:text-[10px] text-indigo-600 font-semibold mt-0.5">A+..D</div>
               </th>
             </tr>
           </thead>
@@ -1112,13 +1118,13 @@
             >
               <!-- Sticky Left Cell: Student Info -->
               <td
-                class="sticky left-0 z-10 bg-white px-2.5 sm:px-3 py-2 border-r border-slate-200 sticky-col-shadow cursor-pointer hover:bg-emerald-50/50 transition"
+                class="sticky left-0 z-10 bg-white px-1.5 sm:px-3 py-1.5 sm:py-2 w-[130px] min-w-[130px] max-w-[130px] sm:w-auto sm:min-w-[220px] sm:max-w-[240px] border-r border-slate-200 sticky-col-shadow cursor-pointer hover:bg-emerald-50/50 transition"
                 :class="{ '!bg-emerald-50': keypad.isOpen && keypad.studentId === student.id }"
                 @click="openStudentProfile(student)"
               >
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 sm:gap-2">
                   <div
-                    class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 border"
+                    class="w-5 h-5 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[9px] sm:text-[11px] font-extrabold shrink-0 border"
                     :class="isStudentBelowKKM(student.id)
                       ? 'bg-rose-50 text-rose-700 border-rose-200'
                       : 'bg-emerald-50 text-emerald-700 border-emerald-200'"
@@ -1126,12 +1132,12 @@
                     {{ sIdx + 1 }}
                   </div>
                   <div class="min-w-0 flex-1">
-                    <div class="font-bold text-xs sm:text-sm text-slate-800 truncate leading-tight">
+                    <div class="font-bold text-[11px] sm:text-sm text-slate-800 truncate leading-tight">
                       {{ student.name }}
                     </div>
-                    <div class="flex items-center gap-1.5 text-[10px] text-slate-400 mt-0.5">
-                      <span>{{ student.nis }}</span>
-                      <span v-if="getStudentBehaviorNet(student.id) !== 0" class="px-1 rounded font-bold" :class="getStudentBehaviorNet(student.id) > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'">
+                    <div class="flex items-center gap-1 text-[9px] sm:text-[10px] text-slate-400 mt-0.5 truncate">
+                      <span class="truncate">{{ student.nis }}</span>
+                      <span v-if="getStudentBehaviorNet(student.id) !== 0" class="px-1 rounded font-bold shrink-0" :class="getStudentBehaviorNet(student.id) > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'">
                         {{ getStudentBehaviorNet(student.id) > 0 ? '+' : '' }}{{ getStudentBehaviorNet(student.id) }}
                       </span>
                     </div>
@@ -1145,26 +1151,26 @@
                 :key="ass.id"
                 :id="'grade-cell-' + student.id + '-' + ass.id"
                 @click="openGradeKeypad(student, ass)"
-                class="px-1.5 py-1.5 border-r border-slate-100 text-center cursor-pointer transition-all"
+                class="px-1 sm:px-1.5 py-1 sm:py-1.5 w-[72px] min-w-[72px] max-w-[76px] sm:w-auto sm:min-w-[108px] sm:max-w-none border-r border-slate-100 text-center cursor-pointer transition-all"
                 :class="getGradeCellClass(student.id, ass)"
               >
-                <div class="min-h-[40px] flex flex-col items-center justify-center rounded-xl px-1 py-0.5">
+                <div class="min-h-[36px] sm:min-h-[40px] flex flex-col items-center justify-center rounded-xl px-0.5 py-0.5">
                   <template v-if="hasScore(student.id, ass.id)">
                     <!-- Display Mode: Letter Only OR Column is Letter -->
                     <template v-if="shouldShowLetter(ass)">
                       <span
-                        class="px-2 py-0.5 rounded-lg text-xs font-extrabold border inline-flex items-center gap-1"
+                        class="px-1.5 sm:px-2 py-0.5 rounded-lg text-[11px] sm:text-xs font-extrabold border inline-flex items-center gap-0.5 sm:gap-1"
                         :class="getLetterBadgeStyle(getCellLetter(student.id, ass.id))"
                       >
                         <span>{{ getCellLetter(student.id, ass.id) }}</span>
-                        <span v-if="gradeDisplayMode === 'both'" class="text-[10px] opacity-75 font-semibold">({{ getScore(student.id, ass.id) }})</span>
+                        <span v-if="gradeDisplayMode === 'both'" class="text-[9px] sm:text-[10px] opacity-75 font-semibold">({{ getScore(student.id, ass.id) }})</span>
                       </span>
                     </template>
 
                     <!-- Display Mode: Numeric -->
                     <template v-else>
                       <span
-                        class="text-sm font-extrabold tracking-tight"
+                        class="text-xs sm:text-sm font-extrabold tracking-tight"
                         :class="Number(getScore(student.id, ass.id)) < currentClass.kkm ? 'text-rose-600' : 'text-slate-800'"
                       >
                         {{ getScore(student.id, ass.id) }}
@@ -1174,7 +1180,7 @@
                     <!-- Sub-note if present -->
                     <span
                       v-if="getScoreNote(student.id, ass.id)"
-                      class="text-[9px] text-amber-700 bg-amber-50 px-1 rounded truncate max-w-[82px] border border-amber-200/70 mt-0.5"
+                      class="text-[8px] sm:text-[9px] text-amber-700 bg-amber-50 px-1 rounded truncate max-w-[62px] sm:max-w-[82px] border border-amber-200/70 mt-0.5"
                     >
                       {{ getScoreNote(student.id, ass.id) }}
                     </span>
@@ -1192,10 +1198,10 @@
               </td>
 
               <!-- Final Weighted Numeric Score (0-100) -->
-              <td class="px-2 py-2 border-r border-slate-200 text-center bg-emerald-50/20 font-extrabold text-sm">
+              <td class="px-1 sm:px-2 py-1.5 sm:py-2 border-r border-slate-200 text-center bg-emerald-50/20 font-extrabold text-xs sm:text-sm">
                 <template v-if="getStudentFinalScore(student.id) !== null">
                   <span
-                    class="px-2 py-1 rounded-lg inline-block min-w-[46px]"
+                    class="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg inline-block min-w-[40px] sm:min-w-[46px]"
                     :class="getStudentFinalScore(student.id) >= currentClass.kkm
                       ? 'bg-emerald-100/90 text-emerald-800'
                       : 'bg-rose-100 text-rose-700'"
@@ -1207,11 +1213,11 @@
               </td>
 
               <!-- Final Letter Grade Badge (A+, A, A-, B+, B, B-, C+, C, C-, D) -->
-              <td class="px-2 py-2 text-center bg-indigo-50/20">
+              <td class="px-1 sm:px-2 py-1.5 sm:py-2 text-center bg-indigo-50/20">
                 <template v-if="getStudentFinalScore(student.id) !== null">
                   <div class="inline-flex flex-col items-center">
                     <span
-                      class="px-2.5 py-1 rounded-lg text-xs font-extrabold border min-w-[38px]"
+                      class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-extrabold border min-w-[34px] sm:min-w-[38px]"
                       :class="getLetterBadgeStyle(numberToLetterGrade(getStudentFinalScore(student.id)))"
                     >
                       {{ numberToLetterGrade(getStudentFinalScore(student.id)) }}
@@ -1276,32 +1282,32 @@
         <table class="w-full border-collapse text-left select-none">
           <thead class="sticky top-0 z-20 bg-slate-100 text-slate-700 border-b border-slate-300 shadow-xs">
             <tr>
-              <!-- Sticky Left Header: Student -->
-              <th class="sticky left-0 z-30 bg-slate-100 px-3 py-2.5 min-w-[185px] max-w-[225px] sm:min-w-[220px] border-r border-slate-300 sticky-col-shadow">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
-                    Daftar Siswa ({{ filteredStudents.length }})
+              <!-- Sticky Left Header: Student (Compact on mobile so >= 3 attendance columns fit at once) -->
+              <th class="sticky left-0 z-30 bg-slate-100 px-2 sm:px-3 py-2 sm:py-2.5 w-[130px] min-w-[130px] max-w-[130px] sm:w-auto sm:min-w-[220px] sm:max-w-[240px] border-r border-slate-300 sticky-col-shadow">
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-500 truncate">
+                    Siswa ({{ filteredStudents.length }})
                   </span>
-                  <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                  <span class="hidden sm:inline-block text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
                     H+D = Aktif
                   </span>
                 </div>
               </th>
 
-              <!-- Dynamic Meeting Session Columns (P1, P2, P3...) -->
+              <!-- Dynamic Meeting Session Columns (P1, P2, P3... - 72px on mobile = 3+ columns visible at once) -->
               <th
                 v-for="(sess, idx) in currentClass.attendanceSessions"
                 :key="sess.id"
-                class="px-2 py-2 min-w-[92px] sm:min-w-[104px] border-r border-slate-200 text-center align-top group bg-slate-50/90 hover:bg-slate-100 transition"
+                class="px-1 sm:px-2 py-1.5 sm:py-2 w-[72px] min-w-[72px] max-w-[76px] sm:w-auto sm:min-w-[104px] sm:max-w-none border-r border-slate-200 text-center align-top group bg-slate-50/90 hover:bg-slate-100 transition"
               >
                 <div class="flex flex-col items-center">
-                  <div class="flex items-center gap-1 mb-0.5">
-                    <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                  <div class="flex items-center justify-center gap-0.5 sm:gap-1 mb-0.5">
+                    <span class="text-[9px] sm:text-[10px] font-extrabold uppercase px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded bg-emerald-100 text-emerald-800">
                       P{{ idx + 1 }}
                     </span>
                     <button
                       @click="markAllPresentInSession(sess)"
-                      class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-300 transition"
+                      class="text-[8px] sm:text-[9px] font-bold px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded bg-white hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-300 transition"
                       title="Set Hadir Semua di pertemuan ini"
                     >
                       <i class="fa-solid fa-check-double"></i> H
@@ -1310,19 +1316,19 @@
 
                   <button
                     @click="openSessionModal('edit', sess)"
-                    class="text-[11px] font-extrabold text-slate-800 hover:text-emerald-700 flex items-center gap-1"
+                    class="text-[10px] sm:text-[11px] font-extrabold text-slate-800 hover:text-emerald-700 flex items-center justify-center gap-0.5 sm:gap-1"
                     :title="sess.topic"
                   >
-                    <span>{{ formatShortDate(sess.date) }}</span>
-                    <i class="fa-solid fa-pen text-[9px] text-slate-400"></i>
+                    <span class="truncate">{{ formatShortDate(sess.date) }}</span>
+                    <i class="fa-solid fa-pen text-[8px] sm:text-[9px] text-slate-400 shrink-0"></i>
                   </button>
 
-                  <div class="text-[10px] text-slate-500 truncate max-w-[88px]" :title="sess.topic">
+                  <div class="text-[9px] sm:text-[10px] text-slate-500 truncate max-w-[64px] sm:max-w-[88px]" :title="sess.topic">
                     {{ sess.topic || 'Pertemuan' }}
                   </div>
 
-                  <div class="text-[9px] font-bold text-emerald-700 mt-0.5">
-                    Aktif: {{ getSessionActiveCount(sess) }}/{{ currentClass.students.length }}
+                  <div class="text-[8px] sm:text-[9px] font-bold text-emerald-700 mt-0.5">
+                    {{ getSessionActiveCount(sess) }}/{{ currentClass.students.length }}
                   </div>
                 </div>
               </th>
@@ -1346,22 +1352,30 @@
             >
               <!-- Sticky Left Student Cell -->
               <td
-                class="sticky left-0 z-10 bg-white px-2.5 sm:px-3 py-2 border-r border-slate-200 sticky-col-shadow cursor-pointer hover:bg-emerald-50/50 transition"
+                class="sticky left-0 z-10 bg-white px-1.5 sm:px-3 py-1.5 sm:py-2 w-[130px] min-w-[130px] max-w-[130px] sm:w-auto sm:min-w-[220px] sm:max-w-[240px] border-r border-slate-200 sticky-col-shadow cursor-pointer hover:bg-emerald-50/50 transition"
                 :class="{ '!bg-emerald-50': attKeypad.isOpen && attKeypad.studentId === student.id }"
                 @click="openStudentProfile(student)"
               >
-                <div class="flex items-center justify-between gap-2">
-                  <div class="flex items-center gap-2 min-w-0">
-                    <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-extrabold text-[11px] flex items-center justify-center shrink-0">
+                <div class="flex items-center justify-between gap-1 sm:gap-2">
+                  <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <div class="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-slate-100 text-slate-700 font-extrabold text-[9px] sm:text-[11px] flex items-center justify-center shrink-0">
                       {{ sIdx + 1 }}
                     </div>
                     <div class="min-w-0">
-                      <div class="font-bold text-xs sm:text-sm text-slate-800 truncate leading-tight">{{ student.name }}</div>
-                      <div class="text-[10px] text-slate-400">NIS: {{ student.nis }}</div>
+                      <div class="font-bold text-[11px] sm:text-sm text-slate-800 truncate leading-tight">{{ student.name }}</div>
+                      <div class="flex items-center gap-1 text-[9px] sm:text-[10px] text-slate-400">
+                        <span class="truncate">{{ student.nis }}</span>
+                        <span
+                          class="sm:hidden font-extrabold px-1 rounded"
+                          :class="getStudentAttendancePercent(student.id) >= 85 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'"
+                        >
+                          {{ getStudentAttendancePercent(student.id) }}%
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <span
-                    class="text-[10px] font-extrabold px-1.5 py-0.5 rounded shrink-0"
+                    class="hidden sm:inline-block text-[10px] font-extrabold px-1.5 py-0.5 rounded shrink-0"
                     :class="getStudentAttendancePercent(student.id) >= 85 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'"
                   >
                     {{ getStudentAttendancePercent(student.id) }}%
@@ -1375,19 +1389,19 @@
                 :key="sess.id"
                 :id="'att-cell-' + student.id + '-' + sess.id"
                 @click="handleAttendanceCellClick(student, sess)"
-                class="px-1.5 py-1.5 border-r border-slate-100 text-center cursor-pointer transition-all"
+                class="px-1 sm:px-1.5 py-1 sm:py-1.5 w-[72px] min-w-[72px] max-w-[76px] sm:w-auto sm:min-w-[104px] sm:max-w-none border-r border-slate-100 text-center cursor-pointer transition-all"
                 :class="getAttendanceCellHighlight(student.id, sess.id)"
               >
-                <div class="min-h-[38px] flex flex-col items-center justify-center">
+                <div class="min-h-[34px] sm:min-h-[38px] flex flex-col items-center justify-center">
                   <span
-                    class="w-8 h-7 rounded-lg font-extrabold text-xs flex items-center justify-center border shadow-2xs transition-transform active:scale-95"
+                    class="w-7 h-6 sm:w-8 sm:h-7 rounded-lg font-extrabold text-[11px] sm:text-xs flex items-center justify-center border shadow-2xs transition-transform active:scale-95"
                     :class="getAttendanceBadgeClass(getAttendanceStatus(sess, student.id))"
                   >
                     {{ getAttendanceStatus(sess, student.id) }}
                   </span>
                   <span
                     v-if="getAttendanceNote(sess, student.id)"
-                    class="text-[9px] px-1 rounded truncate max-w-[82px] mt-0.5 border"
+                    class="text-[8px] sm:text-[9px] px-1 rounded truncate max-w-[62px] sm:max-w-[82px] mt-0.5 border"
                     :class="getAttendanceStatus(sess, student.id) === 'D'
                       ? 'bg-violet-50 text-violet-700 border-violet-200'
                       : 'bg-slate-100 text-slate-600 border-slate-200'"
@@ -1526,7 +1540,7 @@
       <!-- Student Cards Grid -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         <div
-          v-for="(student, idx) in studentDirectoryList"
+          v-for="student in studentDirectoryList"
           :key="student.id"
           class="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs flex flex-col justify-between gap-3 hover:border-emerald-300 transition"
         >
@@ -2246,10 +2260,10 @@
           <div class="flex items-center gap-2 min-w-0 flex-1">
             <!-- Row Index Badge -->
             <span
-              class="px-2 py-1 rounded-lg text-[10px] font-extrabold uppercase shrink-0 border min-w-[58px] text-center"
+              class="px-2 py-1 rounded-lg text-[10px] font-extrabold uppercase shrink-0 border min-w-[28px] text-center"
               :class="slot.type === 'break' ? 'bg-amber-200/80 text-amber-950 border-amber-300' : 'bg-white text-slate-600 border-slate-200'"
             >
-              Baris {{ idx + 1 }}
+              {{ idx + 1 }}
             </span>
 
             <!-- Move Up / Move Down Buttons -->
@@ -2368,7 +2382,7 @@
       <!-- Editable List of Categories -->
       <div class="flex-1 overflow-y-auto space-y-2.5 pr-1">
         <div
-          v-for="(cat, idx) in currentClass.categoryList"
+          v-for="cat in currentClass.categoryList"
           :key="cat.id"
           class="p-3 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-2"
         >
@@ -3089,6 +3103,46 @@
 const { createApp } = Vue;
 
 const STORAGE_KEY = 'additioguru_v4_state';
+const UNSAFE_OBJECT_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+// Security Helper: Sanitize plain text & strip control characters
+function sanitizeText(input, maxLength = 120) {
+  if (input === null || input === undefined) return '';
+  return String(input)
+    .replace(/[\u0000-\u001F\u007F]/g, '')
+    .trim()
+    .slice(0, maxLength);
+}
+
+// Security Helper: Clamp numeric value safely within [min, max]
+function clampNumber(value, min, max, fallback) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.min(max, Math.max(min, num));
+}
+
+// Security Helper: Prevent Prototype Pollution when parsing nested objects from localStorage
+function sanitizePlainMap(rawObj) {
+  const clean = {};
+  if (!rawObj || typeof rawObj !== 'object' || Array.isArray(rawObj)) return clean;
+  Object.keys(rawObj).forEach(key => {
+    if (!UNSAFE_OBJECT_KEYS.has(key)) {
+      clean[key] = rawObj[key];
+    }
+  });
+  return clean;
+}
+
+// Security Helper: Prevent CSV Formula Injection (=, +, -, @, Tab, CR)
+function escapeCSVCell(val) {
+  if (val === null || val === undefined || val === '') return '';
+  if (typeof val === 'number' && Number.isFinite(val)) return String(val);
+  let str = String(val).replace(/\r?\n/g, ' ').trim();
+  if (/^[=+\-@\t\r]/.test(str) && !/^-\d+(\.\d+)?%?$/.test(str)) {
+    str = "'" + str;
+  }
+  return `"${str.replace(/"/g, '""')}"`;
+}
 
 // Complete 10-Level Letter Grade Scale (A+, A, A-, B+, B, B-, C+, C, C-, D)
 const LETTER_GRADE_SCALE = [
@@ -3377,14 +3431,9 @@ createApp({
 
       attendanceQuickTapMode: false,
 
-      // Real-Time Clock & Simulation State for Dashboard
+      // Real-Time Clock for Dashboard
       nowDate: new Date(),
       clockInterval: null,
-      timeSim: {
-        enabled: false,
-        day: 'Senin',
-        time: '07:20'
-      },
 
       // Senin s/d Jumat (5 Hari)
       scheduleDays: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
@@ -3484,22 +3533,24 @@ createApp({
     },
 
     currentClassCategories() {
-      if (!this.currentClass) return [];
-      if (!Array.isArray(this.currentClass.categoryList) || this.currentClass.categoryList.length === 0) {
-        this.currentClass.categoryList = createDefaultCategoryList(this.currentClass.weights);
-      }
-      return this.currentClass.categoryList;
+      return this.currentClass?.categoryList || [];
     },
 
-    // Effective Day & Time (Supports Real-Time & 1-Click Simulation)
+    // Real-Time Day, Full Date & Time
     effectiveDayName() {
-      if (this.timeSim.enabled) return this.timeSim.day;
       const dayMap = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
       return dayMap[this.nowDate.getDay()];
     },
 
+    effectiveFullDateString() {
+      return this.nowDate.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    },
+
     effectiveTimeString() {
-      if (this.timeSim.enabled) return this.timeSim.time;
       const h = String(this.nowDate.getHours()).padStart(2, '0');
       const m = String(this.nowDate.getMinutes()).padStart(2, '0');
       return `${h}:${m}`;
@@ -3542,6 +3593,7 @@ createApp({
               day,
               slot,
               schedule: sched,
+              continuation: this.getScheduleContinuationInfo(day, slot.id),
               progressPercent,
               remainingMinutes: Math.max(1, endMin - nowMin)
             };
@@ -3726,6 +3778,7 @@ createApp({
 
   beforeUnmount() {
     if (this.clockInterval) clearInterval(this.clockInterval);
+    if (this.toast.timer) clearTimeout(this.toast.timer);
   },
 
   methods: {
@@ -3735,16 +3788,16 @@ createApp({
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed.classes) && parsed.classes.length > 0) {
+          if (parsed && typeof parsed === 'object' && Array.isArray(parsed.classes) && parsed.classes.length > 0) {
             this.classes = this.sanitizeClasses(parsed.classes);
-            this.activeClassId = parsed.activeClassId || this.classes[0].id;
+            this.activeClassId = sanitizeText(parsed.activeClassId, 60) || this.classes[0].id;
             const defaultGroups = createDefaultSchedulePeriodsByGroup();
             this.schedulePeriodsByGroup = {
               monThu: Array.isArray(parsed.schedulePeriodsByGroup?.monThu) ? parsed.schedulePeriodsByGroup.monThu : defaultGroups.monThu,
               fri: Array.isArray(parsed.schedulePeriodsByGroup?.fri) ? parsed.schedulePeriodsByGroup.fri : defaultGroups.fri
             };
             this.weeklySchedule = parsed.weeklySchedule && typeof parsed.weeklySchedule === 'object'
-              ? parsed.weeklySchedule
+              ? sanitizePlainMap(parsed.weeklySchedule)
               : createDefaultWeeklySchedule();
             return;
           }
@@ -3761,45 +3814,52 @@ createApp({
     },
 
     sanitizeClasses(clsList) {
+      const allowedColors = new Set(['emerald', 'sky', 'amber', 'purple', 'indigo', 'rose']);
       return clsList.map(c => {
-        const weights = c.weights || { TUGAS: 30, PRAKTIK: 20, PTS: 25, PAS: 25 };
+        const weights = sanitizePlainMap(c.weights || { TUGAS: 30, PRAKTIK: 20, PTS: 25, PAS: 25 });
         const categoryList = Array.isArray(c.categoryList) && c.categoryList.length > 0
           ? c.categoryList.map(cat => ({
-              id: cat.id || 'CAT_' + Date.now(),
-              label: cat.label || 'Kategori',
-              shortLabel: cat.shortLabel || cat.label || 'Kat',
-              weight: Number(cat.weight) || 0,
-              color: cat.color || 'emerald'
+              id: sanitizeText(cat.id, 40) || 'CAT_' + Date.now(),
+              label: sanitizeText(cat.label, 60) || 'Kategori',
+              shortLabel: sanitizeText(cat.shortLabel || cat.label, 20) || 'Kat',
+              weight: clampNumber(cat.weight, 0, 100, 0),
+              color: allowedColors.has(cat.color) ? cat.color : 'emerald'
             }))
           : createDefaultCategoryList(weights);
 
         return {
-          id: c.id || 'cls-' + Date.now(),
-          name: c.name || 'Kelas',
-          subject: c.subject || 'Mata Pelajaran',
-          semester: c.semester || 'Ganjil 2026/2027',
-          kkm: Number(c.kkm) || 75,
+          id: sanitizeText(c.id, 60) || 'cls-' + Date.now(),
+          name: sanitizeText(c.name, 60) || 'Kelas',
+          subject: sanitizeText(c.subject, 60) || 'Mata Pelajaran',
+          semester: sanitizeText(c.semester, 40) || 'Ganjil 2026/2027',
+          kkm: clampNumber(c.kkm, 1, 100, 75),
           weights,
           categoryList,
-          students: Array.isArray(c.students) ? c.students : [],
+          students: Array.isArray(c.students)
+            ? c.students.map(st => ({
+                id: sanitizeText(st.id, 60) || 'st-' + Date.now(),
+                name: sanitizeText(st.name, 80) || 'Siswa',
+                nis: sanitizeText(st.nis, 30) || '-'
+              }))
+            : [],
           assessments: Array.isArray(c.assessments)
             ? c.assessments.map(a => ({
-                id: a.id,
-                title: a.title || 'Penilaian',
-                category: a.category || categoryList[0].id,
+                id: sanitizeText(a.id, 60) || 'ass-' + Date.now(),
+                title: sanitizeText(a.title, 60) || 'Penilaian',
+                category: sanitizeText(a.category, 40) || categoryList[0].id,
                 scaleType: a.scaleType === 'letter' ? 'letter' : 'numeric'
               }))
             : [],
-          scores: c.scores && typeof c.scores === 'object' ? c.scores : {},
-          letterGrades: c.letterGrades && typeof c.letterGrades === 'object' ? c.letterGrades : {},
-          scoreNotes: c.scoreNotes && typeof c.scoreNotes === 'object' ? c.scoreNotes : {},
+          scores: sanitizePlainMap(c.scores),
+          letterGrades: sanitizePlainMap(c.letterGrades),
+          scoreNotes: sanitizePlainMap(c.scoreNotes),
           attendanceSessions: Array.isArray(c.attendanceSessions)
             ? c.attendanceSessions.map(s => ({
-                id: s.id || 'att-' + Date.now(),
-                date: s.date || '2026-11-15',
-                topic: s.topic || 'Pertemuan',
-                records: s.records && typeof s.records === 'object' ? s.records : {},
-                notes: s.notes && typeof s.notes === 'object' ? s.notes : {}
+                id: sanitizeText(s.id, 60) || 'att-' + Date.now(),
+                date: sanitizeText(s.date, 20) || '2026-11-15',
+                topic: sanitizeText(s.topic, 80) || 'Pertemuan',
+                records: sanitizePlainMap(s.records),
+                notes: sanitizePlainMap(s.notes)
               }))
             : [],
           behaviorLogs: Array.isArray(c.behaviorLogs) ? c.behaviorLogs : []
@@ -3860,11 +3920,6 @@ createApp({
         if (num >= item.min) return item.letter;
       }
       return 'D';
-    },
-
-    letterToDefaultNumber(letter) {
-      const found = LETTER_GRADE_SCALE.find(g => g.letter === letter);
-      return found ? found.defaultScore : 50;
     },
 
     getLetterBadgeStyle(letter) {
@@ -4019,10 +4074,47 @@ createApp({
       return this.scheduleDays.includes(dayName);
     },
 
+    getDateForWeekdayInCurrentWeek(dayName) {
+      const dayIndexMap = { 'Senin': 1, 'Selasa': 2, 'Rabu': 3, 'Kamis': 4, 'Jumat': 5 };
+      const targetDayNum = dayIndexMap[dayName];
+      if (!targetDayNum) return '';
+      const base = new Date(this.nowDate);
+      const currentDayNum = base.getDay();
+      const isoCurrentDay = currentDayNum === 0 ? 7 : currentDayNum;
+      const diff = targetDayNum - isoCurrentDay;
+      const targetDate = new Date(base);
+      targetDate.setDate(base.getDate() + diff);
+      return targetDate.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+    },
+
+    formatSimpleSlotLabel(slot, code) {
+      if (!slot) return '';
+      let baseLabel = '';
+      if (slot.type === 'lesson' && slot.number) {
+        baseLabel = `JP ${slot.number}`;
+      } else if (slot.type === 'break') {
+        baseLabel = slot.id === 'brk1' ? 'Istirahat 1' : slot.id === 'brk2' ? 'Istirahat 2' : (slot.label || 'Istirahat');
+      } else {
+        baseLabel = String(slot.label || '').replace(/\s*\(Jumat\)/i, '').trim();
+      }
+      return `${baseLabel}: ${code} (${slot.start})`;
+    },
+
     parseTimeToMinutes(timeStr) {
       if (!timeStr || typeof timeStr !== 'string') return 0;
       const parts = timeStr.split(':').map(Number);
       return (parts[0] || 0) * 60 + (parts[1] || 0);
+    },
+
+    formatMinutesToTime(totalMin) {
+      const safeMin = Math.max(0, Math.round(Number(totalMin) || 0));
+      const h = String(Math.floor(safeMin / 60) % 24).padStart(2, '0');
+      const m = String(safeMin % 60).padStart(2, '0');
+      return `${h}:${m}`;
     },
 
     getPeriodsForDay(dayName) {
@@ -4070,20 +4162,6 @@ createApp({
       return 'bg-white border-slate-200 hover:border-emerald-300';
     },
 
-    applyPresetSimulation(day, time) {
-      this.timeSim.enabled = true;
-      this.timeSim.day = day;
-      this.timeSim.time = time;
-      this.dashboardSubView = 'today';
-      this.showToast(`Simulasi waktu aktif: Hari ${day} pukul ${time}`);
-    },
-
-    disableTimeSimulation() {
-      this.timeSim.enabled = false;
-      this.nowDate = new Date();
-      this.showToast('Kembali menggunakan Waktu Real-Time');
-    },
-
     openPeriodConfigModal(group = 'monThu') {
       this.periodConfigActiveGroup = group === 'fri' ? 'fri' : 'monThu';
       this.autoTimeGen.jpMinutes = this.periodConfigActiveGroup === 'fri' ? 35 : 45;
@@ -4092,6 +4170,79 @@ createApp({
 
     getScheduleCell(day, slotId) {
       return this.weeklySchedule?.[day]?.[slotId] || null;
+    },
+
+    // Detects if a lesson slot is a continuation of the previous lesson slot (same class & subject)
+    // or if it continues into the next lesson slot on the same day.
+    getScheduleContinuationInfo(dayName, slotId) {
+      const currSched = this.getScheduleCell(dayName, slotId);
+      if (!currSched || !currSched.classId) return null;
+
+      const allPeriods = this.getPeriodsForDay(dayName);
+      if (!Array.isArray(allPeriods) || allPeriods.length === 0) return null;
+
+      const lessonSlots = allPeriods.filter(p => p.type === 'lesson');
+      const idx = lessonSlots.findIndex(p => p.id === slotId);
+      if (idx === -1) return null;
+
+      const targetClassId = currSched.classId;
+
+      // Walk backwards to find the first consecutive lesson slot with the same classId
+      let startIdx = idx;
+      while (startIdx > 0) {
+        const prevSlot = lessonSlots[startIdx - 1];
+        const prevSched = this.getScheduleCell(dayName, prevSlot.id);
+        if (prevSched && prevSched.classId === targetClassId) {
+          startIdx--;
+        } else {
+          break;
+        }
+      }
+
+      // Walk forwards to find the last consecutive lesson slot with the same classId
+      let endIdx = idx;
+      while (endIdx < lessonSlots.length - 1) {
+        const nextSlot = lessonSlots[endIdx + 1];
+        const nextSched = this.getScheduleCell(dayName, nextSlot.id);
+        if (nextSched && nextSched.classId === targetClassId) {
+          endIdx++;
+        } else {
+          break;
+        }
+      }
+
+      const totalSessions = endIdx - startIdx + 1;
+      const sessionIndex = idx - startIdx + 1;
+      const isContinuation = sessionIndex > 1;
+      const hasNextSameClass = idx < endIdx;
+
+      const firstSlot = lessonSlots[startIdx];
+      const lastSlot = lessonSlots[endIdx];
+      const prevSlot = idx > startIdx ? lessonSlots[idx - 1] : null;
+      const nextSlot = idx < endIdx ? lessonSlots[idx + 1] : null;
+
+      // Check if there was a break row between prevSlot and current slot in allPeriods
+      let afterBreak = false;
+      if (prevSlot) {
+        const prevRowIdx = allPeriods.findIndex(p => p.id === prevSlot.id);
+        const currRowIdx = allPeriods.findIndex(p => p.id === slotId);
+        if (currRowIdx - prevRowIdx > 1) {
+          afterBreak = true;
+        }
+      }
+
+      return {
+        isContinuation,
+        hasNextSameClass,
+        sessionIndex,
+        totalSessions,
+        firstSlotLabel: firstSlot.label,
+        prevSlotLabel: prevSlot ? prevSlot.label : '',
+        nextSlotLabel: nextSlot ? nextSlot.label : '',
+        blockStart: firstSlot.start,
+        blockEnd: lastSlot.end,
+        afterBreak
+      };
     },
 
     getClassById(classId) {
@@ -4130,13 +4281,16 @@ createApp({
         delete this.weeklySchedule[day][slotId];
         this.showToast('Slot jadwal dikosongkan');
       } else {
+        const cleanRoom = sanitizeText(room, 30);
+        const cleanNote = sanitizeText(note, 80);
+        const safeSpan = clampNumber(spanCount, 1, 4, 1);
         const dayPeriods = this.getPeriodsForDay(day);
         const lessonSlots = dayPeriods.filter(p => p.type === 'lesson');
         const startIdx = lessonSlots.findIndex(p => p.id === slotId);
-        for (let i = 0; i < spanCount; i++) {
+        for (let i = 0; i < safeSpan; i++) {
           const targetSlot = lessonSlots[startIdx + i];
           if (targetSlot) {
-            this.weeklySchedule[day][targetSlot.id] = { classId, room, note };
+            this.weeklySchedule[day][targetSlot.id] = { classId, room: cleanRoom, note: cleanNote };
           }
         }
         this.showToast('Jadwal mengajar disimpan');
@@ -4155,24 +4309,17 @@ createApp({
 
     generateAutomaticPeriodTimes(groupKey = 'monThu') {
       const targetGroup = groupKey === 'fri' ? 'fri' : 'monThu';
-      const [startH, startM] = (this.autoTimeGen.startTime || '07:00').split(':').map(Number);
-      const jpMin = Number(this.autoTimeGen.jpMinutes) || (targetGroup === 'fri' ? 35 : 45);
-      let cursor = startH * 60 + startM;
-
-      const fmt = totalMin => {
-        const h = String(Math.floor(totalMin / 60) % 24).padStart(2, '0');
-        const m = String(totalMin % 60).padStart(2, '0');
-        return `${h}:${m}`;
-      };
+      let cursor = this.parseTimeToMinutes(this.autoTimeGen.startTime || '07:00');
+      const jpMin = clampNumber(this.autoTimeGen.jpMinutes, 15, 90, targetGroup === 'fri' ? 35 : 45);
 
       this.schedulePeriodsByGroup[targetGroup].forEach(slot => {
         let duration = jpMin;
         if (slot.type === 'break') {
           duration = slot.id === 'brk1' ? 20 : (targetGroup === 'fri' ? 75 : 40);
         }
-        slot.start = fmt(cursor);
+        slot.start = this.formatMinutesToTime(cursor);
         cursor += duration;
-        slot.end = fmt(cursor);
+        slot.end = this.formatMinutesToTime(cursor);
       });
 
       this.saveToStorage();
@@ -4183,27 +4330,6 @@ createApp({
       if (!slot) return 0;
       const diff = this.parseTimeToMinutes(slot.end) - this.parseTimeToMinutes(slot.start);
       return diff > 0 ? diff : (slot.type === 'break' ? 20 : 45);
-    },
-
-    recalculateCascadeTimesForGroup(groupKey) {
-      const list = this.schedulePeriodsByGroup[groupKey];
-      if (!Array.isArray(list) || list.length === 0) return;
-
-      // Preserve each slot's existing duration (e.g. 20m for Istirahat, 45m/35m for JP) and cascade from the first row's start time
-      const durations = list.map(slot => this.getSlotDurationMinutes(slot));
-      let cursor = this.parseTimeToMinutes(list[0].start || '07:00');
-
-      const fmt = totalMin => {
-        const h = String(Math.floor(totalMin / 60) % 24).padStart(2, '0');
-        const m = String(totalMin % 60).padStart(2, '0');
-        return `${h}:${m}`;
-      };
-
-      list.forEach((slot, i) => {
-        slot.start = fmt(cursor);
-        cursor += durations[i];
-        slot.end = fmt(cursor);
-      });
     },
 
     swapPeriodRowInGroup(groupKey, fromIdx, toIdx) {
@@ -4223,15 +4349,10 @@ createApp({
 
       if (this.periodReorderOptions.autoCascadeTime) {
         let cursor = this.parseTimeToMinutes(dayStartStr);
-        const fmt = totalMin => {
-          const h = String(Math.floor(totalMin / 60) % 24).padStart(2, '0');
-          const m = String(totalMin % 60).padStart(2, '0');
-          return `${h}:${m}`;
-        };
         list.forEach((slot, i) => {
-          slot.start = fmt(cursor);
+          slot.start = this.formatMinutesToTime(cursor);
           cursor += durations[i];
-          slot.end = fmt(cursor);
+          slot.end = this.formatMinutesToTime(cursor);
         });
       }
     },
@@ -4510,7 +4631,7 @@ createApp({
       if (!this.currentClass.scoreNotes[this.keypad.studentId]) {
         this.currentClass.scoreNotes[this.keypad.studentId] = {};
       }
-      const trimmed = (this.keypad.note || '').trim();
+      const trimmed = sanitizeText(this.keypad.note, 80);
       if (trimmed) {
         this.currentClass.scoreNotes[this.keypad.studentId][this.keypad.assessmentId] = trimmed;
       } else {
@@ -4598,7 +4719,7 @@ createApp({
     syncAttendanceNote() {
       if (!this.activeAttSession || !this.activeAttStudent) return;
       if (!this.activeAttSession.notes) this.activeAttSession.notes = {};
-      const trimmed = (this.attKeypad.note || '').trim();
+      const trimmed = sanitizeText(this.attKeypad.note, 80);
       if (trimmed) {
         this.activeAttSession.notes[this.activeAttStudent.id] = trimmed;
       } else {
@@ -4681,8 +4802,8 @@ createApp({
         this.currentClass.students.forEach(st => { records[st.id] = 'H'; });
         this.currentClass.attendanceSessions.push({
           id: 'att-' + Date.now(),
-          date: this.modals.session.date || '2026-11-15',
-          topic: (this.modals.session.topic || '').trim() || 'Pertemuan Kelas',
+          date: sanitizeText(this.modals.session.date, 20) || '2026-11-15',
+          topic: sanitizeText(this.modals.session.topic, 80) || 'Pertemuan Kelas',
           records,
           notes: {}
         });
@@ -4690,8 +4811,8 @@ createApp({
       } else {
         const target = this.currentClass.attendanceSessions.find(s => s.id === this.modals.session.id);
         if (target) {
-          target.date = this.modals.session.date;
-          target.topic = this.modals.session.topic;
+          target.date = sanitizeText(this.modals.session.date, 20) || target.date;
+          target.topic = sanitizeText(this.modals.session.topic, 80) || 'Pertemuan Kelas';
           this.showToast('Pertemuan diperbarui');
         }
       }
@@ -4773,12 +4894,12 @@ createApp({
     },
 
     submitCustomBehavior() {
-      const rawLabel = (this.modals.badge.customLabel || '').trim();
+      const rawLabel = sanitizeText(this.modals.badge.customLabel, 60);
       const label = rawLabel || (this.modals.badge.customType === 'positive' ? 'Apresiasi Positif' : 'Catatan Pembinaan');
-      const absPoints = Math.max(1, Math.abs(Number(this.modals.badge.customPoints) || 5));
+      const absPoints = clampNumber(Math.abs(Number(this.modals.badge.customPoints) || 5), 1, 100, 5);
       const signedPoints = this.modals.badge.customType === 'positive' ? absPoints : -absPoints;
-      const emoji = this.modals.badge.customEmoji || (signedPoints >= 0 ? '🌟' : '⚠️');
-      const note = (this.modals.badge.customNote || '').trim();
+      const emoji = sanitizeText(this.modals.badge.customEmoji, 10) || (signedPoints >= 0 ? '🌟' : '⚠️');
+      const note = sanitizeText(this.modals.badge.customNote, 80);
 
       const customPresetObj = {
         label,
@@ -4834,10 +4955,10 @@ createApp({
     },
 
     saveClassModal() {
-      const name = (this.modals.classModal.name || '').trim() || 'Kelas Baru';
-      const subject = (this.modals.classModal.subject || '').trim() || 'Mata Pelajaran';
-      const semester = (this.modals.classModal.semester || '').trim() || 'Ganjil 2026/2027';
-      const kkm = Number(this.modals.classModal.kkm) || 75;
+      const name = sanitizeText(this.modals.classModal.name, 60) || 'Kelas Baru';
+      const subject = sanitizeText(this.modals.classModal.subject, 60) || 'Mata Pelajaran';
+      const semester = sanitizeText(this.modals.classModal.semester, 40) || 'Ganjil 2026/2027';
+      const kkm = clampNumber(this.modals.classModal.kkm, 1, 100, 75);
 
       if (this.modals.classModal.mode === 'add') {
         const defaultCats = createDefaultCategoryList();
@@ -4905,7 +5026,7 @@ createApp({
     },
 
     saveAssessmentModal() {
-      const title = (this.modals.assessment.title || '').trim();
+      const title = sanitizeText(this.modals.assessment.title, 60);
       if (!title) return;
       if (this.modals.assessment.mode === 'add') {
         this.currentClass.assessments.push({
@@ -4944,12 +5065,15 @@ createApp({
 
     saveStudentModal() {
       if (!this.modals.student.bulkMode) {
-        const name = (this.modals.student.name || '').trim();
+        const name = sanitizeText(this.modals.student.name, 80);
         if (!name) return;
-        const nis = (this.modals.student.nis || '').trim() || String(1024000 + this.currentClass.students.length + 1);
+        const nis = sanitizeText(this.modals.student.nis, 30) || String(1024000 + this.currentClass.students.length + 1);
         this.currentClass.students.push({ id: 'st-' + Date.now(), name, nis });
       } else {
-        const lines = (this.modals.student.bulkText || '').split('\n').map(l => l.trim()).filter(Boolean);
+        const lines = (this.modals.student.bulkText || '')
+          .split('\n')
+          .map(l => sanitizeText(l, 80))
+          .filter(Boolean);
         lines.forEach((line, i) => {
           this.currentClass.students.push({
             id: 'st-' + Date.now() + '-' + i,
@@ -4998,29 +5122,29 @@ createApp({
         'Izin (I)',
         'Alfa (A)',
         '% Kehadiran (H+D)'
-      ];
+      ].map(escapeCSVCell);
 
       const rows = cls.students.map((st, idx) => {
         const finalScore = this.getStudentFinalScore(st.id);
         const finalLetter = finalScore !== null ? this.numberToLetterGrade(finalScore) : '-';
         return [
           idx + 1,
-          `"${st.nis}"`,
-          `"${(st.name || '').replace(/"/g, '""')}"`,
+          escapeCSVCell(st.nis),
+          escapeCSVCell(st.name),
           ...cls.assessments.map(a => {
             if (!this.hasScore(st.id, a.id)) return '';
             return a.scaleType === 'letter'
-              ? `${this.getCellLetter(st.id, a.id)} (${this.getScore(st.id, a.id)})`
-              : this.getScore(st.id, a.id);
+              ? escapeCSVCell(`${this.getCellLetter(st.id, a.id)} (${this.getScore(st.id, a.id)})`)
+              : escapeCSVCell(this.getScore(st.id, a.id));
           }),
-          finalScore ?? '',
-          finalLetter,
+          escapeCSVCell(finalScore ?? ''),
+          escapeCSVCell(finalLetter),
           this.getStudentStatusCount(st.id, 'H'),
           this.getStudentStatusCount(st.id, 'D'),
           this.getStudentStatusCount(st.id, 'S'),
           this.getStudentStatusCount(st.id, 'I'),
           this.getStudentStatusCount(st.id, 'A'),
-          `${this.getStudentAttendancePercent(st.id)}%`
+          escapeCSVCell(`${this.getStudentAttendancePercent(st.id)}%`)
         ];
       });
 
@@ -5028,8 +5152,9 @@ createApp({
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
+      const safeFileName = (cls.name || 'Kelas').replace(/[^a-zA-Z0-9_-]/g, '_');
       link.setAttribute('href', url);
-      link.setAttribute('download', `Rekap_${cls.name.replace(/\s+/g, '_')}.csv`);
+      link.setAttribute('download', `Rekap_${safeFileName}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
