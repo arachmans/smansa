@@ -379,7 +379,7 @@
             :class="dashboardSubView === 'weekly' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
           >
             <i class="fa-regular fa-calendar-days"></i>
-            <span>Jadwal Mingguan (Senin – Jumat)</span>
+            <span>Jadwal Mingguan</span>
           </button>
         </div>
 
@@ -554,7 +554,7 @@
               class="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-xs flex items-center gap-2 transition"
             >
               <i class="fa-regular fa-calendar-days"></i>
-              <span>Lihat / Kelola Jadwal Mingguan (Senin – Jumat)</span>
+              <span>Lihat / Kelola Jadwal Mingguan</span>
             </button>
           </div>
         </div>
@@ -744,7 +744,7 @@
             <div class="flex items-center gap-2 text-xs">
               <i class="fa-solid fa-arrows-up-down text-emerald-400"></i>
               <span>
-                Jadwal Mingguan <strong>Senin s/d Jumat</strong>. Urutan baris (termasuk posisi <strong>Istirahat</strong>) & jam dapat digeser sesuai kebutuhan sekolah.
+                Jadwal Mingguan <strong>Senin s.d. Jumat</strong>. Urutan baris (termasuk posisi <strong>Istirahat</strong>) & jam dapat digeser sesuai kebutuhan sekolah.
               </span>
             </div>
             <div class="flex items-center gap-1.5">
@@ -1239,19 +1239,19 @@
         <!-- Status Legend Pills including Dispensasi (D) -->
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-bold">
           <span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200">
-            H: Hadir ({{ classAttendanceTotals.H }})
+            H:  <span class="hidden sm:inline">Hadir</span> ({{ classAttendanceTotals.H }})
           </span>
           <span class="px-2 py-0.5 rounded-lg bg-violet-100 text-violet-800 border border-violet-200" title="Dispensasi (Lomba / OSIS / Tugas Sekolah) dihitung aktif hadir">
-            D: Dispensasi ({{ classAttendanceTotals.D }})
+            D:  <span class="hidden sm:inline">Dispensasi</span> ({{ classAttendanceTotals.D }})
           </span>
           <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800 border border-amber-200">
-            S: Sakit ({{ classAttendanceTotals.S }})
+            S:  <span class="hidden sm:inline">Sakit</span> ({{ classAttendanceTotals.S }})
           </span>
           <span class="px-2 py-0.5 rounded-lg bg-sky-100 text-sky-800 border border-sky-200">
-            I: Izin ({{ classAttendanceTotals.I }})
+            I:  <span class="hidden sm:inline">Izin</span> ({{ classAttendanceTotals.I }})
           </span>
           <span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 border border-rose-200">
-            A: Alfa ({{ classAttendanceTotals.A }})
+            A:  <span class="hidden sm:inline">Alfa</span> ({{ classAttendanceTotals.A }})
           </span>
         </div>
 
@@ -1448,7 +1448,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm">
+              <span class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm">
                 <i class="fa-solid fa-user-graduate"></i>
               </span>
               <div>
@@ -1468,10 +1468,10 @@
               Total: <strong>{{ currentClass.students.length }} Siswa</strong>
             </div>
             <div class="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 font-bold">
-              Ada Tugas Kosong: <strong>{{ studentsWithMissingTasksCount }} Siswa</strong>
+              Tugas Kosong: <strong>{{ studentsWithMissingTasksCount }}/strong>
             </div>
             <div class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
-              Catatan Sikap: <strong>{{ currentClass.behaviorLogs.length }}x</strong>
+              Sikap: <strong>{{ currentClass.behaviorLogs.length }}x</strong>
             </div>
           </div>
         </div>
