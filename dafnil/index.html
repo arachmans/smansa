@@ -84,10 +84,7 @@
           <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">v4</span>
         </div>
         <p class="text-[11px] text-slate-400 truncate">Dashboard, Nilai & Presensi</p>
-      </div>
-    </div>
-
-    <!-- Live Ongoing Class Mini Indicator in Sidebar -->
+      <!-- Live Ongoing Class Mini Indicator in Sidebar -->
     <div v-if="currentLiveTeaching" class="mx-3 mt-3 p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-xs">
       <div class="flex items-center gap-2">
         <span class="relative flex h-2.5 w-2.5 shrink-0">
@@ -98,9 +95,12 @@
       </div>
       <div class="font-bold text-white truncate mt-1">
         {{ getClassById(currentLiveTeaching.schedule.classId)?.name }} • {{ currentLiveTeaching.slot.label }}
+        <span v-if="currentLiveTeaching.continuation && currentLiveTeaching.continuation.totalSessions > 1" class="text-emerald-300 font-semibold">
+          ({{ currentLiveTeaching.continuation.sessionIndex }}/{{ currentLiveTeaching.continuation.totalSessions }})
+        </span>
       </div>
       <div class="text-[10px] text-emerald-200/80">
-        {{ currentLiveTeaching.slot.start }} - {{ currentLiveTeaching.slot.end }} ({{ currentLiveTeaching.remainingMinutes }} mnt lagi)
+        {{ currentLiveTeaching.effectiveStart }} - {{ currentLiveTeaching.effectiveEnd }} ({{ currentLiveTeaching.remainingMinutes }} mnt lagi)
       </div>
     </div>
 
@@ -362,12 +362,12 @@
         </div>
       </div>
 
-      <!-- DASHBOARD SUB-NAVIGATION: [Ringkasan Hari Ini] vs [Jadwal Mingguan (Senin-Jumat)] -->
+      <!-- DASHBOARD SUB-NAVIGATION: [Ringkasan Hari Ini] vs [Jadwal Mingguan] -->
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-1.5 bg-white p-1 rounded-2xl border border-slate-200 shadow-2xs">
+        <div class="flex items-center gap-1 bg-white p-1 rounded-2xl border border-slate-200 shadow-2xs w-full sm:w-auto">
           <button
             @click="dashboardSubView = 'today'"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5"
+            class="flex-1 sm:flex-initial justify-center px-3 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 whitespace-nowrap"
             :class="dashboardSubView === 'today' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
           >
             <i class="fa-solid fa-bolt"></i>
@@ -375,7 +375,7 @@
           </button>
           <button
             @click="dashboardSubView = 'weekly'"
-            class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5"
+            class="flex-1 sm:flex-initial justify-center px-3 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 whitespace-nowrap"
             :class="dashboardSubView === 'weekly' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'"
           >
             <i class="fa-regular fa-calendar-days"></i>
@@ -383,13 +383,13 @@
           </button>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
           <button
             @click="openPeriodConfigModal(effectiveDayName === 'Jumat' ? 'fri' : 'monThu')"
-            class="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-extrabold flex items-center gap-1.5 shadow-2xs transition"
+            class="w-full sm:w-auto justify-center px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-extrabold flex items-center gap-1.5 shadow-2xs transition whitespace-nowrap"
           >
             <i class="fa-regular fa-clock text-amber-600"></i>
-            <span>Atur Jam Pelajaran (Senin–Kamis & Jumat)</span>
+            <span>Atur Jam Pelajaran</span>
           </button>
         </div>
       </div>
@@ -449,8 +449,13 @@
               <!-- Live Progress Bar -->
               <div class="pt-2 max-w-md">
                 <div class="flex justify-between text-[11px] font-bold text-emerald-100 mb-1">
-                  <span>Berjalan {{ currentLiveTeaching.progressPercent }}%</span>
-                  <span>Sisa {{ currentLiveTeaching.remainingMinutes }} menit lagi (otomatis hilang pukul {{ currentLiveTeaching.slot.end }})</span>
+                  <span>
+                    Berjalan {{ currentLiveTeaching.progressPercent }}%
+                    <span v-if="currentLiveTeaching.continuation && currentLiveTeaching.continuation.totalSessions > 1">
+                      ({{ currentLiveTeaching.continuation.totalSessions }} JP Paralel)
+                    </span>
+                  </span>
+                  <span>Sisa {{ currentLiveTeaching.remainingMinutes }} menit lagi (selesai {{ currentLiveTeaching.effectiveEnd }})</span>
                 </div>
                 <div class="w-full h-2 rounded-full bg-black/25 overflow-hidden">
                   <div class="h-full bg-white rounded-full transition-all duration-500" :style="{ width: currentLiveTeaching.progressPercent + '%' }"></div>
@@ -554,7 +559,7 @@
               class="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-xs flex items-center gap-2 transition"
             >
               <i class="fa-regular fa-calendar-days"></i>
-              <span>Lihat / Kelola Jadwal Mingguan</span>
+              <span>Jadwal Mingguan</span>
             </button>
           </div>
         </div>
@@ -740,25 +745,27 @@
       <template v-else>
         <div class="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden flex flex-col">
           <!-- Info Banner about Mon-Thu vs Friday Time Difference -->
-          <div class="px-4 py-3 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2 text-xs">
-              <i class="fa-solid fa-arrows-up-down text-emerald-400"></i>
+          <div class="px-3.5 sm:px-4 py-2.5 sm:py-3 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2 text-[11px] sm:text-xs">
+              <i class="fa-solid fa-arrows-up-down text-emerald-400 shrink-0"></i>
               <span>
-                Jadwal Mingguan <strong>Senin s.d. Jumat</strong>. Urutan baris (termasuk posisi <strong>Istirahat</strong>) & jam dapat digeser sesuai kebutuhan sekolah.
+                Jadwal Mingguan <strong>Senin – Jumat</strong>. Geser baris &amp; atur waktu slot sesuai kebutuhan.
               </span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 w-full sm:w-auto">
               <button
                 @click="openPeriodConfigModal('monThu')"
-                class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 text-[11px] font-bold"
+                class="flex-1 sm:flex-initial justify-center px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 text-[11px] font-bold flex items-center gap-1 whitespace-nowrap"
               >
-                <i class="fa-solid fa-sort mr-1"></i>Urutan & Jam Sen–Kam
+                <i class="fa-solid fa-clock"></i>
+                <span>Set Jam Reguler</span>
               </button>
               <button
                 @click="openPeriodConfigModal('fri')"
-                class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold"
+                class="flex-1 sm:flex-initial justify-center px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold flex items-center gap-1 whitespace-nowrap"
               >
-                <i class="fa-solid fa-sort mr-1"></i>Urutan & Jam Jumat
+                <i class="fa-solid fa-clock"></i>
+                <span>Set Jam Jumat</span>
               </button>
             </div>
           </div>
@@ -1236,30 +1243,30 @@
     <main v-if="activeTab === 'attendance' && currentClass" class="flex-1 flex flex-col overflow-hidden bg-slate-50">
       <!-- Top Control Strip: Legend (H, D, S, I, A) + Input Mode Switcher -->
       <div class="bg-white border-b border-slate-200 px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0">
-        <!-- Status Legend Pills including Dispensasi (D) -->
-        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-bold">
-          <span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200">
-            H:  <span class="hidden sm:inline">Hadir</span> ({{ classAttendanceTotals.H }})
+        <!-- Status Legend Pills including Dispensasi (D) - Compact on Mobile: H:(x) -->
+        <div class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar text-[10px] sm:text-[11px] font-bold">
+          <span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap">
+            H<span class="hidden sm:inline">: Hadir </span><span class="sm:hidden">:</span>({{ classAttendanceTotals.H }})
           </span>
-          <span class="px-2 py-0.5 rounded-lg bg-violet-100 text-violet-800 border border-violet-200" title="Dispensasi (Lomba / OSIS / Tugas Sekolah) dihitung aktif hadir">
-            D:  <span class="hidden sm:inline">Dispensasi</span> ({{ classAttendanceTotals.D }})
+          <span class="px-2 py-0.5 rounded-lg bg-violet-100 text-violet-800 border border-violet-200 whitespace-nowrap" title="Dispensasi (Lomba / OSIS / Tugas Sekolah) dihitung aktif hadir">
+            D<span class="hidden sm:inline">: Dispensasi </span><span class="sm:hidden">:</span>({{ classAttendanceTotals.D }})
           </span>
-          <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800 border border-amber-200">
-            S:  <span class="hidden sm:inline">Sakit</span> ({{ classAttendanceTotals.S }})
+          <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800 border border-amber-200 whitespace-nowrap">
+            S<span class="hidden sm:inline">: Sakit </span><span class="sm:hidden">:</span>({{ classAttendanceTotals.S }})
           </span>
-          <span class="px-2 py-0.5 rounded-lg bg-sky-100 text-sky-800 border border-sky-200">
-            I:  <span class="hidden sm:inline">Izin</span> ({{ classAttendanceTotals.I }})
+          <span class="px-2 py-0.5 rounded-lg bg-sky-100 text-sky-800 border border-sky-200 whitespace-nowrap">
+            I<span class="hidden sm:inline">: Izin </span><span class="sm:hidden">:</span>({{ classAttendanceTotals.I }})
           </span>
-          <span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 border border-rose-200">
-            A:  <span class="hidden sm:inline">Alfa</span> ({{ classAttendanceTotals.A }})
+          <span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 border border-rose-200 whitespace-nowrap">
+            A<span class="hidden sm:inline">: Alfa </span><span class="sm:hidden">:</span>({{ classAttendanceTotals.A }})
           </span>
         </div>
 
         <!-- Attendance Click Mode Toggle -->
-        <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-[11px] font-bold">
+        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-[10px] sm:text-[11px] font-bold shrink-0">
           <button
             @click="attendanceQuickTapMode = false"
-            class="px-2.5 py-1 rounded-lg transition flex items-center gap-1"
+            class="px-2 sm:px-2.5 py-1 rounded-lg transition flex items-center gap-1 whitespace-nowrap"
             :class="!attendanceQuickTapMode ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500'"
           >
             <i class="fa-solid fa-keyboard text-emerald-600"></i>
@@ -1267,12 +1274,12 @@
           </button>
           <button
             @click="attendanceQuickTapMode = true; attKeypad.isOpen = false"
-            class="px-2.5 py-1 rounded-lg transition flex items-center gap-1"
+            class="px-2 sm:px-2.5 py-1 rounded-lg transition flex items-center gap-1 whitespace-nowrap"
             :class="attendanceQuickTapMode ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-500'"
             title="Ketuk sel langsung untuk putar status H → D → S → I → A"
           >
             <i class="fa-solid fa-bolt"></i>
-            <span>1-Tap (H→D→S→I→A)</span>
+            <span>1-Tap</span>
           </button>
         </div>
       </div>
@@ -1444,33 +1451,31 @@
     <!-- ==================== TAB 4: DATA SISWA PER KELAS (NILAI RATA2, % HADIR, TUGAS KOSONG & SIKAP CUSTOM) ==================== -->
     <main v-if="activeTab === 'behavior' && currentClass" class="flex-1 overflow-y-auto p-3 sm:p-5 bg-slate-50 space-y-4 pb-24 lg:pb-8">
       <!-- Top Summary Header & Filter Bar -->
-      <div class="bg-white rounded-3xl border border-slate-200 p-4 shadow-2xs space-y-3">
+      <div class="bg-white rounded-3xl border border-slate-200 p-3.5 sm:p-4 shadow-2xs space-y-3">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm">
-                <i class="fa-solid fa-user-graduate"></i>
-              </span>
-              <div>
-                <h2 class="font-extrabold text-base text-slate-800">
-                  Data Siswa & Catatan Sikap — {{ currentClass.name }}
-                </h2>
-                <p class="text-xs text-slate-500">
-                  Pantau rata-rata nilai, % kehadiran, tugas yang belum dikumpulkan/kosong, serta input poin sikap positif/negatif custom.
-                </p>
-              </div>
+          <div class="flex items-start sm:items-center gap-3">
+            <span class="w-10 h-10 aspect-square rounded-xl bg-emerald-600 text-white flex items-center justify-center text-base shrink-0 shadow-xs">
+              <i class="fa-solid fa-user-graduate"></i>
+            </span>
+            <div class="min-w-0">
+              <h2 class="font-extrabold text-sm sm:text-base text-slate-800 leading-snug">
+                Data Siswa &amp; Catatan Sikap — {{ currentClass.name }}
+              </h2>
+              <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
+                Pantau rata-rata nilai, % kehadiran, tugas kosong, serta input poin sikap custom.
+              </p>
             </div>
           </div>
 
           <!-- Class Quick Summary Badges -->
-          <div class="flex flex-wrap items-center gap-2 text-xs">
-            <div class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold">
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+            <div class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold whitespace-nowrap">
               Total: <strong>{{ currentClass.students.length }} Siswa</strong>
             </div>
-            <div class="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 font-bold">
-              Tugas Kosong: <strong>{{ studentsWithMissingTasksCount }}</strong>
+            <div class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 font-bold whitespace-nowrap">
+              Tugas Kosong: <strong>{{ studentsWithMissingTasksCount }} Siswa</strong>
             </div>
-            <div class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
+            <div class="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold whitespace-nowrap">
               Sikap: <strong>{{ currentClass.behaviorLogs.length }}x</strong>
             </div>
           </div>
@@ -1481,22 +1486,22 @@
           <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             <button
               @click="studentDirectoryFilter = 'ALL'"
-              class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition whitespace-nowrap"
+              class="px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap"
               :class="studentDirectoryFilter === 'ALL' ? 'bg-slate-800 text-white shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
             >
-              Semua Siswa ({{ filteredStudents.length }})
+              Semua ({{ filteredStudents.length }})
             </button>
             <button
               @click="studentDirectoryFilter = 'MISSING'"
-              class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition whitespace-nowrap flex items-center gap-1.5"
+              class="px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap flex items-center gap-1.5"
               :class="studentDirectoryFilter === 'MISSING' ? 'bg-amber-500 text-white shadow-2xs' : 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100'"
             >
               <i class="fa-solid fa-file-circle-exclamation"></i>
-              <span>Ada Tugas Kosong ({{ studentsWithMissingTasksCount }})</span>
+              <span>Tugas Kosong ({{ studentsWithMissingTasksCount }})</span>
             </button>
             <button
               @click="studentDirectoryFilter = 'REMEDIAL'"
-              class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition whitespace-nowrap flex items-center gap-1.5"
+              class="px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap flex items-center gap-1.5"
               :class="studentDirectoryFilter === 'REMEDIAL' ? 'bg-rose-600 text-white shadow-2xs' : 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'"
             >
               <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1504,11 +1509,11 @@
             </button>
             <button
               @click="studentDirectoryFilter = 'LOW_ATT'"
-              class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition whitespace-nowrap flex items-center gap-1.5"
+              class="px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-extrabold transition whitespace-nowrap flex items-center gap-1.5"
               :class="studentDirectoryFilter === 'LOW_ATT' ? 'bg-indigo-600 text-white shadow-2xs' : 'bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100'"
             >
               <i class="fa-solid fa-user-clock"></i>
-              <span>Kehadiran &lt; 85%</span>
+              <span>Hadir &lt; 85%</span>
             </button>
           </div>
 
@@ -1605,51 +1610,51 @@
           </div>
 
           <!-- 3 Core Analytics Metrics: [Rata-Rata Nilai] • [% Kehadiran] • [Tugas Kosong] -->
-          <div class="grid grid-cols-3 gap-2">
+          <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
             <!-- Metric 1: Rata-Rata Nilai -->
-            <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
-              <div class="text-[10px] font-bold uppercase text-slate-400 flex items-center justify-between">
-                <span>Rata-Rata Nilai</span>
-                <i class="fa-solid fa-chart-line text-emerald-500"></i>
+            <div class="p-2 sm:p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between min-w-0">
+              <div class="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400 flex items-center justify-between gap-1">
+                <span class="truncate">Rata2 Nilai</span>
+                <i class="fa-solid fa-chart-line text-emerald-500 shrink-0"></i>
               </div>
-              <div class="mt-1 flex items-baseline gap-1.5 flex-wrap">
+              <div class="mt-1 flex items-baseline gap-1 flex-wrap">
                 <template v-if="getStudentFinalScore(student.id) !== null">
                   <span
-                    class="text-base sm:text-lg font-extrabold"
+                    class="text-sm sm:text-lg font-extrabold"
                     :class="getStudentFinalScore(student.id) >= currentClass.kkm ? 'text-emerald-700' : 'text-rose-600'"
                   >
                     {{ getStudentFinalScore(student.id) }}
                   </span>
                   <span
-                    class="text-[10px] font-extrabold px-1.5 py-0.2 rounded border"
+                    class="text-[9px] sm:text-[10px] font-extrabold px-1 sm:px-1.5 py-0.2 rounded border"
                     :class="getLetterBadgeStyle(numberToLetterGrade(getStudentFinalScore(student.id)))"
                   >
                     {{ numberToLetterGrade(getStudentFinalScore(student.id)) }}
                   </span>
                 </template>
-                <span v-else class="text-sm font-bold text-slate-300">Belum ada</span>
+                <span v-else class="text-xs font-bold text-slate-300"> Kosong </span>
               </div>
-              <div class="text-[10px] text-slate-400 mt-0.5 truncate">
-                Rata2 Murni: <strong class="text-slate-600">{{ getStudentSimpleAverage(student.id) ?? '—' }}</strong>
+              <div class="text-[9px] sm:text-[10px] text-slate-400 mt-0.5 truncate">
+                Murni: <strong class="text-slate-600">{{ getStudentSimpleAverage(student.id) ?? '—' }}</strong>
               </div>
             </div>
 
             <!-- Metric 2: Persentase Kehadiran -->
-            <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
-              <div class="text-[10px] font-bold uppercase text-slate-400 flex items-center justify-between">
-                <span>Kehadiran</span>
-                <i class="fa-solid fa-user-check text-sky-500"></i>
+            <div class="p-2 sm:p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between min-w-0">
+              <div class="text-[9px] sm:text-[10px] font-bold uppercase text-slate-400 flex items-center justify-between gap-1">
+                <span class="truncate">Kehadiran</span>
+                <i class="fa-solid fa-user-check text-sky-500 shrink-0"></i>
               </div>
               <div class="mt-1 flex items-baseline gap-1">
                 <span
-                  class="text-base sm:text-lg font-extrabold"
+                  class="text-sm sm:text-lg font-extrabold"
                   :class="getStudentAttendancePercent(student.id) >= 85 ? 'text-slate-800' : 'text-rose-600'"
                 >
                   {{ getStudentAttendancePercent(student.id) }}%
                 </span>
-                <span class="text-[10px] text-slate-400 font-semibold">Aktif</span>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 font-semibold hidden sm:inline">Aktif</span>
               </div>
-              <div class="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1 flex-wrap font-semibold">
+              <div class="text-[9px] sm:text-[10px] text-slate-500 mt-0.5 flex items-center gap-1 flex-wrap font-semibold leading-tight">
                 <span class="text-emerald-700">H:{{ getStudentStatusCount(student.id, 'H') }}</span>
                 <span class="text-violet-700">D:{{ getStudentStatusCount(student.id, 'D') }}</span>
                 <span class="text-amber-700">S:{{ getStudentStatusCount(student.id, 'S') }}</span>
@@ -1660,28 +1665,28 @@
 
             <!-- Metric 3: Tugas / Nilai yang Kosong -->
             <div
-              class="p-2.5 rounded-2xl border flex flex-col justify-between"
+              class="p-2 sm:p-2.5 rounded-2xl border flex flex-col justify-between min-w-0"
               :class="getStudentMissingCount(student.id) > 0
                 ? 'bg-amber-50/70 border-amber-200'
                 : 'bg-emerald-50/40 border-emerald-200/80'"
             >
-              <div class="text-[10px] font-bold uppercase flex items-center justify-between" :class="getStudentMissingCount(student.id) > 0 ? 'text-amber-800' : 'text-emerald-800'">
-                <span>Tugas Kosong</span>
-                <i class="fa-solid" :class="getStudentMissingCount(student.id) > 0 ? 'fa-circle-exclamation text-amber-500' : 'fa-circle-check text-emerald-500'"></i>
+              <div class="text-[9px] sm:text-[10px] font-bold uppercase flex items-center justify-between gap-1" :class="getStudentMissingCount(student.id) > 0 ? 'text-amber-800' : 'text-emerald-800'">
+                <span class="truncate">Tugas Kosong</span>
+                <i class="fa-solid shrink-0" :class="getStudentMissingCount(student.id) > 0 ? 'fa-circle-exclamation text-amber-500' : 'fa-circle-check text-emerald-500'"></i>
               </div>
               <div class="mt-1 flex items-baseline gap-1">
                 <span
-                  class="text-base sm:text-lg font-extrabold"
+                  class="text-sm sm:text-lg font-extrabold"
                   :class="getStudentMissingCount(student.id) > 0 ? 'text-amber-700' : 'text-emerald-700'"
                 >
                   {{ getStudentMissingCount(student.id) }}
                 </span>
-                <span class="text-[10px] font-semibold" :class="getStudentMissingCount(student.id) > 0 ? 'text-amber-700' : 'text-emerald-700'">
-                  / {{ currentClass.assessments.length }} Kolom
+                <span class="text-[9px] sm:text-[10px] font-semibold truncate" :class="getStudentMissingCount(student.id) > 0 ? 'text-amber-700' : 'text-emerald-700'">
+                  / {{ currentClass.assessments.length }}
                 </span>
               </div>
-              <div class="text-[10px] mt-0.5 font-semibold" :class="getStudentMissingCount(student.id) > 0 ? 'text-amber-800' : 'text-emerald-700'">
-                {{ getStudentMissingCount(student.id) === 0 ? 'Semua tugas lengkap' : 'Belum dinilai / kumpul' }}
+              <div class="text-[9px] sm:text-[10px] mt-0.5 font-semibold truncate" :class="getStudentMissingCount(student.id) > 0 ? 'text-amber-800' : 'text-emerald-700'">
+                {{ getStudentMissingCount(student.id) === 0 ? 'Lengkap' : 'Belum dinilai' }}
               </div>
             </div>
           </div>
@@ -3573,6 +3578,7 @@ createApp({
     },
 
     // Detects if a class is actively being taught at this exact minute!
+    // Automatically merges total duration, progress %, and remaining minutes across consecutive slots of the same class.
     currentLiveTeaching() {
       const day = this.effectiveDayName;
       if (!this.isWeekday(day)) return null;
@@ -3586,16 +3592,27 @@ createApp({
         if (nowMin >= startMin && nowMin < endMin) {
           const sched = this.getScheduleCell(day, slot.id);
           if (sched && sched.classId) {
-            const totalDur = Math.max(1, endMin - startMin);
-            const elapsed = nowMin - startMin;
+            const continuation = this.getScheduleContinuationInfo(day, slot.id);
+            const hasParallelBlock = continuation && continuation.totalSessions > 1;
+
+            const effectiveStart = hasParallelBlock ? continuation.blockStart : slot.start;
+            const effectiveEnd = hasParallelBlock ? continuation.blockEnd : slot.end;
+            const blockStartMin = this.parseTimeToMinutes(effectiveStart);
+            const blockEndMin = this.parseTimeToMinutes(effectiveEnd);
+
+            const totalDur = Math.max(1, blockEndMin - blockStartMin);
+            const elapsed = Math.max(0, nowMin - blockStartMin);
             const progressPercent = Math.min(100, Math.max(0, Math.round((elapsed / totalDur) * 100)));
+
             return {
               day,
               slot,
               schedule: sched,
-              continuation: this.getScheduleContinuationInfo(day, slot.id),
+              continuation,
+              effectiveStart,
+              effectiveEnd,
               progressPercent,
-              remainingMinutes: Math.max(1, endMin - nowMin)
+              remainingMinutes: Math.max(1, blockEndMin - nowMin)
             };
           }
         }
