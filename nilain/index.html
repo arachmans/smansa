@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
 <title>Nilain - Presensi dan Nilai Siswa</title>
 <style>
   /* ---------- Layar penuh murni ---------- */
@@ -10,6 +10,7 @@
     margin: 0; padding: 0;
     height: 100%;
     background: #fff;
+    overscroll-behavior-y: contain; /* Mengontrol efek tarik di mobile */
   }
   html { overflow: hidden; }
   #gasFrame {
@@ -20,14 +21,60 @@
     background: #fff;
   }
 
-  /* ---------- Mode tinggi mengikuti konten ----------
-     Dipicu otomatis oleh laporan postMessage dari aplikasi,
-     atau oleh tombol [ ]. Dokumen ikut memanjang sehingga
-     fitur "capture full size screenshot" menangkap seluruh
-     konten (syarat screenshot full-page). */
-  html.grow { height: auto; overflow: auto; }
+  /* ---------- Mode tinggi mengikuti konten ---------- */
+  html.grow { 
+    height: auto; 
+    overflow: auto; 
+    overscroll-behavior-y: auto; /* Mengaktifkan pull-to-refresh bawaan browser saat mode grow */
+  }
   body.grow { height: auto; }
   body.grow #gasFrame { height: var(--app-h); min-height: 100vh; }
+
+  /* ---------- Pull-to-Refresh (Khusus Mobile / Layar Sentuh) ---------- */
+  #ptrZone {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 28px; /* Area tangkap sentuhan di tepi paling atas */
+    z-index: 45;
+    background: transparent;
+    display: none;
+    touch-action: pan-x;
+  }
+  /* Hanya aktifkan zona sentuh pada perangkat layar sentuh (HP/Tablet) */
+  @media (hover: none) and (pointer: coarse) {
+    #ptrZone { display: block; }
+  }
+  /* Saat mode grow aktif dan halaman di-scroll ke bawah, nonaktifkan zona agar tidak menghalangi */
+  body.scrolled #ptrZone { pointer-events: none; }
+
+  #ptrBox {
+    position: fixed; top: -60px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 55;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    transition: top 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
+    opacity: 0;
+  }
+  #ptrBox.pulling { transition: none; opacity: 1; }
+  #ptrBox.refreshing { top: 18px !important; opacity: 1; }
+
+  .ptr-icon {
+    width: 20px; height: 20px;
+    border: 2.5px solid #e5e7eb;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    transition: transform 0.1s linear;
+  }
+  #ptrBox.refreshing .ptr-icon {
+    animation: ptrSpin 0.7s linear infinite;
+  }
+  @keyframes ptrSpin {
+    to { transform: rotate(360deg); }
+  }
 
   /* ---------- Pesan fallback (bukan tombol, hanya teks) ---------- */
   #start {
@@ -50,7 +97,7 @@
   }
   #badge.on { opacity: 1; }
 
-  /* Catatan unduhan (fallback bila popup diblokir) — tautan, bukan tombol */
+  /* Catatan unduhan (fallback bila popup diblokir) */
   #dlNote {
     position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
     z-index: 60; max-width: 90vw;
@@ -65,6 +112,10 @@
 </head>
 <body>
 
+  <!-- Sensor Tarik-untuk-Refresh di Tepi Atas & Indikator Spinner -->
+  <div id="ptrZone"></div>
+  <div id="ptrBox"><div class="ptr-icon" id="ptrIcon"></div></div>
+
   <iframe id="gasFrame" title="Aplikasi Google Apps Script"
     allow="autoplay; clipboard-read; clipboard-write; encrypted-media; fullscreen; picture-in-picture; downloads; storage-access"
     referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -77,7 +128,7 @@
     (alamat yang diakhiri <b>/exec</b>).</span>
   </div>
 
-  <!-- Elemen bantu tersembunyi (tanpa tombol) -->
+  <!-- Elemen bantu tersembunyi -->
   <div id="badge"></div>
   <div id="dlNote" class="hide">Popup diblokir browser — buka manual tautan ini (URL asli tetap utuh):&nbsp;<a target="_blank" rel="noopener"></a></div>
 
@@ -92,6 +143,9 @@
   var badge    = document.getElementById('badge');
   var dlNote   = document.getElementById('dlNote');
   var dlLink   = dlNote.querySelector('a');
+  var ptrZone  = document.getElementById('ptrZone');
+  var ptrBox   = document.getElementById('ptrBox');
+  var ptrIcon  = document.getElementById('ptrIcon');
   var badgeT   = null, dlT = null;
   var mode     = 'full';   /* full | auto | manual */
   var manualH  = 0;
@@ -105,7 +159,7 @@
     try { return new URL(u).href; } catch (e) { return ''; }
   }
 
-  /* ---------- Indikator tinggi (sekejap, tanpa tombol) ---------- */
+  /* ---------- Indikator tinggi ---------- */
   function flash(txt, ms) {
     badge.textContent = txt;
     badge.classList.add('on');
@@ -121,7 +175,7 @@
     document.body.classList.add('grow');
   }
 
-  function setFull() {                       /* kembali ke layar penuh murni */
+  function setFull() {
     mode = 'full'; manualH = 0;
     document.documentElement.classList.remove('grow');
     document.body.classList.remove('grow');
@@ -129,27 +183,100 @@
     flash('Layar penuh — 100% viewport');
   }
 
+  /* ---------- Fungsi Muat Ulang Aplikasi (Refresh) ---------- */
+  function reloadApp() {
+    var cleanUrl = normalize(APP_URL);
+    if (!cleanUrl) return;
+    ptrBox.classList.remove('pulling');
+    ptrBox.classList.add('refreshing');
+    
+    // Muat ulang iframe ke URL asli
+    frame.src = cleanUrl;
+
+    // Sembunyikan spinner setelah iframe selesai dimuat (atau maksimal 2.5 detik)
+    var done = false;
+    function finish() {
+      if (done) return;
+      done = true;
+      ptrBox.classList.remove('refreshing');
+      ptrBox.style.top = '-60px';
+      flash('Halaman diperbarui', 1200);
+    }
+    frame.addEventListener('load', finish, { once: true });
+    setTimeout(finish, 2500);
+  }
+
+  /* ---------- Logika Pull-to-Refresh di Tepi Atas ---------- */
+  var startY = 0;
+  var pulling = false;
+  var threshold = 75; // Jarak tarik (px) untuk memicu refresh
+
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 5) {
+      document.body.classList.add('scrolled');
+    } else {
+      document.body.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  ptrZone.addEventListener('touchstart', function (e) {
+    if (window.scrollY > 0 || ptrBox.classList.contains('refreshing')) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+    ptrBox.classList.add('pulling');
+  }, { passive: true });
+
+  ptrZone.addEventListener('touchmove', function (e) {
+    if (!pulling) return;
+    var dy = e.touches[0].clientY - startY;
+    if (dy <= 0) {
+      ptrBox.style.top = '-60px';
+      return;
+    }
+    // Efek tarik elastis (diredam agar terasa natural)
+    var pullDist = Math.min(dy * 0.55, 110);
+    ptrBox.style.top = (pullDist - 50) + 'px';
+    ptrIcon.style.transform = 'rotate(' + (dy * 2.5) + 'deg)';
+  }, { passive: true });
+
+  function endPull(e) {
+    if (!pulling) return;
+    pulling = false;
+    ptrBox.classList.remove('pulling');
+    var endY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : startY;
+    var dy = endY - startY;
+
+    if (dy * 0.55 >= threshold) {
+      reloadApp();
+    } else {
+      ptrBox.style.top = '-60px';
+    }
+  }
+
+  ptrZone.addEventListener('touchend', endPull, { passive: true });
+  ptrZone.addEventListener('touchcancel', endPull, { passive: true });
+
   /* ---------- Pesan dari aplikasi GAS (protokol __gasViewer) ---------- */
   window.addEventListener('message', function (ev) {
     var d = ev.data;
     if (!d || typeof d !== 'object' || d.__gasViewer !== true) return;
 
-    if (d.type === 'height') {               /* laporan tinggi konten */
+    if (d.type === 'height') {
       var h = Number(d.height);
       if (isFinite(h) && h > 0 && mode !== 'manual') {
         mode = 'auto';
-        growTo(h);                           /* dokumen ikut memanjang -> siap screenshot full-page */
+        growTo(h);
       }
-
     } else if (d.type === 'download' || d.type === 'navigate') {
-      /* Export/unduhan diteruskan ke jendela atas dengan URL PERSIS
-         dari aplikasi — alamat asli tetap utuh, tidak diblokir iframe. */
       var u = String(d.url || '');
       if (/^https?:\/\//i.test(u)) {
         var w = null;
         try { w = window.open(u, '_blank'); } catch (e) {}
         if (!w) showDlNote(u);
       }
+    } else if (d.type === 'reload') {
+      /* Dukungan tambahan: jika dari dalam GAS meminta refresh */
+      reloadApp();
     }
   });
 
@@ -166,13 +293,13 @@
     var t = ((e.target && e.target.tagName) || '').toLowerCase();
     if (t === 'input' || t === 'textarea' || t === 'select') return;
 
-    if (e.key === ']') {                     /* tinggi +100px */
+    if (e.key === ']') {
       var base = manualH || (document.documentElement.scrollHeight || window.innerHeight);
       mode = 'manual';
       manualH = base + 100;
       growTo(manualH);
       flash(manualH + ' px — tinggi dokumen (siap screenshot full-page)');
-    } else if (e.key === '[') {              /* tinggi -100px */
+    } else if (e.key === '[') {
       var base2 = (manualH || (document.documentElement.scrollHeight || window.innerHeight)) - 100;
       if (base2 < 320) { setFull(); }
       else {
@@ -181,7 +308,7 @@
         growTo(base2);
         flash(base2 + ' px — tinggi dokumen');
       }
-    } else if (e.key === 'Escape') {         /* kembali ke layar penuh */
+    } else if (e.key === 'Escape') {
       setFull();
     }
   });
@@ -189,7 +316,7 @@
   /* ---------- Muat aplikasi dari URL manual ---------- */
   var url = normalize(APP_URL);
   if (url) {
-    frame.src = url;    /* src SELALU URL asli /exec — reload (F5) pun kembali ke alamat asli */
+    frame.src = url;
   } else {
     frame.className = 'hide';
     start.classList.remove('hide');
