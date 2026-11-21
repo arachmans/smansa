@@ -1,0 +1,2636 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MassiveMark Studio — Konversi Markdown AI ke DOCX, PDF & HTML</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter, JetBrains Mono, Merriweather -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- KaTeX for Math Rendering ($...$, $$...$$, \(...\), \[...\]) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <!-- Highlight.js for Code Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <!-- Marked.js for Markdown Parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- JSZip for Genuine Native OOXML (.docx) Package Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- Vue.js 3 Global Build -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            serif: ['Merriweather', 'Georgia', 'serif']
+          },
+          colors: {
+            mm: {
+              50: '#fef2f2',
+              100: '#fee2e2',
+              500: '#ef4444',
+              600: '#dc2626',
+              700: '#b91c1c',
+              800: '#991b1b'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Realistic A4 Paper Canvas Styling */
+    .a4-canvas {
+      width: 100%;
+      max-width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: #ffffff;
+      box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+      border: 1px solid #e2e8f0;
+      padding: 22mm 20mm;
+      box-sizing: border-box;
+      outline: none;
+      line-height: 1.65;
+      color: #0f172a;
+      overflow-wrap: break-word;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .a4-canvas:focus {
+      box-shadow: 0 12px 35px -5px rgba(220, 38, 38, 0.12), 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .a4-canvas {
+        padding: 1.25rem;
+        min-height: 70vh;
+      }
+    }
+
+    /* Rich Document Content Typography inside A4 Canvas */
+    .a4-canvas h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 1.25rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid #e2e8f0;
+      line-height: 1.3;
+    }
+    .a4-canvas h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 1.25rem;
+      margin-bottom: 0.6rem;
+      line-height: 1.35;
+    }
+    .a4-canvas h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 1rem;
+      margin-bottom: 0.45rem;
+    }
+    .a4-canvas p {
+      margin-bottom: 0.85rem;
+    }
+    .a4-canvas ul {
+      list-style-type: disc;
+      padding-left: 1.6rem;
+      margin-bottom: 0.85rem;
+    }
+    .a4-canvas ol {
+      list-style-type: decimal;
+      padding-left: 1.6rem;
+      margin-bottom: 0.85rem;
+    }
+    .a4-canvas li {
+      margin-bottom: 0.3rem;
+    }
+    .a4-canvas blockquote {
+      border-left: 4px solid #dc2626;
+      background-color: #fef2f2;
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+      color: #334155;
+      font-style: italic;
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .a4-canvas table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.15rem 0;
+      font-size: 0.92rem;
+    }
+    .a4-canvas th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #cbd5e1;
+    }
+    .a4-canvas td {
+      padding: 0.6rem 0.85rem;
+      border: 1px solid #cbd5e1;
+      vertical-align: top;
+    }
+    .a4-canvas tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+    .a4-canvas pre {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 0.9rem 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .a4-canvas code {
+      font-family: 'JetBrains Mono', monospace;
+      background-color: #f1f5f9;
+      color: #b91c1c;
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.25rem;
+      font-size: 0.88em;
+    }
+    .a4-canvas pre code {
+      background-color: transparent;
+      color: #0f172a;
+      padding: 0;
+      font-size: inherit;
+    }
+    .a4-canvas hr {
+      border: 0;
+      border-top: 1px solid #cbd5e1;
+      margin: 1.5rem 0;
+    }
+    .a4-canvas a {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+    .math-block {
+      margin: 1rem 0;
+      padding: 0.6rem 0.75rem;
+      overflow-x: auto;
+      text-align: center;
+      background-color: #fcfcfd;
+      border-radius: 0.375rem;
+    }
+
+    /* Clean Print / PDF Export Media Rules */
+    @media print {
+      body {
+        background: #ffffff !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+      }
+      .a4-canvas {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        min-height: auto !important;
+      }
+    }
+
+    [v-cloak] {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased selection:bg-red-100 selection:text-red-900 min-h-screen flex flex-col">
+
+  <div id="app" v-cloak class="flex flex-col min-h-screen">
+
+    <!-- ================= TOP HEADER & NAVIGATION BAR ================= -->
+    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+      <div class="max-w-[1600px] mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+
+        <!-- Left: Brand Logo & App Subtitle -->
+        <div class="flex items-center gap-3 min-w-0 flex-1 sm:flex-initial">
+          <!-- Signature MassiveMark Red Icon -->
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-md shadow-red-600/20 shrink-0 cursor-pointer"
+            @click="openInsertModal"
+            title="Klik untuk Sisipkan Markdown AI"
+          >
+            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="3" y="4" width="4" height="16" rx="1.2" />
+              <rect x="10" y="7" width="4" height="13" rx="1.2" />
+              <rect x="17" y="4" width="4" height="16" rx="1.2" />
+            </svg>
+          </div>
+
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-base sm:text-lg tracking-tight text-slate-900">MassiveMark</span>
+              <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200">Studio ID</span>
+              <span class="hidden xl:inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium">
+                <i class="fa-solid fa-cloud-check text-[10px]"></i> {{ saveStatusText }}
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 truncate hidden md:block">
+              Konversi Markdown AI (ChatGPT, Gemini, Claude, DeepSeek) ke DOCX Native Equation, PDF &amp; HTML
+            </p>
+          </div>
+        </div>
+
+        <!-- Center: Editable Document Title & Live Stats -->
+        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200/90 rounded-xl px-3 py-1.5 w-full sm:w-auto justify-between sm:justify-start order-3 lg:order-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <i class="fa-regular fa-file-word text-blue-600 text-sm"></i>
+            <input
+              type="text"
+              v-model="docTitle"
+              @input="saveToLocal"
+              class="bg-transparent font-semibold text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500/30 rounded px-1.5 py-0.5 w-40 sm:w-52 truncate"
+              placeholder="Nama Dokumen..."
+              title="Ubah nama file dokumen"
+            />
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-500 border-l border-slate-200 pl-2.5 shrink-0">
+            <span title="Jumlah Kata"><strong class="text-slate-700">{{ stats.words }}</strong> kata</span>
+            <span class="hidden sm:inline">•</span>
+            <span class="hidden sm:inline" title="Estimasi Halaman A4"><strong class="text-slate-700">~{{ stats.pages }}</strong> hal</span>
+          </div>
+        </div>
+
+        <!-- Right: Quick Sample Templates & Export Buttons -->
+        <div class="flex items-center gap-1.5 sm:gap-2 order-2 lg:order-3">
+          <!-- Template Dropdown / Quick Loaders -->
+          <div class="relative" ref="templateDropdownRef">
+            <button
+              @click.stop="toggleTemplateMenu"
+              class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition"
+              title="Muat contoh konten AI siap pakai"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+              <span class="hidden sm:inline">Contoh AI</span>
+              <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+            </button>
+
+            <div
+              v-if="showTemplateMenu"
+              :style="templateMenuStyle"
+              @click.stop
+              class="fixed bg-white rounded-xl shadow-2xl border border-slate-200 py-1.5 z-[100] max-h-[75vh] overflow-y-auto"
+            >
+              <div class="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                Uji Coba Template Markdown AI
+              </div>
+              <button
+                @click="loadSample('stem')"
+                class="w-full text-left px-3.5 py-2.5 text-xs hover:bg-slate-50 flex items-start gap-2.5 transition"
+              >
+                <i class="fa-solid fa-square-root-variable text-red-600 mt-0.5"></i>
+                <div>
+                  <div class="font-semibold text-slate-800">Contoh Rumus STEM &amp; Fisika</div>
+                  <div class="text-slate-500 text-[11px]">Persamaan LaTeX, integral, sigma &amp; matriks</div>
+                </div>
+              </button>
+              <button
+                @click="loadSample('table_code')"
+                class="w-full text-left px-3.5 py-2.5 text-xs hover:bg-slate-50 flex items-start gap-2.5 transition"
+              >
+                <i class="fa-solid fa-table-columns text-blue-600 mt-0.5"></i>
+                <div>
+                  <div class="font-semibold text-slate-800">Contoh Tabel &amp; Kode Program</div>
+                  <div class="text-slate-500 text-[11px]">Komparasi arsitektur &amp; skrip Python/SQL</div>
+                </div>
+              </button>
+              <button
+                @click="loadSample('academic')"
+                class="w-full text-left px-3.5 py-2.5 text-xs hover:bg-slate-50 flex items-start gap-2.5 transition"
+              >
+                <i class="fa-solid fa-graduation-cap text-emerald-600 mt-0.5"></i>
+                <div>
+                  <div class="font-semibold text-slate-800">Contoh Laporan Akademik</div>
+                  <div class="text-slate-500 text-[11px]">Format jurnal, kutipan, tabel &amp; daftar pustaka</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Download Genuine DOCX Button -->
+          <button
+            @click="exportToDocx"
+            :disabled="isExporting"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60 rounded-xl transition shadow-sm shadow-blue-600/20"
+            title="Unduh file Microsoft Word (.docx) asli dengan Native Word Equation (OMML)"
+          >
+            <i :class="isExporting ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-file-word'"></i>
+            <span>{{ isExporting ? 'Memproses...' : 'Unduh DOCX' }}</span>
+          </button>
+
+          <!-- Download PDF Button -->
+          <button
+            @click="exportToPdf"
+            class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl transition"
+            title="Cetak atau simpan sebagai PDF ukuran A4"
+          >
+            <i class="fa-solid fa-file-pdf text-red-600"></i>
+            <span class="hidden sm:inline">PDF</span>
+          </button>
+
+          <!-- Download HTML Button -->
+          <button
+            @click="exportToHtml"
+            class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl transition"
+            title="Unduh file HTML mandiri"
+          >
+            <i class="fa-solid fa-code text-slate-600"></i>
+            <span class="hidden xl:inline">HTML</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= SIGNATURE MASSIVEMARK STICKY TOOLBAR ================= -->
+      <div class="bg-slate-50/90 border-t border-slate-200 px-3 sm:px-6 py-2">
+        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
+
+          <!-- Left: Signature Prominent Red "+ Sisipkan Markdown AI" Button & View Mode Switcher -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              @click="openInsertModal"
+              class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl shadow-md shadow-red-600/25 transition transform active:scale-95"
+            >
+              <i class="fa-solid fa-plus-circle text-sm"></i>
+              <span>Sisipkan Markdown AI</span>
+              <span class="hidden sm:inline-block text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-semibold">MassiveMark</span>
+            </button>
+
+            <!-- View Switcher Pills -->
+            <div class="inline-flex bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
+              <button
+                @click="switchView('wysiwyg')"
+                :class="activeView === 'wysiwyg' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+                class="px-2.5 py-1.5 rounded-lg transition flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-file-lines text-red-600"></i>
+                <span>Editor Dokumen</span>
+              </button>
+              <button
+                @click="switchView('split')"
+                :class="activeView === 'split' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+                class="px-2.5 py-1.5 rounded-lg transition flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-columns text-blue-600"></i>
+                <span>Split Live Markdown</span>
+              </button>
+              <button
+                @click="switchView('history')"
+                :class="activeView === 'history' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+                class="px-2.5 py-1.5 rounded-lg transition flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-clock-rotate-left text-amber-600"></i>
+                <span class="hidden md:inline">Riwayat Tangkapan</span>
+                <span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.2 rounded-full font-bold">{{ snippetsHistory.length }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Rich Text Formatting Controls (Active in WYSIWYG / Split mode) -->
+          <div v-if="activeView !== 'history'" class="flex flex-wrap items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm overflow-x-auto max-w-full">
+
+            <!-- Document Font Selector -->
+            <select
+              v-model="docFont"
+              class="text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-red-500"
+              title="Pilih Jenis Huruf Dokumen"
+            >
+              <option value="Inter, sans-serif">Font: Inter (Modern)</option>
+              <option value="Calibri, Arial, sans-serif">Font: Calibri (MS Word)</option>
+              <option value="'Times New Roman', Times, serif">Font: Times New Roman (Skripsi)</option>
+              <option value="'Merriweather', Georgia, serif">Font: Merriweather (Jurnal)</option>
+            </select>
+
+            <!-- Heading / Block Selector -->
+            <select
+              @change="formatBlock($event.target.value); $event.target.value = ''"
+              class="text-xs font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-red-500"
+              title="Format Blok Teks"
+            >
+              <option value="" disabled selected>Format Teks...</option>
+              <option value="P">Paragraf Normal</option>
+              <option value="H1">Heading 1 (Judul Bab)</option>
+              <option value="H2">Heading 2 (Sub-Bab)</option>
+              <option value="H3">Heading 3 (Bagian)</option>
+              <option value="BLOCKQUOTE">Kutipan (Blockquote)</option>
+            </select>
+
+            <div class="h-4 w-px bg-slate-200 mx-0.5"></div>
+
+            <!-- Undo / Redo -->
+            <button @click="execCmd('undo')" class="p-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg" title="Urungkan (Undo)">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button @click="execCmd('redo')" class="p-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg" title="Ulangi (Redo)">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+
+            <div class="h-4 w-px bg-slate-200 mx-0.5"></div>
+
+            <!-- Basic Inline Styles -->
+            <button @click="execCmd('bold')" class="p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg font-bold" title="Tebal (Bold)">
+              <i class="fa-solid fa-bold"></i>
+            </button>
+            <button @click="execCmd('italic')" class="p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg" title="Miring (Italic)">
+              <i class="fa-solid fa-italic"></i>
+            </button>
+            <button @click="execCmd('underline')" class="p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg" title="Garis Bawah (Underline)">
+              <i class="fa-solid fa-underline"></i>
+            </button>
+            <button @click="execCmd('strikeThrough')" class="p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg" title="Coret (Strikethrough)">
+              <i class="fa-solid fa-strikethrough"></i>
+            </button>
+
+            <div class="h-4 w-px bg-slate-200 mx-0.5 hidden sm:block"></div>
+
+            <!-- Alignment -->
+            <button @click="execCmd('justifyLeft')" class="hidden sm:inline-block p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg" title="Rata Kiri">
+              <i class="fa-solid fa-align-left"></i>
+            </button>
+            <button @click="execCmd('justifyCenter')" class="hidden sm:inline-block p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg" title="Rata Tengah">
+              <i class="fa-solid fa-align-center"></i>
+            </button>
+            <button @click="execCmd('justifyFull')" class="hidden sm:inline-block p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg" title="Rata Kanan-Kiri (Justify)">
+              <i class="fa-solid fa-align-justify"></i>
+            </button>
+
+            <div class="h-4 w-px bg-slate-200 mx-0.5"></div>
+
+            <!-- Lists -->
+            <button @click="execCmd('insertUnorderedList')" class="p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg" title="Daftar Poin (Bullet List)">
+              <i class="fa-solid fa-list-ul"></i>
+            </button>
+            <button @click="execCmd('insertOrderedList')" class="p-1.5 text-xs text-slate-700 hover:bg-slate-100 rounded-lg" title="Daftar Nomor (Numbered List)">
+              <i class="fa-solid fa-list-ol"></i>
+            </button>
+
+            <!-- Quick Highlight Yellow -->
+            <button @click="execCmd('hiliteColor', '#fef08a')" class="p-1.5 text-xs text-amber-600 hover:bg-amber-50 rounded-lg" title="Stabilo Kuning">
+              <i class="fa-solid fa-highlighter"></i>
+            </button>
+
+            <!-- Clear Formatting -->
+            <button @click="execCmd('removeFormat')" class="p-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg" title="Bersihkan Format Teks Terpilih">
+              <i class="fa-solid fa-eraser"></i>
+            </button>
+
+            <div class="h-4 w-px bg-slate-200 mx-0.5"></div>
+
+            <!-- Clear Entire Document -->
+            <button
+              @click="showClearConfirm = true"
+              class="px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-lg transition flex items-center gap-1"
+              title="Kosongkan seluruh isi dokumen"
+            >
+              <i class="fa-regular fa-trash-can"></i>
+              <span class="hidden xl:inline">Kosongkan</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= MAIN WORKSPACE AREA ================= -->
+    <main class="flex-1 print-container max-w-[1600px] w-full mx-auto px-2 sm:px-6 py-5 pb-24 sm:pb-10">
+
+      <!-- ================= VIEW 1: WYSIWYG A4 DOCUMENT EDITOR ================= -->
+      <section v-show="activeView === 'wysiwyg'" class="flex flex-col items-center">
+        <!-- Document Status Bar above Paper -->
+        <div class="no-print w-full max-w-[210mm] mb-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 px-1">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 font-medium text-slate-700">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Kanvas Dokumen A4 Interaktif (Klik teks di kertas untuk mengedit langsung)
+            </span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span><i class="fa-solid fa-table text-slate-400 mr-1"></i>{{ docElementsCount.tables }} Tabel</span>
+            <span><i class="fa-solid fa-square-root-variable text-slate-400 mr-1"></i>{{ docElementsCount.math }} Rumus</span>
+            <span><i class="fa-solid fa-code text-slate-400 mr-1"></i>{{ docElementsCount.code }} Kode</span>
+          </div>
+        </div>
+
+        <!-- Editable A4 Paper -->
+        <div
+          ref="wysiwygCanvas"
+          contenteditable="true"
+          spellcheck="false"
+          @input="onWysiwygInput"
+          :style="{ fontFamily: docFont }"
+          class="a4-canvas rounded-xl"
+        ></div>
+      </section>
+
+      <!-- ================= VIEW 2: SPLIT LIVE MARKDOWN & PREVIEW ================= -->
+      <section v-if="activeView === 'split'" class="no-print grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        <!-- Left Pane: Raw Markdown Editor -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col lg:sticky lg:top-36">
+          <div class="bg-slate-50 border-b border-slate-200 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
+              <i class="fa-brands fa-markdown text-red-600 text-base"></i>
+              <span>Kode Sumber Markdown &amp; LaTeX</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-1">
+              <button @click="insertQuickSyntax('heading')" class="px-2 py-1 text-[11px] font-semibold bg-white border border-slate-200 hover:bg-slate-100 rounded-lg text-slate-700" title="Sisipkan Judul">H2</button>
+              <button @click="insertQuickSyntax('table')" class="px-2 py-1 text-[11px] font-semibold bg-white border border-slate-200 hover:bg-slate-100 rounded-lg text-slate-700" title="Sisipkan Tabel"><i class="fa-solid fa-table mr-1"></i>Tabel</button>
+              <button @click="insertQuickSyntax('math')" class="px-2 py-1 text-[11px] font-semibold bg-white border border-slate-200 hover:bg-slate-100 rounded-lg text-slate-700" title="Sisipkan Persamaan LaTeX"><i class="fa-solid fa-square-root-variable mr-1"></i>Rumus</button>
+              <button @click="insertQuickSyntax('code')" class="px-2 py-1 text-[11px] font-semibold bg-white border border-slate-200 hover:bg-slate-100 rounded-lg text-slate-700" title="Sisipkan Blok Kode"><i class="fa-solid fa-code mr-1"></i>Kode</button>
+              <button @click="cleanAiConversationalFluffInSplit" class="px-2 py-1 text-[11px] font-semibold bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-lg text-amber-800" title="Hapus kalimat pembuka/penutup basa-basi AI">
+                <i class="fa-solid fa-broom mr-1"></i>Bersihkan Basa-basi AI
+              </button>
+            </div>
+          </div>
+          <textarea
+            v-model="rawMarkdown"
+            @input="onSplitMarkdownInput"
+            rows="26"
+            spellcheck="false"
+            class="w-full p-4 font-mono text-xs sm:text-sm text-slate-800 bg-slate-900/[0.02] focus:outline-none resize-y leading-relaxed min-h-[65vh]"
+            placeholder="Ketik atau tempel Markdown & LaTeX ($...$, $$...$$, \(...\), \[...\]) di sini..."
+          ></textarea>
+        </div>
+
+        <!-- Right Pane: Live Rendered A4 Preview -->
+        <div class="flex flex-col">
+          <div class="mb-2 flex items-center justify-between text-xs text-slate-500 px-1">
+            <span class="font-semibold text-slate-700"><i class="fa-solid fa-eye text-blue-600 mr-1.5"></i>Pratinjau Hasil Dokumen Real-Time</span>
+            <span>Siap Ekspor Native DOCX</span>
+          </div>
+          <div
+            class="a4-canvas rounded-xl !min-h-[65vh] !p-6 sm:!p-10"
+            :style="{ fontFamily: docFont }"
+            v-html="renderedHtml"
+          ></div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 3: SNIPPETS HISTORY ================= -->
+      <section v-if="activeView === 'history'" class="no-print max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-amber-600"></i>
+                Riwayat Tangkapan Markdown AI
+              </h2>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Setiap potongan Markdown yang Anda sisipkan tersimpan otomatis di browser agar mudah digabungkan kembali.
+              </p>
+            </div>
+            <button
+              @click="openInsertModal"
+              class="px-3.5 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-plus"></i> Tambah Tangkapan Baru
+            </button>
+          </div>
+
+          <div v-if="snippetsHistory.length === 0" class="py-14 text-center text-slate-400">
+            <i class="fa-regular fa-folder-open text-4xl mb-3 block"></i>
+            <p class="text-sm font-medium text-slate-600">Belum ada riwayat tangkapan tersimpan.</p>
+            <p class="text-xs mt-1">Klik tombol "+ Sisipkan Markdown AI" untuk mulai mengumpulkan konten AI Anda.</p>
+          </div>
+
+          <div v-else class="mt-4 space-y-3">
+            <div
+              v-for="item in snippetsHistory"
+              :key="item.id"
+              class="border border-slate-200 rounded-xl p-4 hover:border-red-200 hover:bg-red-50/20 transition"
+            >
+              <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-800">{{ item.title }}</h3>
+                  <span class="text-[11px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>{{ item.timestamp }}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button
+                    @click="reinsertSnippet(item, 'append')"
+                    class="px-2.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
+                    title="Tambahkan ke bagian bawah dokumen saat ini"
+                  >
+                    <i class="fa-solid fa-plus mr-1"></i>Gabungkan
+                  </button>
+                  <button
+                    @click="reinsertSnippet(item, 'replace')"
+                    class="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+                    title="Ganti seluruh dokumen dengan tangkapan ini"
+                  >
+                    <i class="fa-solid fa-arrows-rotate mr-1"></i>Buka
+                  </button>
+                  <button
+                    @click="deleteSnippet(item.id)"
+                    class="p-1.5 text-xs text-red-500 hover:bg-red-50 rounded-lg transition"
+                    title="Hapus dari riwayat"
+                  >
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                </div>
+              </div>
+              <pre class="text-[11px] font-mono text-slate-600 bg-slate-50 border border-slate-200/70 rounded-lg p-2.5 overflow-x-auto max-h-28 whitespace-pre-wrap">{{ item.markdown.slice(0, 320) }}{{ item.markdown.length > 320 ? '...' : '' }}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= MODAL: "+ SISIPKAN MARKDOWN AI" (KHAS MASSIVEMARK) ================= -->
+    <div
+      v-if="showInsertModal"
+      class="no-print fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs"
+      @click.self="showInsertModal = false"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden flex flex-col max-h-[92vh]">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-3.5 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+              <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm sm:text-base">Sisipkan Markdown dari AI (MassiveMark Input)</h3>
+              <p class="text-[11px] text-red-100">Mendukung ChatGPT, Gemini, Claude, DeepSeek, Perplexity &amp; rumus LaTeX ($..$, $$..$$, \(..\), \[..\])</p>
+            </div>
+          </div>
+          <button @click="showInsertModal = false" class="p-1.5 text-white/80 hover:text-white rounded-lg">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-4 sm:p-5 overflow-y-auto space-y-3.5 flex-1">
+          <!-- Top Actions & Real-Time Detector Badges -->
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button
+                @click="pasteFromClipboardToModal"
+                class="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition flex items-center gap-1.5"
+              >
+                <i class="fa-regular fa-paste"></i> Tempel dari Clipboard
+              </button>
+              <button
+                @click="fillModalWithSample"
+                class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-flask text-amber-500"></i> Isi Contoh Rumus &amp; Tabel
+              </button>
+              <button
+                v-if="modalMarkdown"
+                @click="modalMarkdown = ''"
+                class="px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition"
+              >
+                Bersihkan
+              </button>
+            </div>
+
+            <!-- Real-time Content Detection Stats -->
+            <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
+              <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                <i class="fa-solid fa-heading text-slate-400 mr-1"></i>{{ modalStats.headings }} Judul
+              </span>
+              <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                <i class="fa-solid fa-table mr-1"></i>{{ modalStats.tables }} Tabel
+              </span>
+              <span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200">
+                <i class="fa-solid fa-square-root-variable mr-1"></i>{{ modalStats.math }} Rumus
+              </span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <i class="fa-solid fa-code mr-1"></i>{{ modalStats.codeBlocks }} Kode
+              </span>
+            </div>
+          </div>
+
+          <!-- Markdown Input Textarea -->
+          <textarea
+            ref="modalTextareaRef"
+            v-model="modalMarkdown"
+            rows="11"
+            spellcheck="false"
+            class="w-full p-3.5 rounded-xl border border-slate-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 font-mono text-xs sm:text-sm text-slate-800 bg-slate-50/70 focus:bg-white transition outline-none resize-y leading-relaxed"
+            placeholder="Tempel (Ctrl+V) hasil salinan dari ChatGPT, Gemini, Claude, atau DeepSeek di sini...&#10;&#10;Contoh rumus:&#10;$$ \int_{0}^{\infty} e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2} $$"
+          ></textarea>
+
+          <!-- Insertion Options -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+            <div>
+              <div class="text-xs font-bold text-slate-700 mb-2">Mode Penempatan ke Dokumen:</div>
+              <div class="flex flex-col gap-1.5 text-xs">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="radio" v-model="insertMode" value="append" class="text-red-600 focus:ring-red-500" />
+                  <span class="font-medium text-slate-700">Gabungkan di bawah dokumen (Append)</span>
+                </label>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="radio" v-model="insertMode" value="replace" class="text-red-600 focus:ring-red-500" />
+                  <span class="font-medium text-slate-700">Ganti seluruh isi dokumen (Replace)</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-xs font-bold text-slate-700 mb-2">Opsi Pemrosesan Otomatis:</div>
+              <div class="flex flex-col gap-1.5 text-xs">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="autoStripAiIntro" class="rounded text-red-600 focus:ring-red-500" />
+                  <span class="text-slate-700">Hapus basa-basi pembuka/penutup AI otomatis</span>
+                </label>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="saveSnippetToHistory" class="rounded text-red-600 focus:ring-red-500" />
+                  <span class="text-slate-700">Simpan ke Riwayat Tangkapan</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-slate-50 border-t border-slate-200 px-5 py-3 flex items-center justify-end gap-2">
+          <button
+            @click="showInsertModal = false"
+            class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200/70 rounded-xl transition"
+          >
+            Batal
+          </button>
+          <button
+            @click="processAndInsertMarkdown"
+            :disabled="!modalMarkdown.trim()"
+            class="px-5 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:opacity-50 rounded-xl shadow-md shadow-red-600/20 transition flex items-center gap-2"
+          >
+            <i class="fa-solid fa-check-double"></i>
+            <span>{{ insertMode === 'append' ? 'Gabungkan ke Dokumen' : 'Render & Ganti Dokumen' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: KONFIRMASI KOSONGKAN DOKUMEN ================= -->
+    <div
+      v-if="showClearConfirm"
+      class="no-print fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+      @click.self="showClearConfirm = false"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-slate-900">Kosongkan Seluruh Dokumen?</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Isi kanvas A4 akan dihapus. Riwayat tangkapan tetap aman.</p>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button
+            @click="showClearConfirm = false"
+            class="px-3.5 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+          >
+            Batal
+          </button>
+          <button
+            @click="clearDocumentConfirmed"
+            class="px-3.5 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition"
+          >
+            Ya, Kosongkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FLOATING MOBILE QUICK ACTION BAR ================= -->
+    <div class="no-print sm:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur border-t border-slate-200 px-3 py-2 flex items-center justify-between gap-2 z-30 shadow-lg">
+      <button
+        @click="openInsertModal"
+        class="flex-1 py-2.5 text-xs font-bold text-white bg-red-600 rounded-xl flex items-center justify-center gap-1.5 shadow-sm"
+      >
+        <i class="fa-solid fa-plus-circle"></i> Sisipkan AI
+      </button>
+      <button
+        @click="exportToDocx"
+        class="py-2.5 px-3.5 text-xs font-bold text-white bg-blue-600 rounded-xl"
+      >
+        <i class="fa-solid fa-file-word mr-1"></i>DOCX
+      </button>
+    </div>
+
+    <!-- ================= TOAST NOTIFICATION ================= -->
+    <transition
+      enter-active-class="transition ease-out duration-200"
+      enter-from-class="opacity-0 translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition ease-in duration-150"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-2"
+    >
+      <div
+        v-if="toast.visible"
+        class="no-print fixed bottom-16 sm:bottom-6 right-4 z-50 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center gap-2.5 max-w-md"
+      >
+        <i :class="toast.icon"></i>
+        <span>{{ toast.message }}</span>
+      </div>
+    </transition>
+
+  </div>
+
+  <!-- ================= VUE 3 APPLICATION LOGIC ================= -->
+  <script>
+    const { createApp, ref, computed, watch, onMounted, nextTick } = Vue;
+
+    // Sample AI Markdown Templates (using array join to avoid backtick/template literal issues)
+    const SAMPLE_TEMPLATES = {
+      stem: [
+        '# Analisis Persamaan Diferensial & Mekanika Kuantum',
+        '',
+        'Berikut adalah ringkasan formulasi matematis untuk uji konversi **Native Word Equation (OMML)** agar setiap simbol dapat diedit langsung di Microsoft Word.',
+        '',
+        '## 1. Persamaan Schrödinger & Integral Gaussian',
+        '',
+        'Persamaan Schrödinger bergantung waktu untuk partikel bermassa $m$ dalam potensial $V(\\mathbf{r}, t)$ dinyatakan sebagai:',
+        '',
+        '$$ i\\hbar \\frac{\\partial}{\\partial t}\\Psi(\\mathbf{r}, t) = \\left[ -\\frac{\\hbar^2}{2m}\\nabla^2 + V(\\mathbf{r}, t) \\right] \\Psi(\\mathbf{r}, t) $$',
+        '',
+        'Untuk normalisasi fungsi gelombang, digunakan integral Gaussian baku dan deret Fourier:',
+        '',
+        '$$ \\int_{-\\infty}^{\\infty} e^{-\\alpha x^2}\\,dx = \\sqrt{\\frac{\\pi}{\\alpha}}, \\quad \\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6} $$',
+        '',
+        '## 2. Representasi Matriks Pauli & Fungsi Bersyarat',
+        '',
+        'Operator spin elektron direpresentasikan melalui matriks Pauli $\\sigma_y$ dan fungsi aktivasi *ReLU*:',
+        '',
+        '$$ \\sigma_y = \\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix}, \\quad f(x) = \\begin{cases} x, & x > 0 \\\\ 0, & x \\le 0 \\end{cases} $$',
+        '',
+        '## 3. Tabel Konstanta Fisika Penting',
+        '',
+        '| Nama Konstanta | Simbol | Persamaan / Nilai | Satuan SI |',
+        '| :--- | :---: | :---: | :--- |',
+        '| Konstanta Planck Tereduksi | $\\hbar$ | $\\frac{h}{2\\pi} \\approx 1.054 \\times 10^{-34}$ | $\\text{J}\\cdot\\text{s}$ |',
+        '| Kecepatan Cahaya | $c$ | $2.998 \\times 10^8$ | $\\text{m/s}$ |',
+        '| Akar Persamaan Kuadrat | $x_{1,2}$ | $\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$ | Tak berdimensi |',
+        '',
+        '> **Catatan Pengujian Word:** Klik tombol **Unduh DOCX** di kanan atas, lalu buka di Microsoft Word. Klik dua kali pada salah satu rumus di atas untuk membuka *Equation Editor* bawaan Word.'
+      ].join('\n'),
+
+      table_code: [
+        '# Perbandingan Arsitektur Microservices vs Monolith',
+        '',
+        'Dokumen ini merangkum evaluasi performa sistem backend beserta implementasi *rate limiter* dalam bahasa Python.',
+        '',
+        '## 1. Matriks Perbandingan Teknis',
+        '',
+        '| Aspek Evaluasi | Monolith Modular | Microservices | Rekomendasi |',
+        '| :--- | :--- | :--- | :--- |',
+        '| **Kompleksitas Deploy** | Rendah (1 artefak) | Tinggi (CI/CD per layanan) | Monolith untuk tim kecil |',
+        '| **Latensi Jaringan** | Sangat rendah (`~1 ms`) | Menengah (`~15-45 ms`) | Gunakan gRPC antar layanan |',
+        '| **Skalabilitas** | Vertikal / duplikasi penuh | Horizontal granular | Microservices untuk trafik tinggi |',
+        '| **Kompleksitas Waktu** | $O(n \\log n)$ | $O(n \\log n) + T_{\\text{net}}$ | Optimasi *caching* Redis |',
+        '',
+        '## 2. Implementasi Algoritma Token Bucket (Python)',
+        '',
+        '\x60\x60\x60python',
+        'import time',
+        '',
+        'class TokenBucket:',
+        '    def __init__(self, capacity: int, refill_rate: float):',
+        '        self.capacity = capacity',
+        '        self.tokens = float(capacity)',
+        '        self.refill_rate = refill_rate',
+        '        self.last_check = time.monotonic()',
+        '',
+        '    def allow_request(self, cost: int = 1) -> bool:',
+        '        now = time.monotonic()',
+        '        elapsed = now - self.last_check',
+        '        self.tokens = min(self.capacity, self.tokens + elapsed * self.refill_rate)',
+        '        self.last_check = now',
+        '        if self.tokens >= cost:',
+        '            self.tokens -= cost',
+        '            return True',
+        '        return False',
+        '\x60\x60\x60',
+        '',
+        '## 3. Daftar Langkah Migrasi',
+        '',
+        '1. Identifikasi batas domain menggunakan *Domain-Driven Design (DDD)*.',
+        '2. Pisahkan skema basis data sebelum memecah layanan HTTP.',
+        '3. Terapkan pemantauan terdistribusi (*OpenTelemetry* & *Prometheus*).'
+      ].join('\n'),
+
+      academic: [
+        '# Evaluasi Efektivitas Pembelajaran Adaptif Berbasis AI Generatif',
+        '',
+        '## Abstrak',
+        '',
+        'Penelitian ini mengkaji dampak penggunaan tutor berbasis *Large Language Model (LLM)* terhadap peningkatan pemahaman konsep kalkulus mahasiswa tingkat pertama. Hasil uji-t berpasangan menunjukkan peningkatan skor rata-rata yang signifikan secara statistik ($p < 0.001$).',
+        '',
+        '## 1. Metodologi & Metrik Evaluasi',
+        '',
+        'Peningkatan hasil belajar dinormalisasi menggunakan rumus *Normalized Gain* ($\\langle g \\rangle$) dari Hake (1998):',
+        '',
+        '$$ \\langle g \\rangle = \\frac{\\bar{S}_{\\text{post}} - \\bar{S}_{\\text{pre}}}{100 - \\bar{S}_{\\text{pre}}} $$',
+        '',
+        'Sedangkan ukuran efek (*effect size*) dihitung menggunakan **Cohen\'s $d$**:',
+        '',
+        '$$ d = \\frac{\\bar{X}_1 - \\bar{X}_2}{\\sqrt{\\frac{s_1^2 + s_2^2}{2}}} $$',
+        '',
+        '## 2. Ringkasan Hasil Eksperimen',
+        '',
+        '| Kelompok | Jumlah ($N$) | Rata-rata Pre-Test | Rata-rata Post-Test | Gain ($\\langle g \\rangle$) |',
+        '| :--- | :---: | :---: | :---: | :---: |',
+        '| Kontrol (Konvensional) | 45 | 54.2 | 71.8 | 0.38 |',
+        '| Eksperimen (AI Adaptif) | 46 | 53.9 | 86.4 | 0.70 |',
+        '',
+        '> "Integrasi umpan balik instan berbasis AI mampu menurunkan beban kognitif ekstrinsik mahasiswa selama pemecahan masalah bertahap."',
+        '',
+        '## Daftar Pustaka',
+        '',
+        '- Hake, R. R. (1998). *Interactive-engagement versus traditional methods*. American Journal of Physics, 66(1), 64–74.',
+        '- Vaswani, A., et al. (2017). *Attention Is All You Need*. Advances in Neural Information Processing Systems.'
+      ].join('\n')
+    };
+
+    createApp({
+      setup() {
+        // Core Document State
+        const docTitle = ref('Analisis_Persamaan_Kuantum');
+        const docFont = ref('Calibri, Arial, sans-serif');
+        const activeView = ref('wysiwyg'); // 'wysiwyg' | 'split' | 'history'
+        const rawMarkdown = ref(SAMPLE_TEMPLATES.stem);
+        const renderedHtml = ref('');
+        const saveStatusText = ref('Tersimpan Otomatis');
+        const isExporting = ref(false);
+
+        // UI & Modal States
+        const showTemplateMenu = ref(false);
+        const templateMenuStyle = ref({});
+        const showInsertModal = ref(false);
+        const showClearConfirm = ref(false);
+
+        // Insert Modal State
+        const modalMarkdown = ref('');
+        const insertMode = ref('append'); // 'append' | 'replace'
+        const autoStripAiIntro = ref(true);
+        const saveSnippetToHistory = ref(true);
+
+        // History State
+        const snippetsHistory = ref([]);
+
+        // DOM Refs
+        const wysiwygCanvas = ref(null);
+        const modalTextareaRef = ref(null);
+        const templateDropdownRef = ref(null);
+
+        // Toast State
+        const toast = ref({
+          visible: false,
+          message: '',
+          icon: 'fa-solid fa-circle-check text-emerald-400'
+        });
+        let toastTimer = null;
+
+        const triggerToast = (message, icon = 'fa-solid fa-circle-check text-emerald-400') => {
+          toast.value = { visible: true, message, icon };
+          if (toastTimer) clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => {
+            toast.value.visible = false;
+          }, 3600);
+        };
+
+        // Keep "Contoh AI" dropdown always visible inside viewport on any screen width
+        const updateTemplateMenuPosition = () => {
+          if (!templateDropdownRef.value) return;
+          const rect = templateDropdownRef.value.getBoundingClientRect();
+          const menuWidth = Math.min(272, window.innerWidth - 16);
+          const top = rect.bottom + 8;
+          let left = rect.right - menuWidth;
+          if (left < 8) {
+            left = rect.left;
+          }
+          if (left + menuWidth > window.innerWidth - 8) {
+            left = window.innerWidth - menuWidth - 8;
+          }
+          left = Math.max(8, left);
+          templateMenuStyle.value = {
+            top: `${top}px`,
+            left: `${left}px`,
+            width: `${menuWidth}px`
+          };
+        };
+
+        const toggleTemplateMenu = () => {
+          if (showTemplateMenu.value) {
+            showTemplateMenu.value = false;
+            return;
+          }
+          showTemplateMenu.value = true;
+          nextTick(() => {
+            updateTemplateMenuPosition();
+          });
+        };
+
+        // ================= MARKDOWN + LATEX (KATEX) ENGINE =================
+
+        // Clean conversational AI intro/outro fluff (Indonesian & English)
+        const stripAiConversationalFluff = (text) => {
+          if (!text) return '';
+          let cleaned = text.trim();
+
+          // Common AI intro lines (first paragraph only if it looks conversational)
+          const introPattern = /^(?:(?:tentu|baik|halo|berikut(?:\s+adalah)?|ini\s+adalah|saya\s+telah|dengan\s+senang\s+hati|sure|certainly|here\s+is|here's|of\s+course|great\s+question)[^\n]*?:?\s*\n+)+/i;
+          cleaned = cleaned.replace(introPattern, '');
+
+          // Common AI closing lines
+          const outroPattern = /(?:\n+(?:semoga\s+membantu|jika\s+anda\s+(?:memiliki|ingin|butuh)|apakah\s+ada\s+yang\s+ingin|silakan\s+beri\s+tahu|hope\s+this\s+helps|let\s+me\s+know\s+if|feel\s+free\s+to\s+ask)[^\n]*)+$/i;
+          cleaned = cleaned.replace(outroPattern, '');
+
+          return cleaned.trim();
+        };
+
+        // Render Markdown with full protection for fenced code, inline code, and LaTeX math
+        // Supports: $$...$$, \[...\], $...$, \(...\)
+        const convertMarkdownToWordReadyHtml = (markdownText) => {
+          if (!markdownText || !markdownText.trim()) return '<p><br></p>';
+
+          let text = String(markdownText).replace(/\r\n/g, '\n');
+
+          // Step 1: Temporarily protect fenced code blocks & inline code so $ inside code is untouched
+          const codeStash = [];
+          const stashCode = (match) => {
+            const token = `@@CODE_STASH_${codeStash.length}@@`;
+            codeStash.push(match);
+            return token;
+          };
+
+          const fenceRegex = new RegExp('(\x60\x60\x60[\\s\\S]*?\x60\x60\x60)', 'g');
+          text = text.replace(fenceRegex, stashCode);
+          text = text.replace(/(`[^`\n]+`)/g, stashCode);
+
+          // Step 2: Extract & Render Math Expressions with KaTeX (HTML + MathML)
+          const mathStash = [];
+          const renderLatexToToken = (latex, isDisplay) => {
+            const cleanLatex = latex.trim();
+            if (!cleanLatex) return '';
+            let rendered = '';
+            try {
+              rendered = katex.renderToString(cleanLatex, {
+                displayMode: isDisplay,
+                throwOnError: false,
+                strict: false,
+                trust: false,
+                output: 'htmlAndMathml'
+              });
+            } catch (e) {
+              rendered = `<code>${cleanLatex}</code>`;
+            }
+
+            const wrapped = isDisplay
+              ? `<div class="math-block" data-latex="${encodeURIComponent(cleanLatex)}">${rendered}</div>`
+              : `<span class="math-inline" data-latex="${encodeURIComponent(cleanLatex)}">${rendered}</span>`;
+
+            const token = `@@MATH_STASH_${mathStash.length}@@`;
+            mathStash.push(wrapped);
+            return isDisplay ? `\n\n${token}\n\n` : token;
+          };
+
+          // Display math: $$ ... $$
+          text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_, expr) => renderLatexToToken(expr, true));
+          // Display math: \[ ... \]
+          text = text.replace(/\\\[([\s\S]+?)\\\]/g, (_, expr) => renderLatexToToken(expr, true));
+          // Inline math: \( ... \)
+          text = text.replace(/\\\(([\s\S]+?)\\\)/g, (_, expr) => renderLatexToToken(expr, false));
+          // Inline math: $ ... $ (avoid matching currency like "$50 and $60" where space follows opening $)
+          text = text.replace(/(?<!\\)\$(?!\s)([^\$\n]+?)(?<!\s)\$/g, (_, expr) => renderLatexToToken(expr, false));
+
+          // Step 3: Restore stashed code blocks before Marked parses Markdown
+          text = text.replace(/@@CODE_STASH_(\d+)@@/g, (_, idx) => codeStash[Number(idx)] || '');
+
+          // Step 4: Parse Markdown via Marked.js
+          if (typeof marked !== 'undefined') {
+            marked.setOptions({
+              gfm: true,
+              breaks: true
+            });
+          }
+          let html = typeof marked !== 'undefined' ? marked.parse(text) : text;
+
+          // Step 5: Restore rendered KaTeX math blocks (unwrapping <p> around block math)
+          html = html.replace(/<p>\s*@@MATH_STASH_(\d+)@@\s*<\/p>/g, (_, idx) => mathStash[Number(idx)] || '');
+          html = html.replace(/@@MATH_STASH_(\d+)@@/g, (_, idx) => mathStash[Number(idx)] || '');
+
+          // Step 6: Syntax highlight code blocks via Highlight.js
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = html;
+          if (typeof hljs !== 'undefined') {
+            tempDiv.querySelectorAll('pre code').forEach((block) => {
+              try {
+                hljs.highlightElement(block);
+              } catch (e) {}
+            });
+          }
+
+          return tempDiv.innerHTML;
+        };
+
+        // ================= COMPUTED LIVE STATISTICS =================
+
+        const stats = computed(() => {
+          const temp = document.createElement('div');
+          temp.innerHTML = renderedHtml.value || '';
+          temp.querySelectorAll('.katex-mathml, style, script').forEach((el) => el.remove());
+          const plain = (temp.textContent || '').trim();
+          const words = plain ? plain.split(/\s+/).filter(Boolean).length : 0;
+          const pages = Math.max(1, Math.ceil(words / 350));
+          return { words, pages };
+        });
+
+        const docElementsCount = computed(() => {
+          const temp = document.createElement('div');
+          temp.innerHTML = renderedHtml.value || '';
+          return {
+            tables: temp.querySelectorAll('table').length,
+            math: temp.querySelectorAll('.katex').length,
+            code: temp.querySelectorAll('pre').length
+          };
+        });
+
+        const modalStats = computed(() => {
+          const src = modalMarkdown.value || '';
+          const headings = (src.match(/^#{1,6}\s+.+/gm) || []).length;
+          const tableSeparators = (src.match(/^\s*\|?[\s:-]+\|[\s|:-]+\s*$/gm) || []).length;
+          const displayMath = (src.match(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]/g) || []).length;
+          const inlineMath = (src.match(/(?<!\$)\$(?!\$)[^\$\n]+?\$|\\\([\s\S]+?\\\)/g) || []).length;
+          const codeFenceRegex = new RegExp('\x60\x60\x60[\\s\\S]*?\x60\x60\x60', 'g');
+          const codeBlocks = (src.match(codeFenceRegex) || []).length;
+          return {
+            headings,
+            tables: tableSeparators,
+            math: displayMath + inlineMath,
+            codeBlocks
+          };
+        });
+
+        // ================= EDITOR & MODAL INTERACTION HANDLERS =================
+
+        const syncHtmlToCanvas = (htmlString) => {
+          renderedHtml.value = htmlString;
+          nextTick(() => {
+            if (wysiwygCanvas.value) {
+              wysiwygCanvas.value.innerHTML = htmlString;
+            }
+          });
+          saveToLocal();
+        };
+
+        const openInsertModal = () => {
+          showInsertModal.value = true;
+          nextTick(() => {
+            if (modalTextareaRef.value) modalTextareaRef.value.focus();
+          });
+        };
+
+        const openInsertModalWithMode = (mode) => {
+          insertMode.value = mode;
+          openInsertModal();
+        };
+
+        const pasteFromClipboardToModal = async () => {
+          try {
+            if (navigator.clipboard && navigator.clipboard.readText) {
+              const clipText = await navigator.clipboard.readText();
+              if (clipText) {
+                modalMarkdown.value = clipText;
+                triggerToast('Teks dari clipboard berhasil ditempel!');
+                return;
+              }
+            }
+          } catch (e) {}
+          triggerToast('Silakan tekan Ctrl+V di kotak teks untuk menempel.', 'fa-solid fa-circle-info text-blue-400');
+          if (modalTextareaRef.value) modalTextareaRef.value.focus();
+        };
+
+        const fillModalWithSample = () => {
+          modalMarkdown.value = SAMPLE_TEMPLATES.stem;
+        };
+
+        const extractSnippetTitle = (md) => {
+          const firstHeading = md.match(/^#{1,6}\s+(.+)/m);
+          if (firstHeading && firstHeading[1]) return firstHeading[1].trim().slice(0, 70);
+          const firstLine = md.split('\n').find((l) => l.trim().length > 0) || 'Tangkapan Markdown AI';
+          return firstLine.replace(/[*_`#]/g, '').trim().slice(0, 70);
+        };
+
+        const processAndInsertMarkdown = () => {
+          let md = modalMarkdown.value.trim();
+          if (!md) return;
+
+          if (autoStripAiIntro.value) {
+            md = stripAiConversationalFluff(md);
+          }
+
+          const newHtmlSegment = convertMarkdownToWordReadyHtml(md);
+
+          if (insertMode.value === 'append' && rawMarkdown.value.trim()) {
+            rawMarkdown.value = `${rawMarkdown.value.trim()}\n\n---\n\n${md}`;
+            const currentCanvasHtml = wysiwygCanvas.value ? wysiwygCanvas.value.innerHTML : renderedHtml.value;
+            const combined = `${currentCanvasHtml}<hr />${newHtmlSegment}`;
+            syncHtmlToCanvas(combined);
+            triggerToast('Konten Markdown AI berhasil digabungkan ke dokumen!');
+          } else {
+            rawMarkdown.value = md;
+            syncHtmlToCanvas(newHtmlSegment);
+            triggerToast('Dokumen berhasil diperbarui dari Markdown AI!');
+          }
+
+          if (saveSnippetToHistory.value) {
+            snippetsHistory.value.unshift({
+              id: Date.now(),
+              title: extractSnippetTitle(md),
+              markdown: md,
+              timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB'
+            });
+            if (snippetsHistory.value.length > 25) {
+              snippetsHistory.value.pop();
+            }
+            saveToLocal();
+          }
+
+          modalMarkdown.value = '';
+          showInsertModal.value = false;
+          if (activeView.value === 'history') {
+            activeView.value = 'wysiwyg';
+          }
+        };
+
+        const reinsertSnippet = (item, mode) => {
+          const htmlSeg = convertMarkdownToWordReadyHtml(item.markdown);
+          if (mode === 'append' && rawMarkdown.value.trim()) {
+            rawMarkdown.value = `${rawMarkdown.value.trim()}\n\n---\n\n${item.markdown}`;
+            const current = wysiwygCanvas.value ? wysiwygCanvas.value.innerHTML : renderedHtml.value;
+            syncHtmlToCanvas(`${current}<hr />${htmlSeg}`);
+            triggerToast('Tangkapan berhasil digabungkan ke dokumen!');
+          } else {
+            rawMarkdown.value = item.markdown;
+            syncHtmlToCanvas(htmlSeg);
+            triggerToast('Tangkapan berhasil dibuka di editor!');
+          }
+          activeView.value = 'wysiwyg';
+        };
+
+        const deleteSnippet = (id) => {
+          snippetsHistory.value = snippetsHistory.value.filter((item) => item.id !== id);
+          saveToLocal();
+          triggerToast('Riwayat tangkapan dihapus.');
+        };
+
+        const loadSample = (key) => {
+          const tpl = SAMPLE_TEMPLATES[key];
+          if (!tpl) return;
+          rawMarkdown.value = tpl;
+          if (key === 'stem') docTitle.value = 'Analisis_Persamaan_Kuantum';
+          else if (key === 'table_code') docTitle.value = 'Arsitektur_Microservices_Python';
+          else if (key === 'academic') docTitle.value = 'Laporan_Akademik_AI_Generatif';
+
+          const html = convertMarkdownToWordReadyHtml(tpl);
+          syncHtmlToCanvas(html);
+          showTemplateMenu.value = false;
+          if (activeView.value === 'history') activeView.value = 'wysiwyg';
+          triggerToast('Template contoh AI berhasil dimuat!');
+        };
+
+        const onWysiwygInput = () => {
+          if (wysiwygCanvas.value) {
+            renderedHtml.value = wysiwygCanvas.value.innerHTML;
+            saveStatusText.value = 'Menyimpan...';
+            saveToLocal();
+          }
+        };
+
+        const onSplitMarkdownInput = () => {
+          const html = convertMarkdownToWordReadyHtml(rawMarkdown.value);
+          syncHtmlToCanvas(html);
+        };
+
+        const cleanAiConversationalFluffInSplit = () => {
+          rawMarkdown.value = stripAiConversationalFluff(rawMarkdown.value);
+          onSplitMarkdownInput();
+          triggerToast('Basa-basi pembuka/penutup AI berhasil dibersihkan!');
+        };
+
+        const insertQuickSyntax = (type) => {
+          const snippets = {
+            heading: '\n\n## Sub-Judul Baru\n',
+            table: '\n\n| Kolom 1 | Kolom 2 | Kolom 3 |\n| :--- | :---: | :--- |\n| Data A | $x^2 + y^2$ | Keterangan |\n| Data B | $\\frac{1}{2}$ | Keterangan |\n',
+            math: '\n\n$$ \\int_{a}^{b} f(x)\\,dx = F(b) - F(a) $$\n',
+            code: '\n\n\x60\x60\x60python\ndef hitung_rata_rata(data):\n    return sum(data) / len(data)\n\x60\x60\x60\n'
+          };
+          rawMarkdown.value += snippets[type] || '';
+          onSplitMarkdownInput();
+        };
+
+        const execCmd = (command, value = null) => {
+          if (wysiwygCanvas.value) {
+            wysiwygCanvas.value.focus();
+          }
+          try {
+            document.execCommand(command, false, value);
+            onWysiwygInput();
+          } catch (e) {}
+        };
+
+        const formatBlock = (tag) => {
+          if (!tag) return;
+          execCmd('formatBlock', `<${tag}>`);
+        };
+
+        const clearDocumentConfirmed = () => {
+          rawMarkdown.value = '';
+          syncHtmlToCanvas('<p><br></p>');
+          showClearConfirm.value = false;
+          triggerToast('Dokumen telah dikosongkan.');
+        };
+
+        const switchView = (view) => {
+          activeView.value = view;
+          if (view === 'wysiwyg') {
+            nextTick(() => {
+              if (wysiwygCanvas.value) {
+                wysiwygCanvas.value.innerHTML = renderedHtml.value;
+              }
+            });
+          }
+        };
+
+        // ================= EXPORT & COPY FUNCTIONS (NATIVE WORD OMML + GENUINE DOCX) =================
+
+        // XML Helper: Escape special XML characters and strip illegal XML 1.0 control chars
+        const escapeXml = (str) => {
+          return String(str ?? '')
+            .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+        };
+
+        // Extract primary font name from CSS font-family stack for Word styles
+        const getPrimaryFontName = (fontStack) => {
+          const first = (fontStack || 'Calibri').split(',')[0].trim();
+          return first.replace(/^['"]|['"]$/g, '') || 'Calibri';
+        };
+
+        // Core Engine: Convert Presentation MathML DOM (from KaTeX) into Genuine Native Word OMML
+        // Supports mode = 'docx' (ECMA-376 word/document.xml) and mode = 'wordHtml' (CF_HTML msEquation 12 clipboard)
+        const mathmlToOmml = (mathElement, isDisplay = false, mode = 'docx') => {
+          if (!mathElement) return '';
+
+          const isWordHtml = mode === 'wordHtml';
+          const flagOn = isWordHtml ? 'on' : '1';
+          const flagOff = isWordHtml ? 'off' : '0';
+
+          const NARY_OPS = new Set(['∫', '∬', '∭', '∮', '∯', '∰', '∑', '∏', '∐', '⋃', '⋂', '⋁', '⋀', '⨁', '⨂', '⨀']);
+          const RELATION_OPS = new Set(['=', '<', '>', '≤', '≥', '≠', '≈', '≡', '∼', '≃', '≅', '∝', '→', '←', '↔', '⇒', '⇐', '⇔', '↦', ',', ';']);
+          const FENCE_PAIRS = {
+            '(': ')',
+            '[': ']',
+            '{': '}',
+            '⟨': '⟩',
+            '⌈': '⌉',
+            '⌊': '⌋',
+            '|': '|',
+            '‖': '‖',
+            '∣': '∣'
+          };
+          const ACCENT_MAP = {
+            '^': '\u0302',
+            'ˆ': '\u0302',
+            '~': '\u0303',
+            '˜': '\u0303',
+            '˙': '\u0307',
+            '.': '\u0307',
+            '¨': '\u0308',
+            '→': '\u20D7',
+            '⃗': '\u20D7',
+            '←': '\u20D6',
+            'ˇ': '\u030C',
+            '˘': '\u0306',
+            'ˊ': '\u0301',
+            'ˋ': '\u0300',
+            '¯': '\u0304',
+            '‾': '\u0304',
+            'ˉ': '\u0304'
+          };
+
+          const tagOf = (node) => (node && node.nodeType === 1 ? node.localName.toLowerCase() : '');
+          const elemChildren = (node) => Array.from(node.childNodes || []).filter((n) => n.nodeType === 1);
+
+          // Build a Word OMML math run (<m:r>) for either OOXML (.docx) or Word HTML (Clipboard msEquation 12)
+          const makeMathRun = (rawText, opts = {}) => {
+            // Strip invisible MathML operators (\u2061 FunctionApplication, \u2062 InvisibleTimes, etc.)
+            const text = String(rawText ?? '').replace(/[\u2061\u2062\u2063\u2064]/g, '');
+            if (!text) return '';
+
+            let mRPrInner = '';
+            if (opts.normalText) {
+              mRPrInner += '<m:nor/>';
+            }
+            if (opts.sty) {
+              // Valid OMML sty values: 'p' (plain upright), 'b' (bold), 'i' (italic), 'bi' (bold-italic)
+              mRPrInner += `<m:sty m:val="${opts.sty}"/>`;
+            }
+
+            const mRPr = mRPrInner ? `<m:rPr>${mRPrInner}</m:rPr>` : '';
+
+            // Word HTML Clipboard (msEquation 12) expects styled HTML <span> inside <m:r> instead of <w:rPr>/<m:t>
+            if (isWordHtml) {
+              const escaped = escapeXml(text);
+              let innerHtml = `<span style='font-family:"Cambria Math",serif'>${escaped}</span>`;
+              const useItalic = (opts.italic || opts.sty === 'i' || opts.sty === 'bi') && !opts.normalText && opts.sty !== 'p' && opts.sty !== 'b';
+              const useBold = opts.sty === 'b' || opts.sty === 'bi';
+              if (useItalic) {
+                innerHtml = `<i style='mso-bidi-font-style:normal'>${innerHtml}</i>`;
+              }
+              if (useBold) {
+                innerHtml = `<b style='mso-bidi-font-weight:normal'>${innerHtml}</b>`;
+              }
+              return `<m:r>${mRPr}${innerHtml}</m:r>`;
+            }
+
+            // Genuine OOXML (.docx): strict ECMA-376 child ordering m:rPr -> w:rPr -> m:t
+            const wRPr = '<w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math" w:cs="Cambria Math"/></w:rPr>';
+            return `<m:r>${mRPr}${wRPr}<m:t xml:space="preserve">${escapeXml(text)}</m:t></m:r>`;
+          };
+
+          // Unwrap single-child mrow/mstyle containers to inspect underlying base element
+          const unwrapSingle = (node) => {
+            let cur = node;
+            while (cur && (tagOf(cur) === 'mrow' || tagOf(cur) === 'mstyle' || tagOf(cur) === 'mpadded')) {
+              const ch = elemChildren(cur);
+              if (ch.length === 1) cur = ch[0];
+              else break;
+            }
+            return cur;
+          };
+
+          // Detect if a node is an N-ary operator expression (integral, sum, product, etc.)
+          const extractNaryInfo = (node) => {
+            const tag = tagOf(node);
+            if (tag === 'mo') {
+              const opText = (node.textContent || '').trim();
+              if (NARY_OPS.has(opText)) {
+                const isIntegral = ['∫', '∬', '∭', '∮', '∯', '∰'].includes(opText);
+                return {
+                  chr: opText,
+                  subNode: null,
+                  supNode: null,
+                  limLoc: isIntegral ? 'subSup' : (isDisplay ? 'undOvr' : 'subSup')
+                };
+              }
+              return null;
+            }
+            if (['msub', 'msup', 'msubsup', 'munder', 'mover', 'munderover'].includes(tag)) {
+              const ch = elemChildren(node);
+              if (ch.length < 2) return null;
+              const base = unwrapSingle(ch[0]);
+              if (tagOf(base) === 'mo') {
+                const opText = (base.textContent || '').trim();
+                if (NARY_OPS.has(opText)) {
+                  const isUndOvr = tag === 'munder' || tag === 'mover' || tag === 'munderover';
+                  let subNode = null;
+                  let supNode = null;
+                  if (tag === 'msub' || tag === 'munder') subNode = ch[1];
+                  else if (tag === 'msup' || tag === 'mover') supNode = ch[1];
+                  else {
+                    subNode = ch[1];
+                    supNode = ch[2];
+                  }
+                  const isIntegral = ['∫', '∬', '∭', '∮', '∯', '∰'].includes(opText);
+                  return {
+                    chr: opText,
+                    subNode,
+                    supNode,
+                    limLoc: isIntegral ? 'subSup' : (isUndOvr ? 'undOvr' : 'subSup')
+                  };
+                }
+              }
+            }
+            return null;
+          };
+
+          // Detect balanced fenced group inside an <mrow> such as \left( ... \right), matrices, or \begin{cases}
+          const detectBalancedFence = (children) => {
+            if (children.length < 2) return null;
+            const first = children[0];
+            const last = children[children.length - 1];
+
+            // Special case for KaTeX \begin{cases}: <mrow><mo>{</mo><mtable>...</mtable></mrow>
+            if (children.length === 2 && tagOf(first) === 'mo' && tagOf(last) === 'mtable') {
+              const openChar = (first.textContent || '').trim();
+              if (openChar === '{' || openChar === '[' || openChar === '(') {
+                return { openChar, closeChar: '', inner: [last] };
+              }
+            }
+
+            if (tagOf(first) !== 'mo' || tagOf(last) !== 'mo') return null;
+
+            const openChar = (first.textContent || '').trim();
+            const closeChar = (last.textContent || '').trim();
+            const isExplicitFence =
+              first.getAttribute('fence') === 'true' ||
+              first.getAttribute('stretchy') === 'true' ||
+              last.getAttribute('fence') === 'true' ||
+              last.getAttribute('stretchy') === 'true';
+            const expectedClose = FENCE_PAIRS[openChar];
+
+            // Matching pair OR asymmetric \left\{ ... \right. (empty closing fence)
+            const validMatch =
+              (expectedClose && closeChar === expectedClose) ||
+              (isExplicitFence && openChar && closeChar === '') ||
+              (isExplicitFence && openChar === '' && closeChar);
+
+            if (!validMatch) return null;
+
+            // Ensure fences are balanced across interior nodes (prevent merging "(a)+(b)")
+            if (openChar && openChar !== closeChar && expectedClose === closeChar) {
+              let depth = 0;
+              for (let i = 0; i < children.length; i++) {
+                if (tagOf(children[i]) === 'mo') {
+                  const t = (children[i].textContent || '').trim();
+                  if (t === openChar) depth++;
+                  else if (t === closeChar) depth--;
+                }
+                if (depth === 0 && i < children.length - 1) return null;
+              }
+              if (depth !== 0) return null;
+            }
+
+            return {
+              openChar,
+              closeChar,
+              inner: children.slice(1, -1)
+            };
+          };
+
+          // Convert a list of sibling MathML elements (handles N-ary operand grouping)
+          const convertSequence = (nodes) => {
+            let out = '';
+            for (let i = 0; i < nodes.length; i++) {
+              const node = nodes[i];
+              const nary = extractNaryInfo(node);
+              if (nary) {
+                const operandNodes = [];
+                let j = i + 1;
+                while (j < nodes.length) {
+                  const nextNode = nodes[j];
+                  if (tagOf(nextNode) === 'mo' && RELATION_OPS.has((nextNode.textContent || '').trim())) {
+                    break;
+                  }
+                  operandNodes.push(nextNode);
+                  j++;
+                }
+
+                const subHide = nary.subNode ? flagOff : flagOn;
+                const supHide = nary.supNode ? flagOff : flagOn;
+                const subXml = nary.subNode ? `<m:sub>${convertNode(nary.subNode)}</m:sub>` : '<m:sub/>';
+                const supXml = nary.supNode ? `<m:sup>${convertNode(nary.supNode)}</m:sup>` : '<m:sup/>';
+                const bodyXml = operandNodes.length > 0
+                  ? convertSequence(operandNodes)
+                  : makeMathRun('\u200B');
+
+                out += `<m:nary>` +
+                  `<m:naryPr>` +
+                    `<m:chr m:val="${escapeXml(nary.chr)}"/>` +
+                    `<m:limLoc m:val="${nary.limLoc}"/>` +
+                    `<m:subHide m:val="${subHide}"/>` +
+                    `<m:supHide m:val="${supHide}"/>` +
+                  `</m:naryPr>` +
+                  subXml +
+                  supXml +
+                  `<m:e>${bodyXml}</m:e>` +
+                `</m:nary>`;
+
+                i = j - 1;
+              } else {
+                out += convertNode(node);
+              }
+            }
+            return out;
+          };
+
+          // Recursive MathML node converter
+          const convertNode = (node) => {
+            if (!node) return '';
+            if (node.nodeType === 3) {
+              const t = node.textContent.trim();
+              return t ? makeMathRun(t, { normalText: true }) : '';
+            }
+            if (node.nodeType !== 1) return '';
+
+            const tag = tagOf(node);
+            const children = elemChildren(node);
+
+            switch (tag) {
+              case 'math':
+                return convertSequence(children);
+
+              case 'semantics':
+                // First child is presentation MathML; skip <annotation> (raw LaTeX)
+                return children.length > 0 ? convertNode(children[0]) : '';
+
+              case 'annotation':
+              case 'annotation-xml':
+                return '';
+
+              case 'mrow': {
+                const fence = detectBalancedFence(children);
+                if (fence) {
+                  return `<m:d>` +
+                    `<m:dPr>` +
+                      `<m:begChr m:val="${escapeXml(fence.openChar)}"/>` +
+                      `<m:endChr m:val="${escapeXml(fence.closeChar)}"/>` +
+                    `</m:dPr>` +
+                    `<m:e>${convertSequence(fence.inner) || makeMathRun('\u200B')}</m:e>` +
+                  `</m:d>`;
+                }
+                return convertSequence(children);
+              }
+
+              case 'mstyle':
+              case 'mpadded':
+              case 'merror':
+                return convertSequence(children);
+
+              case 'mphantom':
+                return `<m:phant><m:phantPr><m:show m:val="${flagOff}"/></m:phantPr><m:e>${convertSequence(children)}</m:e></m:phant>`;
+
+              case 'menclose': {
+                const notation = (node.getAttribute('notation') || '').toLowerCase();
+                if (notation.includes('box')) {
+                  return `<m:borderBox><m:e>${convertSequence(children)}</m:e></m:borderBox>`;
+                }
+                return convertSequence(children);
+              }
+
+              case 'mi': {
+                const txt = node.textContent || '';
+                const variant = (node.getAttribute('mathvariant') || '').toLowerCase();
+                if (variant === 'normal') return makeMathRun(txt, { sty: 'p' });
+                if (variant === 'bold') return makeMathRun(txt, { sty: 'b' });
+                if (variant === 'bold-italic') return makeMathRun(txt, { sty: 'bi' });
+                if (variant === 'italic') return makeMathRun(txt, { sty: 'i' });
+                // Multi-character identifiers (sin, cos, exp, lim, log) are upright math plain ('p')
+                if (txt.trim().length > 1) return makeMathRun(txt, { sty: 'p' });
+                // Single-letter variables default to Cambria Math italic natively
+                return makeMathRun(txt, { italic: true });
+              }
+
+              case 'mn':
+                // Digits render upright automatically in Word OMML without <m:nor/>
+                return makeMathRun(node.textContent || '');
+
+              case 'mo': {
+                let op = node.textContent || '';
+                if (op === '-') op = '−'; // Proper Unicode minus sign
+                // Do NOT set <m:nor/> on math operators so Word applies native mathematical operator spacing
+                const isWordOp = /^[a-zA-Z]{2,}$/.test(op.trim());
+                return isWordOp ? makeMathRun(op, { sty: 'p' }) : makeMathRun(op);
+              }
+
+              case 'mtext':
+              case 'ms':
+                return makeMathRun((node.textContent || '').replace(/\u00A0/g, ' '), { normalText: true });
+
+              case 'mspace':
+                return makeMathRun(' ', { normalText: true });
+
+              case 'mfrac': {
+                if (children.length < 2) return convertSequence(children);
+                const lt = (node.getAttribute('linethickness') || '').trim();
+                const isNoBar = lt === '0' || lt === '0px' || lt === '0em' || lt === '0pt';
+                const fPr = isNoBar ? '<m:fPr><m:type m:val="noBar"/></m:fPr>' : '';
+                const numXml = convertNode(children[0]) || makeMathRun('\u200B');
+                const denXml = convertNode(children[1]) || makeMathRun('\u200B');
+                return `<m:f>${fPr}<m:num>${numXml}</m:num><m:den>${denXml}</m:den></m:f>`;
+              }
+
+              case 'msqrt':
+                return `<m:rad><m:radPr><m:degHide m:val="${flagOn}"/></m:radPr><m:deg/><m:e>${convertSequence(children) || makeMathRun('\u200B')}</m:e></m:rad>`;
+
+              case 'mroot': {
+                if (children.length < 2) return convertSequence(children);
+                return `<m:rad><m:radPr><m:degHide m:val="${flagOff}"/></m:radPr><m:deg>${convertNode(children[1])}</m:deg><m:e>${convertNode(children[0])}</m:e></m:rad>`;
+              }
+
+              case 'msup': {
+                if (children.length < 2) return convertSequence(children);
+                return `<m:sSup><m:e>${convertNode(children[0])}</m:e><m:sup>${convertNode(children[1])}</m:sup></m:sSup>`;
+              }
+
+              case 'msub': {
+                if (children.length < 2) return convertSequence(children);
+                return `<m:sSub><m:e>${convertNode(children[0])}</m:e><m:sub>${convertNode(children[1])}</m:sub></m:sSub>`;
+              }
+
+              case 'msubsup': {
+                if (children.length < 3) return convertSequence(children);
+                return `<m:sSubSup><m:e>${convertNode(children[0])}</m:e><m:sub>${convertNode(children[1])}</m:sub><m:sup>${convertNode(children[2])}</m:sup></m:sSubSup>`;
+              }
+
+              case 'mover': {
+                if (children.length < 2) return convertSequence(children);
+                const baseNode = children[0];
+                const overNode = unwrapSingle(children[1]);
+                const overText = (overNode.textContent || '').trim();
+                if (overText === '⏞') {
+                  return `<m:groupChr><m:groupChrPr><m:chr m:val="&#x23DE;"/><m:pos m:val="top"/><m:vertJc m:val="bot"/></m:groupChrPr><m:e>${convertNode(baseNode)}</m:e></m:groupChr>`;
+                }
+                if ((overText === '¯' || overText === '‾') && (baseNode.textContent || '').trim().length > 1) {
+                  return `<m:bar><m:barPr><m:pos m:val="top"/></m:barPr><m:e>${convertNode(baseNode)}</m:e></m:bar>`;
+                }
+                if (ACCENT_MAP[overText]) {
+                  return `<m:acc><m:accPr><m:chr m:val="${escapeXml(ACCENT_MAP[overText])}"/></m:accPr><m:e>${convertNode(baseNode)}</m:e></m:acc>`;
+                }
+                return `<m:limUpp><m:e>${convertNode(baseNode)}</m:e><m:lim>${convertNode(children[1])}</m:lim></m:limUpp>`;
+              }
+
+              case 'munder': {
+                if (children.length < 2) return convertSequence(children);
+                const baseNode = children[0];
+                const underNode = unwrapSingle(children[1]);
+                const underText = (underNode.textContent || '').trim();
+                if (underText === '⏟') {
+                  return `<m:groupChr><m:groupChrPr><m:chr m:val="&#x23DF;"/><m:pos m:val="bot"/><m:vertJc m:val="top"/></m:groupChrPr><m:e>${convertNode(baseNode)}</m:e></m:groupChr>`;
+                }
+                if (underText === '_' || underText === '̲' || underText === '‾' || underText === '¯') {
+                  return `<m:bar><m:barPr><m:pos m:val="bot"/></m:barPr><m:e>${convertNode(baseNode)}</m:e></m:bar>`;
+                }
+                return `<m:limLow><m:e>${convertNode(baseNode)}</m:e><m:lim>${convertNode(children[1])}</m:lim></m:limLow>`;
+              }
+
+              case 'munderover': {
+                if (children.length < 3) return convertSequence(children);
+                return `<m:limUpp><m:e><m:limLow><m:e>${convertNode(children[0])}</m:e><m:lim>${convertNode(children[1])}</m:lim></m:limLow></m:e><m:lim>${convertNode(children[2])}</m:lim></m:limUpp>`;
+              }
+
+              case 'mfenced': {
+                const open = node.getAttribute('open') ?? '(';
+                const close = node.getAttribute('close') ?? ')';
+                const innerElements = children.map((c) => `<m:e>${convertNode(c)}</m:e>`).join('');
+                return `<m:d><m:dPr><m:begChr m:val="${escapeXml(open)}"/><m:endChr m:val="${escapeXml(close)}"/></m:dPr>${innerElements || '<m:e/>'}</m:d>`;
+              }
+
+              case 'mtable': {
+                const rows = children.filter((c) => tagOf(c) === 'mtr' || tagOf(c) === 'mlabeledtr');
+                let maxCols = 1;
+                const rowData = rows.map((row) => {
+                  const cells = elemChildren(row).filter((c) => tagOf(c) === 'mtd');
+                  if (cells.length > maxCols) maxCols = cells.length;
+                  return cells;
+                });
+                const rowsXml = rowData
+                  .map((cells) => {
+                    let cellsXml = cells.map((cell) => `<m:e>${convertSequence(elemChildren(cell))}</m:e>`).join('');
+                    for (let pad = cells.length; pad < maxCols; pad++) cellsXml += '<m:e/>';
+                    return `<m:mr>${cellsXml}</m:mr>`;
+                  })
+                  .join('');
+                return `<m:m><m:mPr><m:mcs><m:mc><m:mcPr><m:count m:val="${maxCols}"/><m:mcJc m:val="center"/></m:mcPr></m:mc></m:mcs></m:mPr>${rowsXml}</m:m>`;
+              }
+
+              case 'mmultiscripts': {
+                if (children.length === 0) return '';
+                const baseXml = convertNode(children[0]);
+                const sub = children[1] && tagOf(children[1]) !== 'none' && tagOf(children[1]) !== 'mprescripts' ? children[1] : null;
+                const sup = children[2] && tagOf(children[2]) !== 'none' && tagOf(children[2]) !== 'mprescripts' ? children[2] : null;
+                if (sub && sup) return `<m:sSubSup><m:e>${baseXml}</m:e><m:sub>${convertNode(sub)}</m:sub><m:sup>${convertNode(sup)}</m:sup></m:sSubSup>`;
+                if (sub) return `<m:sSub><m:e>${baseXml}</m:e><m:sub>${convertNode(sub)}</m:sub></m:sSub>`;
+                if (sup) return `<m:sSup><m:e>${baseXml}</m:e><m:sup>${convertNode(sup)}</m:sup></m:sSup>`;
+                return baseXml;
+              }
+
+              default:
+                return convertSequence(children);
+            }
+          };
+
+          const innerOmml = convertNode(mathElement);
+          if (!innerOmml) return '';
+          return `<m:oMath>${innerOmml}</m:oMath>`;
+        };
+
+        // Core Engine: Build Genuine Native OOXML (.docx) Package with Real Word OMML Equations
+        const buildNativeDocxBlob = async (sourceHtml, fontStack) => {
+          if (typeof JSZip === 'undefined') {
+            throw new Error('Library JSZip belum termuat. Periksa koneksi internet Anda.');
+          }
+
+          const primaryFont = getPrimaryFontName(fontStack);
+          const container = document.createElement('div');
+          container.innerHTML = sourceHtml || '';
+
+          const hyperlinks = [];
+          const registerHyperlink = (href) => {
+            const rId = `rId${hyperlinks.length + 4}`; // rId1=styles, rId2=numbering, rId3=settings
+            hyperlinks.push({ rId, target: href });
+            return rId;
+          };
+
+          // Build Word run XML (<w:r>) with formatting flags
+          const makeTextRun = (text, fmt = {}) => {
+            if (!text) return '';
+            const cleanText = String(text).replace(/\r\n/g, '\n');
+            if (!cleanText) return '';
+
+            let rPr = '';
+            if (fmt.code) {
+              rPr += `<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>`;
+              rPr += `<w:color w:val="B91C1C"/>`;
+              rPr += `<w:sz w:val="19"/><w:szCs w:val="19"/>`;
+              rPr += `<w:shd w:val="clear" w:color="auto" w:fill="F1F5F9"/>`;
+            } else if (fmt.codeBlock) {
+              rPr += `<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>`;
+              rPr += `<w:color w:val="0F172A"/>`;
+              rPr += `<w:sz w:val="18"/><w:szCs w:val="18"/>`;
+            } else if (fmt.color) {
+              rPr += `<w:color w:val="${fmt.color}"/>`;
+            }
+            if (fmt.bold) rPr += '<w:b/><w:bCs/>';
+            if (fmt.italic) rPr += '<w:i/><w:iCs/>';
+            if (fmt.underline) rPr += '<w:u w:val="single"/>';
+            if (fmt.strike) rPr += '<w:strike/>';
+            if (fmt.highlight) rPr += '<w:highlight w:val="yellow"/>';
+            if (fmt.sup) rPr += '<w:vertAlign w:val="superscript"/>';
+            if (fmt.sub) rPr += '<w:vertAlign w:val="subscript"/>';
+            if (fmt.link) rPr += '<w:color w:val="2563EB"/><w:u w:val="single"/>';
+
+            const rPrXml = rPr ? `<w:rPr>${rPr}</w:rPr>` : '';
+            const lines = cleanText.split('\n');
+            return lines
+              .map((line, idx) => {
+                const br = idx > 0 ? '<w:br/>' : '';
+                return `<w:r>${rPrXml}${br}<w:t xml:space="preserve">${escapeXml(line)}</w:t></w:r>`;
+              })
+              .join('');
+          };
+
+          // Serialize inline DOM nodes into sibling <w:r>, <m:oMath>, and <w:hyperlink> XML
+          const serializeInline = (node, fmt = {}) => {
+            if (!node) return '';
+            if (node.nodeType === 3) {
+              return makeTextRun(node.textContent, fmt);
+            }
+            if (node.nodeType !== 1) return '';
+
+            const tag = node.tagName.toLowerCase();
+
+            // KaTeX Equation -> Native Word <m:oMath>
+            if (
+              node.classList.contains('katex') ||
+              node.classList.contains('math-inline') ||
+              node.classList.contains('math-block') ||
+              node.classList.contains('katex-display')
+            ) {
+              const mathEl = node.querySelector('math');
+              if (mathEl) {
+                const isDisp = node.classList.contains('math-block') || node.classList.contains('katex-display');
+                return mathmlToOmml(mathEl, isDisp, 'docx');
+              }
+              return makeTextRun(node.textContent, fmt);
+            }
+            if (node.classList.contains('katex-html')) return '';
+
+            if (tag === 'br') {
+              return '<w:r><w:br/></w:r>';
+            }
+
+            if (tag === 'a') {
+              const href = node.getAttribute('href') || '';
+              const nextFmt = { ...fmt, link: true };
+              const inner = Array.from(node.childNodes).map((c) => serializeInline(c, nextFmt)).join('');
+              if (href && /^https?:\/\//i.test(href)) {
+                const rId = registerHyperlink(href);
+                return `<w:hyperlink r:id="${rId}" w:history="1">${inner}</w:hyperlink>`;
+              }
+              return inner;
+            }
+
+            const nextFmt = { ...fmt };
+            if (tag === 'strong' || tag === 'b') nextFmt.bold = true;
+            if (tag === 'em' || tag === 'i') nextFmt.italic = true;
+            if (tag === 'u') nextFmt.underline = true;
+            if (tag === 's' || tag === 'del' || tag === 'strike') nextFmt.strike = true;
+            if (tag === 'code') nextFmt.code = true;
+            if (tag === 'sup') nextFmt.sup = true;
+            if (tag === 'sub') nextFmt.sub = true;
+            if (tag === 'mark') nextFmt.highlight = true;
+
+            const bg = (node.style && node.style.backgroundColor || '').toLowerCase();
+            if (bg.includes('254, 240, 138') || bg.includes('fef08a') || bg === 'yellow') {
+              nextFmt.highlight = true;
+            }
+
+            return Array.from(node.childNodes).map((c) => serializeInline(c, nextFmt)).join('');
+          };
+
+          // Map CSS text-align to OOXML <w:jc>
+          const getAlignXml = (el) => {
+            const align = (el.style && el.style.textAlign || el.getAttribute('align') || '').toLowerCase();
+            if (align === 'center') return '<w:jc w:val="center"/>';
+            if (align === 'right') return '<w:jc w:val="right"/>';
+            if (align === 'justify') return '<w:jc w:val="both"/>';
+            return '';
+          };
+
+          // Serialize HTML Table into Native Word <w:tbl>
+          const serializeTable = (tableEl) => {
+            const trNodes = Array.from(tableEl.querySelectorAll('tr'));
+            if (trNodes.length === 0) return '';
+
+            let maxCols = 1;
+            trNodes.forEach((tr) => {
+              let count = 0;
+              Array.from(tr.children).forEach((cell) => {
+                if (cell.tagName === 'TD' || cell.tagName === 'TH') {
+                  count += parseInt(cell.getAttribute('colspan') || '1', 10) || 1;
+                }
+              });
+              if (count > maxCols) maxCols = count;
+            });
+
+            const totalWidthTwips = 9026; // A4 usable width (11906 - 2*1440)
+            const colW = Math.floor(totalWidthTwips / maxCols);
+            const gridCols = Array.from({ length: maxCols }, () => `<w:gridCol w:w="${colW}"/>`).join('');
+
+            const rowsXml = trNodes
+              .map((tr, rowIdx) => {
+                const cells = Array.from(tr.children).filter((c) => c.tagName === 'TD' || c.tagName === 'TH');
+                if (cells.length === 0) return '';
+                const isHeaderRow = cells.every((c) => c.tagName === 'TH');
+                const trPr = isHeaderRow ? '<w:trPr><w:tblHeader/><w:cantSplit/></w:trPr>' : '<w:trPr><w:cantSplit/></w:trPr>';
+
+                const cellsXml = cells
+                  .map((cell) => {
+                    const isTh = cell.tagName === 'TH';
+                    const colspan = parseInt(cell.getAttribute('colspan') || '1', 10) || 1;
+                    const cellWidth = colW * colspan;
+                    const gridSpanXml = colspan > 1 ? `<w:gridSpan w:val="${colspan}"/>` : '';
+                    const fillHex = isTh ? 'F1F5F9' : (rowIdx % 2 === 0 && rowIdx > 0 ? 'F8FAFC' : 'FFFFFF');
+                    const shdXml = `<w:shd w:val="clear" w:color="auto" w:fill="${fillHex}"/>`;
+
+                    const inlineXml = serializeInline(cell, { bold: isTh });
+                    const pXml = `<w:p><w:pPr><w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/>${getAlignXml(cell)}</w:pPr>${inlineXml}</w:p>`;
+
+                    return `<w:tc>` +
+                      `<w:tcPr>` +
+                        `<w:tcW w:w="${cellWidth}" w:type="dxa"/>` +
+                        gridSpanXml +
+                        shdXml +
+                        `<w:vAlign w:val="top"/>` +
+                      `</w:tcPr>` +
+                      pXml +
+                    `</w:tc>`;
+                  })
+                  .join('');
+
+                return `<w:tr>${trPr}${cellsXml}</w:tr>`;
+              })
+              .join('');
+
+            return `<w:tbl>` +
+              `<w:tblPr>` +
+                `<w:tblW w:w="${totalWidthTwips}" w:type="dxa"/>` +
+                `<w:tblBorders>` +
+                  `<w:top w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                  `<w:left w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                  `<w:bottom w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                  `<w:right w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                  `<w:insideH w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                  `<w:insideV w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                `</w:tblBorders>` +
+                `<w:tblCellMar>` +
+                  `<w:top w:w="90" w:type="dxa"/><w:left w:w="130" w:type="dxa"/>` +
+                  `<w:bottom w:w="90" w:type="dxa"/><w:right w:w="130" w:type="dxa"/>` +
+                `</w:tblCellMar>` +
+              `</w:tblPr>` +
+              `<w:tblGrid>${gridCols}</w:tblGrid>` +
+              rowsXml +
+            `</w:tbl>` +
+            `<w:p><w:pPr><w:spacing w:before="0" w:after="100"/></w:pPr></w:p>`;
+          };
+
+          // Serialize List (<ul> / <ol>) recursively into native Word numbered/bulleted paragraphs
+          const serializeList = (listEl, level = 0) => {
+            const isOrdered = listEl.tagName.toLowerCase() === 'ol';
+            const numId = isOrdered ? '2' : '1';
+            const clampedLevel = Math.min(level, 4);
+            let xml = '';
+
+            Array.from(listEl.children).forEach((li) => {
+              if (li.tagName.toLowerCase() !== 'li') return;
+
+              const inlineParts = [];
+              const nestedLists = [];
+              Array.from(li.childNodes).forEach((child) => {
+                if (child.nodeType === 1 && (child.tagName === 'UL' || child.tagName === 'OL')) {
+                  nestedLists.push(child);
+                } else {
+                  inlineParts.push(serializeInline(child, {}));
+                }
+              });
+
+              xml += `<w:p>` +
+                `<w:pPr>` +
+                  `<w:numPr><w:ilvl w:val="${clampedLevel}"/><w:numId w:val="${numId}"/></w:numPr>` +
+                  `<w:spacing w:before="20" w:after="60" w:line="276" w:lineRule="auto"/>` +
+                `</w:pPr>` +
+                inlineParts.join('') +
+              `</w:p>`;
+
+              nestedLists.forEach((nested) => {
+                xml += serializeList(nested, level + 1);
+              });
+            });
+
+            return xml;
+          };
+
+          // Serialize Block-level DOM nodes into WordprocessingML body elements
+          const serializeBlocks = (parentNode) => {
+            let bodyXml = '';
+            let pendingInline = '';
+
+            const flushPendingInline = () => {
+              if (pendingInline.trim()) {
+                bodyXml += `<w:p><w:pPr><w:spacing w:after="140" w:line="276" w:lineRule="auto"/></w:pPr>${pendingInline}</w:p>`;
+              }
+              pendingInline = '';
+            };
+
+            Array.from(parentNode.childNodes).forEach((node) => {
+              if (node.nodeType === 3) {
+                if (node.textContent.trim()) {
+                  pendingInline += makeTextRun(node.textContent, {});
+                }
+                return;
+              }
+              if (node.nodeType !== 1) return;
+
+              const tag = node.tagName.toLowerCase();
+
+              // Display Equation Block -> Native Word <m:oMathPara><m:oMath>...</m:oMath></m:oMathPara>
+              if (node.classList.contains('math-block') || node.classList.contains('katex-display')) {
+                flushPendingInline();
+                const mathEl = node.querySelector('math');
+                if (mathEl) {
+                  const oMathXml = mathmlToOmml(mathEl, true, 'docx');
+                  if (oMathXml) {
+                    bodyXml += `<w:p>` +
+                      `<w:pPr><w:spacing w:before="140" w:after="140"/><w:jc w:val="center"/></w:pPr>` +
+                      `<m:oMathPara><m:oMathParaPr><m:jc m:val="center"/></m:oMathParaPr>${oMathXml}</m:oMathPara>` +
+                    `</w:p>`;
+                    return;
+                  }
+                }
+                bodyXml += `<w:p><w:pPr><w:jc w:val="center"/></w:pPr>${makeTextRun(node.textContent, {})}</w:p>`;
+                return;
+              }
+
+              // Headings H1 - H4
+              if (['h1', 'h2', 'h3', 'h4'].includes(tag)) {
+                flushPendingInline();
+                const styleName = `Heading${tag.charAt(1)}`;
+                const inner = serializeInline(node, {});
+                bodyXml += `<w:p><w:pPr><w:pStyle w:val="${styleName}"/>${getAlignXml(node)}</w:pPr>${inner}</w:p>`;
+                return;
+              }
+
+              // Paragraph
+              if (tag === 'p') {
+                flushPendingInline();
+                const displayWrapper = node.querySelector('.katex-display, .math-block');
+                const displayMath = displayWrapper ? displayWrapper.querySelector('math') : null;
+                if (displayMath && node.textContent.trim() === displayWrapper.textContent.trim()) {
+                  const oMathXml = mathmlToOmml(displayMath, true, 'docx');
+                  bodyXml += `<w:p><w:pPr><w:spacing w:before="140" w:after="140"/><w:jc w:val="center"/></w:pPr><m:oMathPara><m:oMathParaPr><m:jc m:val="center"/></m:oMathParaPr>${oMathXml}</m:oMathPara></w:p>`;
+                  return;
+                }
+                const inner = serializeInline(node, {});
+                bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="140" w:line="276" w:lineRule="auto"/>${getAlignXml(node)}</w:pPr>${inner}</w:p>`;
+                return;
+              }
+
+              // Table
+              if (tag === 'table') {
+                flushPendingInline();
+                bodyXml += serializeTable(node);
+                return;
+              }
+
+              // Lists
+              if (tag === 'ul' || tag === 'ol') {
+                flushPendingInline();
+                bodyXml += serializeList(node, 0);
+                return;
+              }
+
+              // Blockquote
+              if (tag === 'blockquote') {
+                flushPendingInline();
+                const inner = serializeInline(node, { italic: true, color: '334155' });
+                bodyXml += `<w:p>` +
+                  `<w:pPr>` +
+                    `<w:pBdr><w:left w:val="single" w:sz="24" w:space="12" w:color="DC2626"/></w:pBdr>` +
+                    `<w:shd w:val="clear" w:color="auto" w:fill="FEF2F2"/>` +
+                    `<w:ind w:left="360" w:right="200"/>` +
+                    `<w:spacing w:before="120" w:after="140" w:line="276" w:lineRule="auto"/>` +
+                  `</w:pPr>` +
+                  inner +
+                `</w:p>`;
+                return;
+              }
+
+              // Code Block (<pre>)
+              if (tag === 'pre') {
+                flushPendingInline();
+                const codeText = (node.textContent || '').replace(/\r\n/g, '\n').replace(/\n$/, '');
+                const codeRuns = makeTextRun(codeText, { codeBlock: true });
+                bodyXml += `<w:tbl>` +
+                  `<w:tblPr>` +
+                    `<w:tblW w:w="9026" w:type="dxa"/>` +
+                    `<w:tblBorders>` +
+                      `<w:top w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                      `<w:left w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                      `<w:bottom w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                      `<w:right w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>` +
+                    `</w:tblBorders>` +
+                    `<w:tblCellMar>` +
+                      `<w:top w:w="120" w:type="dxa"/><w:left w:w="160" w:type="dxa"/>` +
+                      `<w:bottom w:w="120" w:type="dxa"/><w:right w:w="160" w:type="dxa"/>` +
+                    `</w:tblCellMar>` +
+                  `</w:tblPr>` +
+                  `<w:tblGrid><w:gridCol w:w="9026"/></w:tblGrid>` +
+                  `<w:tr><w:tc>` +
+                    `<w:tcPr><w:tcW w:w="9026" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F8FAFC"/></w:tcPr>` +
+                    `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>${codeRuns}</w:p>` +
+                  `</w:tc></w:tr>` +
+                `</w:tbl>` +
+                `<w:p><w:pPr><w:spacing w:before="0" w:after="100"/></w:pPr></w:p>`;
+                return;
+              }
+
+              // Horizontal Rule (<hr>)
+              if (tag === 'hr') {
+                flushPendingInline();
+                bodyXml += `<w:p>` +
+                  `<w:pPr>` +
+                    `<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="CBD5E1"/></w:pBdr>` +
+                    `<w:spacing w:before="140" w:after="140"/>` +
+                  `</w:pPr>` +
+                `</w:p>`;
+                return;
+              }
+
+              // Generic block container (<div>, <section>, <article>)
+              if (tag === 'div' || tag === 'section' || tag === 'article') {
+                flushPendingInline();
+                bodyXml += serializeBlocks(node);
+                return;
+              }
+
+              // Fallback: treat as inline content
+              pendingInline += serializeInline(node, {});
+            });
+
+            flushPendingInline();
+            return bodyXml;
+          };
+
+          const documentBodyContent = serializeBlocks(container) || '<w:p/>';
+
+          // 1. [Content_Types].xml
+          const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>
+  <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
+</Types>`;
+
+          // 2. _rels/.rels
+          const rootRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+
+          // 3. word/_rels/document.xml.rels
+          const extraHyperlinkRels = hyperlinks
+            .map((h) => `  <Relationship Id="${h.rId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${escapeXml(h.target)}" TargetMode="External"/>`)
+            .join('\n');
+
+          const docRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
+  <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
+${extraHyperlinkRels}
+</Relationships>`;
+
+          // 4. word/settings.xml (Official Word Math Configuration for Cambria Math & OMML rendering)
+          const settingsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math">
+  <w:zoom w:percent="100"/>
+  <m:mathPr>
+    <m:mathFont m:val="Cambria Math"/>
+    <m:brkBin m:val="before"/>
+    <m:brkBinSub m:val="--"/>
+    <m:smallFrac m:val="0"/>
+    <m:dispDef/>
+    <m:lMargin m:val="0"/>
+    <m:rMargin m:val="0"/>
+    <m:defJc m:val="centerGroup"/>
+    <m:wrapIndent m:val="1440"/>
+    <m:intLim m:val="subSup"/>
+    <m:naryLim m:val="undOvr"/>
+  </m:mathPr>
+</w:settings>`;
+
+          // 5. word/styles.xml
+          const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:docDefaults>
+    <w:rPrDefault>
+      <w:rPr>
+        <w:rFonts w:ascii="${escapeXml(primaryFont)}" w:hAnsi="${escapeXml(primaryFont)}" w:cs="${escapeXml(primaryFont)}"/>
+        <w:color w:val="0F172A"/>
+        <w:sz w:val="22"/>
+        <w:szCs w:val="22"/>
+      </w:rPr>
+    </w:rPrDefault>
+    <w:pPrDefault>
+      <w:pPr>
+        <w:spacing w:after="140" w:line="276" w:lineRule="auto"/>
+      </w:pPr>
+    </w:pPrDefault>
+  </w:docDefaults>
+  <w:style w:type="paragraph" w:default="1" w:styleId="Normal">
+    <w:name w:val="Normal"/>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading1">
+    <w:name w:val="heading 1"/>
+    <w:basedOn w:val="Normal"/>
+    <w:next w:val="Normal"/>
+    <w:pPr>
+      <w:keepNext/>
+      <w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="CBD5E1"/></w:pBdr>
+      <w:spacing w:before="280" w:after="140"/>
+      <w:outlineLvl w:val="0"/>
+    </w:pPr>
+    <w:rPr><w:b/><w:bCs/><w:color w:val="0F172A"/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading2">
+    <w:name w:val="heading 2"/>
+    <w:basedOn w:val="Normal"/>
+    <w:next w:val="Normal"/>
+    <w:pPr>
+      <w:keepNext/>
+      <w:spacing w:before="240" w:after="100"/>
+      <w:outlineLvl w:val="1"/>
+    </w:pPr>
+    <w:rPr><w:b/><w:bCs/><w:color w:val="1E293B"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading3">
+    <w:name w:val="heading 3"/>
+    <w:basedOn w:val="Normal"/>
+    <w:next w:val="Normal"/>
+    <w:pPr>
+      <w:keepNext/>
+      <w:spacing w:before="200" w:after="80"/>
+      <w:outlineLvl w:val="2"/>
+    </w:pPr>
+    <w:rPr><w:b/><w:bCs/><w:color w:val="334155"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading4">
+    <w:name w:val="heading 4"/>
+    <w:basedOn w:val="Normal"/>
+    <w:next w:val="Normal"/>
+    <w:pPr>
+      <w:keepNext/>
+      <w:spacing w:before="160" w:after="60"/>
+      <w:outlineLvl w:val="3"/>
+    </w:pPr>
+    <w:rPr><w:b/><w:bCs/><w:color w:val="475569"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+  </w:style>
+</w:styles>`;
+
+          // 6. word/numbering.xml (Native Bullet & Numbered Lists)
+          const numberingXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:abstractNum w:abstractNumId="0">
+    <w:multiLevelType w:val="hybridMultilevel"/>
+    <w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#x2022;"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="720" w:hanging="360"/></w:pPr></w:lvl>
+    <w:lvl w:ilvl="1"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#x25E6;"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="1440" w:hanging="360"/></w:pPr></w:lvl>
+    <w:lvl w:ilvl="2"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#x25AA;"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="2160" w:hanging="360"/></w:pPr></w:lvl>
+  </w:abstractNum>
+  <w:abstractNum w:abstractNumId="1">
+    <w:multiLevelType w:val="hybridMultilevel"/>
+    <w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1."/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="720" w:hanging="360"/></w:pPr></w:lvl>
+    <w:lvl w:ilvl="1"><w:start w:val="1"/><w:numFmt w:val="lowerLetter"/><w:lvlText w:val="%2."/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="1440" w:hanging="360"/></w:pPr></w:lvl>
+    <w:lvl w:ilvl="2"><w:start w:val="1"/><w:numFmt w:val="lowerRoman"/><w:lvlText w:val="%3."/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="2160" w:hanging="360"/></w:pPr></w:lvl>
+  </w:abstractNum>
+  <w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>
+  <w:num w:numId="2"><w:abstractNumId w:val="1"/></w:num>
+</w:numbering>`;
+
+          // 7. word/document.xml (A4 Page Size + Official OOXML Math Namespace)
+          const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
+            xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <w:body>
+    ${documentBodyContent}
+    <w:sectPr>
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/>
+    </w:sectPr>
+  </w:body>
+</w:document>`;
+
+          // Package into a real .docx ZIP file
+          const zip = new JSZip();
+          zip.file('[Content_Types].xml', contentTypesXml);
+          zip.folder('_rels').file('.rels', rootRelsXml);
+          const wordFolder = zip.folder('word');
+          wordFolder.file('document.xml', documentXml);
+          wordFolder.file('styles.xml', stylesXml);
+          wordFolder.file('numbering.xml', numberingXml);
+          wordFolder.file('settings.xml', settingsXml);
+          wordFolder.folder('_rels').file('document.xml.rels', docRelsXml);
+
+          return await zip.generateAsync({
+            type: 'blob',
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            compression: 'DEFLATE'
+          });
+        };
+
+        // 2. Export to Genuine Microsoft Word (.docx) with Native Editable Word Equations
+        const exportToDocx = async () => {
+          if (isExporting.value) return;
+          isExporting.value = true;
+          const rawBodyHtml = wysiwygCanvas.value ? wysiwygCanvas.value.innerHTML : renderedHtml.value;
+          const safeFilename = (docTitle.value || 'Dokumen_MassiveMark').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim() || 'Dokumen_MassiveMark';
+
+          try {
+            const docxBlob = await buildNativeDocxBlob(rawBodyHtml, docFont.value);
+            const url = URL.createObjectURL(docxBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${safeFilename}.docx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            triggerToast(`File "${safeFilename}.docx" dengan Native Word Equation berhasil diunduh!`);
+          } catch (err) {
+            console.error('DOCX Export Error:', err);
+            triggerToast(`Gagal membuat DOCX: ${err.message}`, 'fa-solid fa-circle-exclamation text-red-400');
+          } finally {
+            isExporting.value = false;
+          }
+        };
+
+        // 3. Export to PDF via Clean Print View
+        const exportToPdf = () => {
+          activeView.value = 'wysiwyg';
+          nextTick(() => {
+            window.print();
+          });
+        };
+
+        // 4. Export to Standalone HTML File
+        const exportToHtml = () => {
+          const bodyHtml = wysiwygCanvas.value ? wysiwygCanvas.value.innerHTML : renderedHtml.value;
+          const safeFilename = (docTitle.value || 'Dokumen_MassiveMark').replace(/[^a-zA-Z0-9_\-\s]/g, '').trim() || 'Dokumen_MassiveMark';
+
+          const standaloneHtml = `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${safeFilename}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <style>
+    body {
+      font-family: ${docFont.value};
+      max-width: 210mm;
+      margin: 2rem auto;
+      padding: 20mm;
+      color: #0f172a;
+      line-height: 1.65;
+      background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #cbd5e1; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f1f5f9; }
+    pre { background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    blockquote { border-left: 4px solid #dc2626; background: #fef2f2; padding: 0.75rem 1rem; margin: 1rem 0; }
+    .math-block { text-align: center; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  ${bodyHtml}
+</body>
+</html>`;
+
+          const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${safeFilename}.html`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+
+          triggerToast(`File HTML "${safeFilename}.html" berhasil diunduh!`);
+        };
+
+        // ================= LOCALSTORAGE PERSISTENCE =================
+        const STORAGE_KEY = 'massivemark_studio_state_v2';
+
+        const saveToLocal = () => {
+          try {
+            const payload = {
+              docTitle: docTitle.value,
+              docFont: docFont.value,
+              rawMarkdown: rawMarkdown.value,
+              renderedHtml: renderedHtml.value,
+              snippetsHistory: snippetsHistory.value
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            setTimeout(() => {
+              saveStatusText.value = 'Tersimpan Otomatis';
+            }, 400);
+          } catch (e) {}
+        };
+
+        const loadFromLocal = () => {
+          try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              if (parsed.docTitle) docTitle.value = parsed.docTitle;
+              if (parsed.docFont) docFont.value = parsed.docFont;
+              if (parsed.rawMarkdown !== undefined) rawMarkdown.value = parsed.rawMarkdown;
+              if (Array.isArray(parsed.snippetsHistory)) snippetsHistory.value = parsed.snippetsHistory;
+              if (parsed.renderedHtml) {
+                renderedHtml.value = parsed.renderedHtml;
+                return true;
+              }
+            }
+          } catch (e) {}
+          return false;
+        };
+
+        onMounted(() => {
+          const hadSaved = loadFromLocal();
+          if (!hadSaved) {
+            const initialHtml = convertMarkdownToWordReadyHtml(rawMarkdown.value);
+            renderedHtml.value = initialHtml;
+            snippetsHistory.value = [
+              {
+                id: Date.now(),
+                title: 'Analisis Persamaan Diferensial & Mekanika Kuantum',
+                markdown: SAMPLE_TEMPLATES.stem,
+                timestamp: 'Contoh Awal'
+              }
+            ];
+          }
+          if (wysiwygCanvas.value) {
+            wysiwygCanvas.value.innerHTML = renderedHtml.value;
+          }
+
+          document.addEventListener('click', (e) => {
+            if (templateDropdownRef.value && !templateDropdownRef.value.contains(e.target)) {
+              showTemplateMenu.value = false;
+            }
+          });
+
+          window.addEventListener('resize', () => {
+            if (showTemplateMenu.value) updateTemplateMenuPosition();
+          });
+
+          window.addEventListener('scroll', () => {
+            if (showTemplateMenu.value) updateTemplateMenuPosition();
+          }, true);
+        });
+
+        watch(docFont, () => {
+          saveToLocal();
+        });
+
+        return {
+          docTitle,
+          docFont,
+          activeView,
+          rawMarkdown,
+          renderedHtml,
+          saveStatusText,
+          isExporting,
+          showTemplateMenu,
+          templateMenuStyle,
+          showInsertModal,
+          showClearConfirm,
+          modalMarkdown,
+          insertMode,
+          autoStripAiIntro,
+          saveSnippetToHistory,
+          snippetsHistory,
+          wysiwygCanvas,
+          modalTextareaRef,
+          templateDropdownRef,
+          toast,
+          stats,
+          docElementsCount,
+          modalStats,
+          toggleTemplateMenu,
+          openInsertModal,
+          openInsertModalWithMode,
+          pasteFromClipboardToModal,
+          fillModalWithSample,
+          processAndInsertMarkdown,
+          reinsertSnippet,
+          deleteSnippet,
+          loadSample,
+          onWysiwygInput,
+          onSplitMarkdownInput,
+          cleanAiConversationalFluffInSplit,
+          insertQuickSyntax,
+          execCmd,
+          formatBlock,
+          clearDocumentConfirmed,
+          switchView,
+          exportToDocx,
+          exportToPdf,
+          exportToHtml,
+          saveToLocal
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
