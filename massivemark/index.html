@@ -96,6 +96,13 @@
       box-shadow: 0 12px 35px -5px rgba(220, 38, 38, 0.12), 0 0 0 2px rgba(220, 38, 38, 0.2);
     }
 
+    .a4-canvas:empty::before {
+      content: attr(data-placeholder);
+      color: #94a3b8;
+      pointer-events: none;
+      display: block;
+    }
+
     @media (max-width: 768px) {
       .a4-canvas {
         padding: 1.25rem;
@@ -239,6 +246,9 @@
         max-width: 100% !important;
         width: 100% !important;
         min-height: auto !important;
+      }
+      .a4-canvas:empty::before {
+        content: none !important;
       }
     }
 
@@ -570,6 +580,7 @@
           spellcheck="false"
           @input="onWysiwygInput"
           :style="{ fontFamily: docFont }"
+          data-placeholder='Mulai mengetik di sini atau klik "+ Sisipkan Markdown AI" untuk menempel hasil dari ChatGPT, Gemini, Claude, atau DeepSeek...'
           class="a4-canvas rounded-xl"
         ></div>
       </section>
@@ -1000,11 +1011,11 @@
 
     createApp({
       setup() {
-        // Core Document State
-        const docTitle = ref('Analisis_Persamaan_Kuantum');
+        // Core Document State (dimulai kosong saat pertama kali dibuka)
+        const docTitle = ref('Dokumen_Baru');
         const docFont = ref('Calibri, Arial, sans-serif');
         const activeView = ref('wysiwyg'); // 'wysiwyg' | 'split' | 'history'
-        const rawMarkdown = ref(SAMPLE_TEMPLATES.stem);
+        const rawMarkdown = ref('');
         const renderedHtml = ref('');
         const saveStatusText = ref('Tersimpan Otomatis');
         const isExporting = ref(false);
@@ -1098,7 +1109,7 @@
         // Render Markdown with full protection for fenced code, inline code, and LaTeX math
         // Supports: $$...$$, \[...\], $...$, \(...\)
         const convertMarkdownToWordReadyHtml = (markdownText) => {
-          if (!markdownText || !markdownText.trim()) return '<p><br></p>';
+          if (!markdownText || !markdownText.trim()) return '';
 
           let text = String(markdownText).replace(/\r\n/g, '\n');
 
@@ -1208,7 +1219,7 @@
           temp.querySelectorAll('.katex-mathml, style, script').forEach((el) => el.remove());
           const plain = (temp.textContent || '').trim();
           const words = plain ? plain.split(/\s+/).filter(Boolean).length : 0;
-          const pages = Math.max(1, Math.ceil(words / 350));
+          const pages = words === 0 ? 0 : Math.max(1, Math.ceil(words / 350));
           return { words, pages };
         });
 
@@ -1297,9 +1308,15 @@
           }
 
           const newHtmlSegment = convertMarkdownToWordReadyHtml(md);
+          const hasExistingContent = Boolean(
+            rawMarkdown.value.trim() ||
+            (wysiwygCanvas.value && wysiwygCanvas.value.textContent.trim())
+          );
 
-          if (insertMode.value === 'append' && rawMarkdown.value.trim()) {
-            rawMarkdown.value = `${rawMarkdown.value.trim()}\n\n---\n\n${md}`;
+          if (insertMode.value === 'append' && hasExistingContent) {
+            rawMarkdown.value = rawMarkdown.value.trim()
+              ? `${rawMarkdown.value.trim()}\n\n---\n\n${md}`
+              : md;
             const currentCanvasHtml = wysiwygCanvas.value ? wysiwygCanvas.value.innerHTML : renderedHtml.value;
             const combined = `${currentCanvasHtml}<hr />${newHtmlSegment}`;
             syncHtmlToCanvas(combined);
@@ -1413,7 +1430,7 @@
 
         const clearDocumentConfirmed = () => {
           rawMarkdown.value = '';
-          syncHtmlToCanvas('<p><br></p>');
+          syncHtmlToCanvas('');
           showClearConfirm.value = false;
           triggerToast('Dokumen telah dikosongkan.');
         };
@@ -2530,7 +2547,7 @@ ${extraHyperlinkRels}
         };
 
         // ================= LOCALSTORAGE PERSISTENCE =================
-        const STORAGE_KEY = 'massivemark_studio_state_v2';
+        const STORAGE_KEY = 'massivemark_studio_state_v3';
 
         const saveToLocal = () => {
           try {
@@ -2557,7 +2574,7 @@ ${extraHyperlinkRels}
               if (parsed.docFont) docFont.value = parsed.docFont;
               if (parsed.rawMarkdown !== undefined) rawMarkdown.value = parsed.rawMarkdown;
               if (Array.isArray(parsed.snippetsHistory)) snippetsHistory.value = parsed.snippetsHistory;
-              if (parsed.renderedHtml) {
+              if (parsed.renderedHtml !== undefined) {
                 renderedHtml.value = parsed.renderedHtml;
                 return true;
               }
@@ -2569,16 +2586,9 @@ ${extraHyperlinkRels}
         onMounted(() => {
           const hadSaved = loadFromLocal();
           if (!hadSaved) {
-            const initialHtml = convertMarkdownToWordReadyHtml(rawMarkdown.value);
-            renderedHtml.value = initialHtml;
-            snippetsHistory.value = [
-              {
-                id: Date.now(),
-                title: 'Analisis Persamaan Diferensial & Mekanika Kuantum',
-                markdown: SAMPLE_TEMPLATES.stem,
-                timestamp: 'Contoh Awal'
-              }
-            ];
+            rawMarkdown.value = '';
+            renderedHtml.value = '';
+            snippetsHistory.value = [];
           }
           if (wysiwygCanvas.value) {
             wysiwygCanvas.value.innerHTML = renderedHtml.value;
