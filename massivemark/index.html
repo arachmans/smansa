@@ -1141,14 +1141,34 @@
             return isDisplay ? `\n\n${token}\n\n` : token;
           };
 
+          // Normalize double-escaped LaTeX commands inside \\[ ... \\] or \\( ... \\) copied from ChatGPT
+          const normalizeDoubleEscapedLatex = (expr) => {
+            const hasDoubleEscapedCmd = /\\\\(?:frac|dfrac|tfrac|sqrt|sum|int|iint|iiint|oint|prod|lim|left|right|begin|end|text|textbf|textit|mathbf|mathrm|mathit|mathbb|mathcal|cdot|times|div|pm|mp|le|leq|ge|geq|ne|neq|approx|equiv|sim|propto|infty|alpha|beta|gamma|delta|epsilon|varepsilon|theta|lambda|mu|nu|xi|pi|rho|sigma|tau|phi|varphi|psi|omega|Gamma|Delta|Theta|Lambda|Pi|Sigma|Omega|partial|nabla|quad|qquad|sin|cos|tan|cot|sec|csc|log|ln|exp|bar|hat|vec|tilde|dot|ddot|overline|underline|overbrace|underbrace|binom|choose|to|rightarrow|leftarrow|Rightarrow|Leftarrow|leftrightarrow|Leftrightarrow)\b/.test(expr);
+            if (!hasDoubleEscapedCmd) return expr;
+            return expr
+              .replace(/\\\\\\\\/g, '\u0000LATEX_BR\u0000')
+              .replace(/\\\\([a-zA-Z{}\[\](),;!:| ])/g, '\\$1')
+              .replace(/\u0000LATEX_BR\u0000/g, '\\\\');
+          };
+
           // Display math: $$ ... $$
           text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_, expr) => renderLatexToToken(expr, true));
-          // Display math: \[ ... \]
-          text = text.replace(/\\\[([\s\S]+?)\\\]/g, (_, expr) => renderLatexToToken(expr, true));
-          // Inline math: \( ... \)
-          text = text.replace(/\\\(([\s\S]+?)\\\)/g, (_, expr) => renderLatexToToken(expr, false));
-          // Inline math: $ ... $ (avoid matching currency like "$50 and $60" where space follows opening $)
-          text = text.replace(/(?<!\\)\$(?!\s)([^\$\n]+?)(?<!\s)\$/g, (_, expr) => renderLatexToToken(expr, false));
+          // Display math (double-escaped from ChatGPT / Markdown): \\[ ... \\]
+          text = text.replace(/\\\\\[([\s\S]+?)\\\\\]/g, (_, expr) => renderLatexToToken(normalizeDoubleEscapedLatex(expr), true));
+          // Display math (standard LaTeX): \[ ... \]
+          text = text.replace(/(?<!\\)\\\[([\s\S]+?)(?<!\\)\\\]/g, (_, expr) => renderLatexToToken(expr, true));
+          // Inline math (double-escaped from ChatGPT / Markdown): \\( ... \\)
+          text = text.replace(/\\\\\(([\s\S]+?)\\\\\)/g, (_, expr) => renderLatexToToken(normalizeDoubleEscapedLatex(expr), false));
+          // Inline math (standard LaTeX): \( ... \)
+          text = text.replace(/(?<!\\)\\\(([\s\S]+?)(?<!\\)\\\)/g, (_, expr) => renderLatexToToken(expr, false));
+          // Inline math: $ ... $ (supports optional spaces like $ x = 1 $, avoids currency like "$50 dan $60")
+          text = text.replace(/(?<!\\)\$(?!\$)([^\$\n]+?)(?<!\\)\$(?!\$)/g, (fullMatch, expr) => {
+            const trimmed = expr.trim();
+            if (!trimmed) return fullMatch;
+            if (/^\d[\d.,]*\s+[a-zA-Z]/.test(expr)) return fullMatch;
+            if (/^\s/.test(expr) && !/\s$/.test(expr)) return fullMatch;
+            return renderLatexToToken(trimmed, false);
+          });
 
           // Step 3: Restore stashed code blocks before Marked parses Markdown
           text = text.replace(/@@CODE_STASH_(\d+)@@/g, (_, idx) => codeStash[Number(idx)] || '');
@@ -1206,8 +1226,8 @@
           const src = modalMarkdown.value || '';
           const headings = (src.match(/^#{1,6}\s+.+/gm) || []).length;
           const tableSeparators = (src.match(/^\s*\|?[\s:-]+\|[\s|:-]+\s*$/gm) || []).length;
-          const displayMath = (src.match(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]/g) || []).length;
-          const inlineMath = (src.match(/(?<!\$)\$(?!\$)[^\$\n]+?\$|\\\([\s\S]+?\\\)/g) || []).length;
+          const displayMath = (src.match(/\$\$[\s\S]+?\$\$|\\\\\[[\s\S]+?\\\\\]|(?<!\\)\\\[[\s\S]+?(?<!\\)\\\]/g) || []).length;
+          const inlineMath = (src.match(/(?<!\$)\$(?!\$)[^\$\n]+?(?<!\\)\$(?!\$)|\\\\\([\s\S]+?\\\\\)|(?<!\\)\\\([\s\S]+?(?<!\\)\\\)/g) || []).length;
           const codeFenceRegex = new RegExp('\x60\x60\x60[\\s\\S]*?\x60\x60\x60', 'g');
           const codeBlocks = (src.match(codeFenceRegex) || []).length;
           return {
